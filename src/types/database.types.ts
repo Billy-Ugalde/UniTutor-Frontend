@@ -1,9 +1,3 @@
-/**
- * Tipos TypeScript del esquema de la base de datos UniTutor.
- * Generados manualmente a partir del esquema SQL.
- * Cuando el esquema esté estable, regenerar con:
- *   npx supabase gen types typescript --project-id lltwnxgdbwxfsrfzvywp
- */
 export type Json =
   | string
   | number
@@ -17,7 +11,6 @@ export type UserRole = 'inst_admin' | 'tutor' | 'estudiante'
 export interface Database {
   public: {
     Tables: {
-      /** Instituciones educativas (tenants) */
       institutions: {
         Row: {
           id: string
@@ -51,38 +44,42 @@ export interface Database {
         }
       }
 
-      /** Perfiles de usuario (extiende auth.users) */
       profiles: {
         Row: {
           id: string
           institution_id: string | null
+          email: string | null
           first_name: string
           last_name: string
           phone: string | null
           avatar_url: string | null
+          active: boolean
           created_at: string
         }
         Insert: {
           id: string
           institution_id?: string | null
+          email?: string | null
           first_name?: string
           last_name?: string
           phone?: string | null
           avatar_url?: string | null
+          active?: boolean
           created_at?: string
         }
         Update: {
           id?: string
           institution_id?: string | null
+          email?: string | null
           first_name?: string
           last_name?: string
           phone?: string | null
           avatar_url?: string | null
+          active?: boolean
           created_at?: string
         }
       }
 
-      /** Roles de usuario dentro de su institución */
       user_roles: {
         Row: {
           id: string
@@ -110,7 +107,6 @@ export interface Database {
         }
       }
 
-      /** Catálogo global — Áreas de conocimiento */
       careers: {
         Row: {
           id: string
@@ -135,7 +131,6 @@ export interface Database {
         }
       }
 
-      /** Catálogo global — Cursos (categorías) */
       courses: {
         Row: {
           id: string
@@ -166,7 +161,6 @@ export interface Database {
         }
       }
 
-      /** Catálogo global — Materias específicas */
       subjects: {
         Row: {
           id: string
@@ -197,7 +191,6 @@ export interface Database {
         }
       }
 
-      /** Materias que ofrece una institución (catálogo global ↔ institución) */
       institution_subjects: {
         Row: {
           institution_id: string
@@ -228,7 +221,6 @@ export interface Database {
   }
 }
 
-/** Tipo de perfil con institución anidada */
 export type Profile = Database['public']['Tables']['profiles']['Row']
 export type Institution = Database['public']['Tables']['institutions']['Row']
 export type UserRoleRecord = Database['public']['Tables']['user_roles']['Row']

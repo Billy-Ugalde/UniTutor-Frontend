@@ -9,9 +9,4 @@ if (!supabaseUrl || !supabaseAnonKey) {
   )
 }
 
-/**
- * Cliente singleton de Supabase.
- * Los tipos de las respuestas se gestionan explícitamente mediante los tipos
- * exportados en @/types/database.types.ts
- */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)

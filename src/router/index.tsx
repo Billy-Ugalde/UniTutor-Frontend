@@ -1,20 +1,18 @@
 import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
-
-// Auth module
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute'
 import { LoginPage } from '@/modules/auth/pages/LoginPage'
 import { RegisterPage } from '@/modules/auth/pages/RegisterPage'
-
-// Dashboard module
 import { DashboardPage } from '@/modules/dashboard/pages/DashboardPage'
-
-// Shared
+import { AdminRoute } from '@/modules/admin/components/AdminRoute'
+import { AdminDashboardPage } from '@/modules/admin/pages/AdminDashboardPage'
+import { InstitutionsManagementPage } from '@/modules/admin/pages/InstitutionsManagementPage'
+import { UsersManagementPage } from '@/modules/admin/pages/UsersManagementPage'
+import { SubjectsManagementPage } from '@/modules/admin/pages/SubjectsManagementPage'
 import { PublicLayout } from '@/shared/layouts/PublicLayout'
 import { AppLayout } from '@/shared/layouts/AppLayout'
 import { NotFoundPage } from '@/shared/pages/NotFoundPage'
 
 const router = createBrowserRouter([
-  // ── Rutas públicas ─────────────────────────────────────────
   {
     element: <PublicLayout />,
     children: [
@@ -22,8 +20,6 @@ const router = createBrowserRouter([
       { path: '/register', element: <RegisterPage /> },
     ],
   },
-
-  // ── Rutas protegidas ───────────────────────────────────────
   {
     element: <ProtectedRoute />,
     children: [
@@ -31,18 +27,19 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
-
-          // Próximos módulos se agregarán aquí:
-          // { path: '/tutors',    element: <TutorsPage /> },
-          // { path: '/requests',  element: <RequestsPage /> },
-          // { path: '/sessions',  element: <SessionsPage /> },
-          // { path: '/admin',     element: <AdminPage /> },
+          {
+            element: <AdminRoute />,
+            children: [
+              { path: '/admin', element: <AdminDashboardPage /> },
+              { path: '/admin/institutions', element: <InstitutionsManagementPage /> },
+              { path: '/admin/users', element: <UsersManagementPage /> },
+              { path: '/admin/subjects', element: <SubjectsManagementPage /> },
+            ],
+          },
         ],
       },
     ],
   },
-
-  // ── Redireccionamientos ────────────────────────────────────
   { path: '/', element: <Navigate to="/dashboard" replace /> },
   { path: '*', element: <NotFoundPage /> },
 ])

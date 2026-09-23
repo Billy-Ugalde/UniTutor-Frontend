@@ -2,26 +2,18 @@ import { create } from 'zustand'
 import type { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import type { Profile, UserRole } from '@/types/database.types'
+import { useAdminStore } from '@/modules/admin/store/admin.store'
 
 interface AuthState {
-  /** Sesión activa de Supabase (contiene el JWT) */
   session: Session | null
-  /** Usuario de Supabase Auth */
   user: User | null
-  /** Perfil de la tabla public.profiles */
   profile: Profile | null
-  /** Roles activos del usuario en su institución */
   roles: UserRole[]
-  /** true mientras se verifica la sesión inicial */
   isLoading: boolean
 
-  /** Inicializar: verificar sesión y suscribirse a cambios de auth */
   initialize: () => Promise<() => void>
-  /** Iniciar sesión con email y contraseña */
   signIn: (email: string, password: string) => Promise<void>
-  /** Cerrar sesión */
   signOut: () => Promise<void>
-  /** Cargar perfil desde la base de datos (interno) */
   _loadProfile: (userId: string) => Promise<void>
 }
 
@@ -59,11 +51,37 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   signIn: async (email, password) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const cleanEmail = email.trim().toLowerCase()
+
+    const { data: statusCheck, error: checkError } = await supabase.rpc(
+      'check_user_can_sign_in',
+      { p_email: cleanEmail }
+    )
+
+    if (!checkError && statusCheck && (statusCheck as { allowed: boolean; message?: string }).allowed === false) {
+      throw new Error((statusCheck as { allowed: boolean; message?: string }).message || 'Esta cuenta ha sido desactivada.')
+    }
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password })
     if (error) throw error
+
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('active')
+        .eq('id', data.user.id)
+        .single()
+
+      if (profile && profile.active === false) {
+        await supabase.auth.signOut()
+        set({ session: null, user: null, profile: null, roles: [] })
+        throw new Error('Esta cuenta ha sido desactivada. Comunícate con el administrador de tu institución.')
+      }
+    }
   },
 
   signOut: async () => {
+    useAdminStore.getState().setSelectedInstitutionId(null)
     await supabase.auth.signOut()
     set({ session: null, user: null, profile: null, roles: [] })
   },
@@ -71,15 +89,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   _loadProfile: async (userId) => {
     const { data: profile } = await supabase
       .from('profiles')
-      .select('*')
+      .select('*, institutions(active)')
       .eq('id', userId)
       .single()
+
+    const instData = (profile as { institutions?: { active: boolean } | null } | null)?.institutions
+    const isInstActive = instData?.active !== false
+
+    if (profile && (profile.active === false || !isInstActive)) {
+      useAdminStore.getState().setSelectedInstitutionId(null)
+      await supabase.auth.signOut()
+      set({ session: null, user: null, profile: null, roles: [] })
+      return
+    }
 
     const { data: userRoles } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
       .eq('active', true)
+
+    const currentUser = get().user
+    const isSuperAdmin = Boolean(currentUser?.app_metadata?.is_super_admin)
+    if (!isSuperAdmin) {
+      useAdminStore.getState().setSelectedInstitutionId(profile?.institution_id ?? null)
+    }
 
     set({
       profile: profile ?? null,

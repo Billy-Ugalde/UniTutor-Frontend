@@ -1,11 +1,8 @@
 import { useEffect } from 'react'
 import { AppRouter } from '@/router'
 import { useAuthStore } from '@/modules/auth/store/auth.store'
+import { ToastContainer } from '@/shared/components/ui/ToastContainer'
 
-/**
- * Punto de entrada de la aplicación.
- * Inicializa el estado de autenticación y monta el router.
- */
 export default function App() {
   const initialize = useAuthStore((s) => s.initialize)
 
@@ -22,5 +19,10 @@ export default function App() {
     }
   }, [initialize])
 
-  return <AppRouter />
+  return (
+    <>
+      <AppRouter />
+      <ToastContainer />
+    </>
+  )
 }

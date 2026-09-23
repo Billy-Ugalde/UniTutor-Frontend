@@ -1,26 +1,29 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { GraduationCap } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { Card } from '@/shared/components/ui/Card'
+import { toast } from '@/shared/store/toast.store'
 
-/**
- * Página de inicio de sesión.
- * Autentica al usuario con email y contraseña vía Supabase Auth.
- */
 export function LoginPage() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
-  // Si el usuario viene del registro puede traer un mensaje de éxito
   const successMessage = (location.state as { message?: string } | null)?.message
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    if (successMessage) {
+      toast.success('¡Registro completado!', successMessage)
+    }
+  }, [successMessage])
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
@@ -29,15 +32,24 @@ export function LoginPage() {
 
     try {
       await signIn(email, password)
+      toast.success('¡Bienvenido a UniTutor!', 'Has iniciado sesión correctamente.')
       navigate('/dashboard')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al iniciar sesión.'
-      if (message.includes('Invalid login credentials')) {
-        setError('Correo o contraseña incorrectos.')
+      if (message.includes('desactivada')) {
+        setError(message)
+        toast.error('Acceso denegado', message, 6000)
+      } else if (message.includes('Invalid login credentials')) {
+        const errorText = 'Correo o contraseña incorrectos.'
+        setError(errorText)
+        toast.error('Credenciales incorrectas', errorText)
       } else if (message.includes('Email not confirmed')) {
-        setError('Debes confirmar tu correo electrónico antes de ingresar.')
+        const warnText = 'Debes confirmar tu correo electrónico antes de ingresar.'
+        setError(warnText)
+        toast.warning('Confirmación requerida', warnText)
       } else {
         setError(message)
+        toast.error('Error al ingresar', message)
       }
     } finally {
       setIsLoading(false)
@@ -47,7 +59,10 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center flex flex-col items-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 mb-3">
+            <GraduationCap className="h-6 w-6" />
+          </div>
           <h1 className="text-3xl font-bold text-primary-700">UniTutor</h1>
           <p className="mt-2 text-gray-600">Plataforma de tutorías universitarias</p>
         </div>

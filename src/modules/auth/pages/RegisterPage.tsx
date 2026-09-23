@@ -1,16 +1,13 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { GraduationCap, UserCheck } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { Card } from '@/shared/components/ui/Card'
+import { toast } from '@/shared/store/toast.store'
 import type { Institution } from '@/types/database.types'
 
-/**
- * Página de registro de usuario.
- * Crea cuenta en Supabase Auth, actualiza el perfil con institution_id
- * y asigna el rol 'estudiante' por defecto.
- */
 export function RegisterPage() {
   const navigate = useNavigate()
 
@@ -22,6 +19,7 @@ export function RegisterPage() {
     password: '',
     confirmPassword: '',
     institutionId: '',
+    role: 'estudiante' as 'estudiante' | 'tutor',
   })
   const [errors, setErrors] = useState<Partial<typeof form>>({})
   const [serverError, setServerError] = useState<string | null>(null)
@@ -69,49 +67,40 @@ export function RegisterPage() {
     setIsLoading(true)
 
     try {
-      // 1. Crear usuario en Supabase Auth
-      //    El trigger on_auth_user_created creará el profile automáticamente
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: form.email,
+      const { error: registerError } = await supabase.rpc('register_user', {
+        p_email: form.email.trim(),
+        p_password: form.password,
+        p_first_name: form.firstName.trim(),
+        p_last_name: form.lastName.trim(),
+        p_institution_id: form.institutionId,
+        p_role: form.role,
+      })
+
+      if (registerError) throw registerError
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: form.email.trim(),
         password: form.password,
-        options: {
-          data: {
-            first_name: form.firstName,
-            last_name: form.lastName,
-          },
-        },
       })
-      if (authError) throw authError
-      if (!authData.user) throw new Error('No se pudo crear el usuario.')
 
-      // 2. Actualizar el profile con institution_id y nombre completo
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          institution_id: form.institutionId,
-          first_name: form.firstName,
-          last_name: form.lastName,
+      if (!signInError) {
+        toast.success('¡Cuenta creada exitosamente!', 'Bienvenido a UniTutor.')
+        navigate('/dashboard')
+      } else {
+        toast.success('¡Registro completado!', 'Ya puedes iniciar sesión con tus credenciales.')
+        navigate('/login', {
+          state: { message: '¡Cuenta creada exitosamente! Ya puedes iniciar sesión con tus credenciales.' },
         })
-        .eq('id', authData.user.id)
-      if (profileError) throw profileError
-
-      // 3. Asignar rol de Estudiante por defecto
-      const { error: roleError } = await supabase.from('user_roles').insert({
-        user_id: authData.user.id,
-        institution_id: form.institutionId,
-        role: 'estudiante',
-      })
-      if (roleError) throw roleError
-
-      navigate('/login', {
-        state: { message: '¡Cuenta creada! Verifica tu correo e inicia sesión.' },
-      })
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al crear la cuenta.'
-      if (message.includes('User already registered')) {
-        setServerError('Ya existe una cuenta con ese correo electrónico.')
+      if (message.includes('Ya existe una cuenta') || message.includes('already registered')) {
+        const errorText = 'Ya existe una cuenta con ese correo electrónico.'
+        setServerError(errorText)
+        toast.error('Correo ya registrado', errorText)
       } else {
         setServerError(message)
+        toast.error('Error al registrarse', message)
       }
     } finally {
       setIsLoading(false)
@@ -121,14 +110,17 @@ export function RegisterPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
-        <div className="mb-8 text-center">
+        <div className="mb-8 text-center flex flex-col items-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 mb-3">
+            <GraduationCap className="h-6 w-6" />
+          </div>
           <h1 className="text-3xl font-bold text-primary-700">UniTutor</h1>
-          <p className="mt-2 text-gray-600">Crea tu cuenta de estudiante</p>
+          <p className="mt-2 text-gray-600">Crea tu cuenta institucional</p>
         </div>
 
         <Card>
           <Card.Header>
-            <h2 className="text-lg font-semibold text-gray-900">Registro</h2>
+            <h2 className="text-lg font-semibold text-gray-900">Registro de Usuario</h2>
             <p className="mt-1 text-sm text-gray-500">
               Los campos marcados con <span className="text-red-500">*</span> son obligatorios
             </p>
@@ -136,6 +128,38 @@ export function RegisterPage() {
 
           <Card.Body>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700">
+                  Deseo registrarme como: <span className="text-red-500">*</span>
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, role: 'estudiante' }))}
+                    className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 px-3 text-sm font-medium transition-all cursor-pointer ${
+                      form.role === 'estudiante'
+                        ? 'border-primary-600 bg-primary-50 text-primary-700 ring-2 ring-primary-500/20 font-semibold'
+                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <GraduationCap className="h-4 w-4" />
+                    Estudiante
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForm((prev) => ({ ...prev, role: 'tutor' }))}
+                    className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 px-3 text-sm font-medium transition-all cursor-pointer ${
+                      form.role === 'tutor'
+                        ? 'border-primary-600 bg-primary-50 text-primary-700 ring-2 ring-primary-500/20 font-semibold'
+                        : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    <UserCheck className="h-4 w-4" />
+                    Tutor
+                  </button>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <Input
                   label="Nombre"
@@ -171,7 +195,6 @@ export function RegisterPage() {
                 autoComplete="email"
               />
 
-              {/* Selección de institución */}
               <div className="flex flex-col gap-1">
                 <label htmlFor="institutionId" className="text-sm font-medium text-gray-700">
                   Institución <span className="text-red-500">*</span>
@@ -240,7 +263,7 @@ export function RegisterPage() {
                 </div>
               )}
 
-              <Button type="submit" fullWidth isLoading={isLoading}>
+              <Button type="submit" variant="success" fullWidth isLoading={isLoading}>
                 Crear cuenta
               </Button>
             </form>

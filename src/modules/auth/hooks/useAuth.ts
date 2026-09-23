@@ -1,19 +1,18 @@
 import { useAuthStore } from '@/modules/auth/store/auth.store'
 import type { UserRole } from '@/types/database.types'
 
-/**
- * Hook de autenticación — acceso simplificado al estado de auth.
- *
- * @example
- * const { user, profile, isAuthenticated, hasRole } = useAuth()
- */
 export function useAuth() {
   const { session, user, profile, roles, isLoading, signIn, signOut } =
     useAuthStore()
 
   const isAuthenticated = session !== null
 
-  const hasRole = (role: UserRole): boolean => roles.includes(role)
+  const isSuperAdmin = Boolean(user?.app_metadata?.is_super_admin)
+
+  const hasRole = (role: UserRole): boolean => {
+    if (isSuperAdmin && role === 'inst_admin') return true
+    return roles.includes(role)
+  }
 
   const fullName =
     profile
@@ -27,6 +26,7 @@ export function useAuth() {
     roles,
     isLoading,
     isAuthenticated,
+    isSuperAdmin,
     fullName,
     hasRole,
     signIn,
