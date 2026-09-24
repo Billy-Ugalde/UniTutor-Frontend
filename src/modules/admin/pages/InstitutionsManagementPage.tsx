@@ -789,7 +789,7 @@ export function InstitutionsManagementPage() {
 
               <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
-                  <UserCheck className="h-4 w-4 text-blue-700" /> 2. Administrador de la Institución (inst_admin)
+                  <UserCheck className="h-4 w-4 text-blue-700" /> 2. Administrador de la Institución
                 </h4>
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
