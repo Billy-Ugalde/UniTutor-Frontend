@@ -135,7 +135,7 @@ export interface Database {
         Row: {
           id: string
           career_id: string
-          code: string
+          code: string | null
           name: string
           description: string | null
           active: boolean
@@ -144,7 +144,7 @@ export interface Database {
         Insert: {
           id?: string
           career_id: string
-          code: string
+          code?: string | null
           name: string
           description?: string | null
           active?: boolean
@@ -153,7 +153,7 @@ export interface Database {
         Update: {
           id?: string
           career_id?: string
-          code?: string
+          code?: string | null
           name?: string
           description?: string | null
           active?: boolean
@@ -195,16 +195,19 @@ export interface Database {
         Row: {
           institution_id: string
           subject_id: string
+          custom_code: string | null
           active: boolean
         }
         Insert: {
           institution_id: string
           subject_id: string
+          custom_code?: string | null
           active?: boolean
         }
         Update: {
           institution_id?: string
           subject_id?: string
+          custom_code?: string | null
           active?: boolean
         }
       }
@@ -227,3 +230,5 @@ export type UserRoleRecord = Database['public']['Tables']['user_roles']['Row']
 export type Career = Database['public']['Tables']['careers']['Row']
 export type Course = Database['public']['Tables']['courses']['Row']
 export type Subject = Database['public']['Tables']['subjects']['Row']
+
+export type InstitutionSubject = Database['public']['Tables']['institution_subjects']['Row']
