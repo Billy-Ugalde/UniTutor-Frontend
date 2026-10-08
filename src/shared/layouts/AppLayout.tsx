@@ -1,6 +1,6 @@
 import { useTranslations } from '@/i18n/useTranslations'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { GraduationCap, Shield, LogOut } from 'lucide-react'
+import { GraduationCap, Shield, LogOut, BookOpen, Calendar } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { LanguageSelector } from '@/shared/components/LanguageSelector'
 
@@ -33,6 +33,23 @@ export function AppLayout() {
             >
               {t("Inicio")}
             </Link>
+
+            {hasRole('tutor') && (
+              <>
+                <Link
+                  to="/tutor/sesiones"
+                  className="text-sm font-medium text-blue-700 hover:text-blue-900 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Calendar className="h-4 w-4 text-blue-600" /> {t("Mis Sesiones")}
+                </Link>
+                <Link
+                  to="/tutor/materias"
+                  className="text-sm font-medium text-green-700 hover:text-green-900 bg-green-50 px-2.5 py-1 rounded-md border border-green-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <BookOpen className="h-4 w-4 text-green-600" /> {t("Mis Materias")}
+                </Link>
+              </>
+            )}
 
             {(hasRole('inst_admin') || isSuperAdmin) && (
               <Link
@@ -76,4 +93,3 @@ export function AppLayout() {
     </div>
   )
 }
-

@@ -95,10 +95,19 @@ export function DashboardPage() {
           id: 'tutor-sessions',
           label: t("Mis Tutorías Impartidas"),
           icon: Calendar,
-          href: '/sessions',
-          available: false,
-          badgeText: t("Próximamente"),
+          href: '/tutor/sesiones',
+          available: true,
+          badgeText: t("Disponible"),
           description: t("Consulta tus sesiones asignadas y calendario"),
+        },
+        {
+          id: 'tutor-availability',
+          label: t("Mi Disponibilidad y Materias"),
+          icon: Clock,
+          href: '/tutor/materias',
+          available: true,
+          badgeText: t("Disponible"),
+          description: t("Configura tus horarios y asignaturas de dominio"),
         },
         {
           id: 'tutor-requests',
@@ -108,15 +117,6 @@ export function DashboardPage() {
           available: false,
           badgeText: t("Próximamente"),
           description: t("Revisa y responde a solicitudes de estudiantes"),
-        },
-        {
-          id: 'tutor-availability',
-          label: t("Mi Disponibilidad y Materias"),
-          icon: Clock,
-          href: '/availability',
-          available: false,
-          badgeText: t("Próximamente"),
-          description: t("Configura tus horarios y asignaturas de dominio"),
         }
       )
     }
