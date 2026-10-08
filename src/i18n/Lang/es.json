@@ -402,5 +402,9 @@
   "Curso / Área \"{name}\" creado exitosamente.": "Curso / Área \"{name}\" creado exitosamente.",
   "Materia \"{name}\" creada exitosamente{offer}.": "Materia \"{name}\" creada exitosamente{offer}.",
   " y ofertada con código {code}": " y ofertada con código {code}",
-  "El código para {name} ahora es {code}.": "El código para {name} ahora es {code}."
+  "El código para {name} ahora es {code}.": "El código para {name} ahora es {code}.",
+  "Registro público no disponible": "Registro público no disponible",
+  "Próximamente se implementará el autoregistro para estudiantes y tutores. Actualmente, la asignación de cuentas es gestionada directamente por los administradores de cada institución.": "Próximamente se implementará el autoregistro para estudiantes y tutores. Actualmente, la asignación de cuentas es gestionada directamente por los administradores de cada institución.",
+  "Registro próximamente disponible": "Registro próximamente disponible",
+  "El registro público de usuarios se implementará próximamente. Por favor contacta al administrador de tu institución.": "El registro público de usuarios se implementará próximamente. Por favor contacta al administrador de tu institución."
 }

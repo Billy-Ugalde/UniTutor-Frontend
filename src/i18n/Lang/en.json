@@ -402,5 +402,9 @@
   "Curso / Área \"{name}\" creado exitosamente.": "Course / Area \"{name}\" created successfully.",
   "Materia \"{name}\" creada exitosamente{offer}.": "Subject \"{name}\" created successfully{offer}.",
   " y ofertada con código {code}": " and offered with code {code}",
-  "El código para {name} ahora es {code}.": "The code for {name} is now {code}."
+  "El código para {name} ahora es {code}.": "The code for {name} is now {code}.",
+  "Registro público no disponible": "Public registration unavailable",
+  "Próximamente se implementará el autoregistro para estudiantes y tutores. Actualmente, la asignación de cuentas es gestionada directamente por los administradores de cada institución.": "Self-registration for students and tutors will be implemented soon. Currently, user accounts are managed directly by each institution administrator.",
+  "Registro próximamente disponible": "Registration coming soon",
+  "El registro público de usuarios se implementará próximamente. Por favor contacta al administrador de tu institución.": "Public user registration will be implemented soon. Please contact your institution administrator."
 }
