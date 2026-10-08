@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute'
 import { LoginPage } from '@/modules/auth/pages/LoginPage'
 import { RegisterPage } from '@/modules/auth/pages/RegisterPage'
@@ -8,7 +8,6 @@ import { AdminDashboardPage } from '@/modules/admin/pages/AdminDashboardPage'
 import { InstitutionsManagementPage } from '@/modules/admin/pages/InstitutionsManagementPage'
 import { UsersManagementPage } from '@/modules/admin/pages/UsersManagementPage'
 import { SubjectsManagementPage } from '@/modules/admin/pages/SubjectsManagementPage'
-import { LandingPage } from '@/modules/landing/pages/LandingPage'
 import { TutorRoute } from '@/modules/tutor/components/TutorRoute'
 import { TutorSubjectsPage } from '@/modules/tutor/pages/TutorSubjectsPage'
 import { TutorSubjectDetailPage } from '@/modules/tutor/pages/TutorSubjectDetailPage'
@@ -18,7 +17,6 @@ import { AppLayout } from '@/shared/layouts/AppLayout'
 import { NotFoundPage } from '@/shared/pages/NotFoundPage'
 
 const router = createBrowserRouter([
-  { path: '/', element: <LandingPage /> },
   {
     element: <PublicLayout />,
     children: [
@@ -55,6 +53,7 @@ const router = createBrowserRouter([
       },
     ],
   },
+  { path: '/', element: <Navigate to="/dashboard" replace /> },
   { path: '*', element: <NotFoundPage /> },
 ])
 
