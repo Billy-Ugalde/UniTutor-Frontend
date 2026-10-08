@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { forwardRef, useState, type InputHTMLAttributes } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 
@@ -9,6 +10,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, hint, id, className = '', type, ...props }, ref) => {
+  const { t } = useTranslations()
     const [showPassword, setShowPassword] = useState(false)
     const inputId = id ?? label?.toLowerCase().replace(/\s+/g, '-')
 
@@ -50,8 +52,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               disabled={props.disabled}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-sm cursor-pointer disabled:cursor-not-allowed"
               tabIndex={-1}
-              title={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
-              aria-label={showPassword ? 'Ocultar contraseña' : 'Ver contraseña'}
+              title={showPassword ? t("Ocultar contraseña") : t("Ver contraseña")}
+              aria-label={showPassword ? t("Ocultar contraseña") : t("Ver contraseña")}
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" />

@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
@@ -23,6 +24,7 @@ interface AdminStats {
 }
 
 export function AdminDashboardPage() {
+  const { t } = useTranslations()
   const { profile, isSuperAdmin } = useAuth()
   const { selectedInstitutionId, setSelectedInstitutionId } = useAdminStore()
   const [institutions, setInstitutions] = useState<Institution[]>([])
@@ -129,31 +131,31 @@ export function AdminDashboardPage() {
       ? [
           {
             id: 'institutions',
-            label: 'Gestión de Instituciones',
+            label: t("Gestión de Instituciones"),
             icon: Building2,
-            badge: 'Super Admin',
+            badge: t("Super Admin"),
             description:
-              'Supervisa universidades adscritas, edita sus datos de contacto y registra nuevas instituciones.',
+              t("Supervisa universidades adscritas, edita sus datos de contacto y registra nuevas instituciones."),
             href: '/admin/institutions',
           },
         ]
       : []),
     {
       id: 'users',
-      label: 'Gestión de Usuarios y Roles',
+      label: t("Gestión de Usuarios y Roles"),
       icon: Users,
-      badge: 'Disponible',
+      badge: t("Disponible"),
       description:
-        'Administra el personal y estudiantes de la institución, asigna o revoca roles de tutor y administrador.',
+        t("Administra el personal y estudiantes de la institución, asigna o revoca roles de tutor y administrador."),
       href: '/admin/users',
     },
     {
       id: 'subjects',
-      label: 'Catálogo de Materias',
+      label: t("Catálogo de Materias"),
       icon: BookOpen,
-      badge: 'Disponible',
+      badge: t("Disponible"),
       description:
-        'Habilita o deshabilita qué asignaturas del catálogo global imparte la institución para tutorías.',
+        t("Habilita o deshabilita qué asignaturas del catálogo global imparte la institución para tutorías."),
       href: '/admin/subjects',
     },
   ]
@@ -167,9 +169,9 @@ export function AdminDashboardPage() {
               <Shield className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-bold text-blue-900">Control de Plataforma (Super Administrador)</p>
+              <p className="text-sm font-bold text-blue-900">{t("Control de Plataforma (Super Administrador)")}</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-blue-700">Institución actual:</span>
+                <span className="text-xs text-blue-700">{t("Institución actual:")}</span>
                 <select
                   value={selectedInstitutionId ?? ''}
                   onChange={(e) => setSelectedInstitutionId(e.target.value)}
@@ -189,12 +191,12 @@ export function AdminDashboardPage() {
 
       <div>
         <h1 className="text-2xl font-bold text-gray-900">
-          Administración Institucional
+          {t("Administración Institucional")}
         </h1>
         <p className="mt-1 text-sm text-gray-500">
-          Gestión de usuarios, roles y materias para{' '}
+          {t("Gestión de usuarios, roles y materias para")}{' '}
           <span className="font-semibold text-gray-800">
-            {currentInst?.name ?? 'la institución seleccionada'}
+            {currentInst?.name ?? t("la institución seleccionada")}
           </span>
         </p>
       </div>
@@ -205,7 +207,7 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Usuarios Totales
+                  {t("Usuarios Totales")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-gray-900">
                   {isLoading ? '...' : stats.totalUsers}
@@ -215,7 +217,7 @@ export function AdminDashboardPage() {
                 <Users className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">Registrados en la institución</p>
+            <p className="mt-3 text-xs text-gray-500">{t("Registrados en la institución")}</p>
           </Card.Body>
         </Card>
 
@@ -224,7 +226,7 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Tutores Activos
+                  {t("Tutores Activos")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-green-600">
                   {isLoading ? '...' : stats.totalTutors}
@@ -234,7 +236,7 @@ export function AdminDashboardPage() {
                 <UserCheck className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">Listos para impartir tutorías</p>
+            <p className="mt-3 text-xs text-gray-500">{t("Listos para impartir tutorías")}</p>
           </Card.Body>
         </Card>
 
@@ -243,7 +245,7 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Estudiantes
+                  {t("Estudiantes")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-sky-600">
                   {isLoading ? '...' : stats.totalStudents}
@@ -253,7 +255,7 @@ export function AdminDashboardPage() {
                 <GraduationCap className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">Con rol de estudiante activo</p>
+            <p className="mt-3 text-xs text-gray-500">{t("Con rol de estudiante activo")}</p>
           </Card.Body>
         </Card>
 
@@ -262,7 +264,7 @@ export function AdminDashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Materias Ofertadas
+                  {t("Materias Ofertadas")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-amber-600">
                   {isLoading ? '...' : stats.totalSubjects}
@@ -272,7 +274,7 @@ export function AdminDashboardPage() {
                 <BookOpen className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">Disponibles para tutoría</p>
+            <p className="mt-3 text-xs text-gray-500">{t("Disponibles para tutoría")}</p>
           </Card.Body>
         </Card>
       </div>
@@ -303,7 +305,7 @@ export function AdminDashboardPage() {
 
                   <div className="mt-4 pt-3 border-t border-gray-100/80">
                     <span className="inline-flex items-center text-xs font-semibold text-blue-600 group-hover:text-blue-700">
-                      Acceder al módulo <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                      {t("Acceder al módulo")} <ArrowRight className="h-3.5 w-3.5 ml-1" />
                     </span>
                   </div>
                 </div>

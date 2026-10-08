@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
@@ -28,6 +29,7 @@ import { toast } from '@/shared/store/toast.store'
 import type { Institution } from '@/types/database.types'
 
 export function InstitutionsManagementPage() {
+  const { t, locale } = useTranslations()
   const { isSuperAdmin } = useAuth()
   const { setSelectedInstitutionId } = useAdminStore()
   const navigate = useNavigate()
@@ -84,7 +86,7 @@ export function InstitutionsManagementPage() {
       console.error('Error al cargar instituciones:', err)
       setActionFeedback({
         type: 'error',
-        text: 'No fue posible cargar la lista de instituciones.',
+        text: t("No fue posible cargar la lista de instituciones."),
       })
     } finally {
       setIsLoading(false)
@@ -159,9 +161,9 @@ export function InstitutionsManagementPage() {
 
       setActionFeedback({
         type: 'success',
-        text: `Institución "${newInstForm.name}" creada exitosamente junto a su administrador.`,
+        text: t("Institución \"{name}\" creada exitosamente junto a su administrador.", { name: newInstForm.name }),
       })
-      toast.success('Institución registrada', `"${newInstForm.name}" ha sido creada exitosamente.`)
+      toast.success(t("Institución registrada"), t("\"{name}\" ha sido creada exitosamente.", { name: newInstForm.name }))
 
       setIsCreateModalOpen(false)
       setNewInstForm({
@@ -180,12 +182,12 @@ export function InstitutionsManagementPage() {
       await loadInstitutions()
     } catch (err) {
       console.error('Error al crear institución:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al crear la institución.'
+      const errorText = err instanceof Error ? err.message : t("Error al crear la institución.")
       setCreateFeedback({
         type: 'error',
         text: errorText,
       })
-      toast.error('Error al registrar institución', errorText)
+      toast.error(t("Error al registrar institución"), errorText)
     } finally {
       setIsCreating(false)
     }
@@ -225,19 +227,19 @@ export function InstitutionsManagementPage() {
 
       setActionFeedback({
         type: 'success',
-        text: `Institución "${editForm.name}" actualizada con éxito.`,
+        text: t("Institución \"{name}\" actualizada con éxito.", { name: editForm.name }),
       })
-      toast.success('Institución actualizada', `Los datos de "${editForm.name}" se guardaron correctamente.`)
+      toast.success(t("Institución actualizada"), t("Los datos de \"{name}\" se guardaron correctamente.", { name: editForm.name }))
       setEditingInst(null)
       await loadInstitutions()
     } catch (err) {
       console.error('Error al actualizar institución:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al actualizar la institución.'
+      const errorText = err instanceof Error ? err.message : t("Error al actualizar la institución.")
       setActionFeedback({
         type: 'error',
         text: errorText,
       })
-      toast.error('Error al actualizar institución', errorText)
+      toast.error(t("Error al actualizar institución"), errorText)
     } finally {
       setIsSavingEdit(false)
     }
@@ -246,8 +248,8 @@ export function InstitutionsManagementPage() {
   const handleToggleActive = async (inst: Institution) => {
     const nextState = !inst.active
     const confirmText = nextState
-      ? `¿Deseas activar la institución "${inst.name}"?`
-      : `¿Estás seguro de desactivar la institución "${inst.name}"? Sus usuarios no podrán ingresar hasta ser reactivada.`
+      ? t("¿Deseas activar la institución \"{name}\"?", { name: inst.name })
+      : t("¿Estás seguro de desactivar la institución \"{name}\"? Sus usuarios no podrán ingresar hasta ser reactivada.", { name: inst.name })
 
     if (!window.confirm(confirmText)) return
 
@@ -259,20 +261,20 @@ export function InstitutionsManagementPage() {
 
       if (error) throw error
 
-      const statusMsg = `Institución "${inst.name}" ahora está ${nextState ? 'activa' : 'desactivada'}.`
+      const statusMsg = t("Institución \"{name}\" ahora está {status}.", { name: inst.name, status: nextState ? t("activa") : t("desactivada") })
       setActionFeedback({
         type: 'success',
         text: statusMsg,
       })
-      toast.success(nextState ? 'Institución activada' : 'Institución desactivada', statusMsg)
+      toast.success(nextState ? t("Institución activada") : t("Institución desactivada"), statusMsg)
       await loadInstitutions()
     } catch (err) {
       console.error('Error al cambiar estado de institución:', err)
       setActionFeedback({
         type: 'error',
-        text: 'No fue posible cambiar el estado de la institución.',
+        text: t("No fue posible cambiar el estado de la institución."),
       })
-      toast.error('Error de operación', 'No fue posible cambiar el estado de la institución.')
+      toast.error(t("Error de operación"), t("No fue posible cambiar el estado de la institución."))
     }
   }
 
@@ -285,14 +287,14 @@ export function InstitutionsManagementPage() {
               to="/admin"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800"
             >
-              <ArrowLeft className="h-4 w-4" /> Panel de Administración
+              <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
             </Link>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mt-1">
-            Gestión de Instituciones
+            {t("Gestión de Instituciones")}
           </h1>
           <p className="text-sm text-gray-500">
-            Supervisa, administra y registra las universidades adscritas a la plataforma
+            {t("Supervisa, administra y registra las universidades adscritas a la plataforma")}
           </p>
         </div>
 
@@ -306,7 +308,7 @@ export function InstitutionsManagementPage() {
             className="whitespace-nowrap cursor-pointer shadow-xs"
           >
             <Building2 className="h-4 w-4" />
-            Crear Nueva Institución
+            {t("Crear Nueva Institución")}
           </Button>
         )}
       </div>
@@ -329,7 +331,7 @@ export function InstitutionsManagementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Total Instituciones
+                  {t("Total Instituciones")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-blue-600">
                   {isLoading ? '...' : metrics.total}
@@ -339,7 +341,7 @@ export function InstitutionsManagementPage() {
                 <Building2 className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">Registradas en la plataforma</p>
+            <p className="mt-2 text-xs text-gray-500">{t("Registradas en la plataforma")}</p>
           </Card.Body>
         </Card>
 
@@ -348,7 +350,7 @@ export function InstitutionsManagementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Instituciones Activas
+                  {t("Instituciones Activas")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-green-600">
                   {isLoading ? '...' : metrics.active}
@@ -358,7 +360,7 @@ export function InstitutionsManagementPage() {
                 <CheckCircle2 className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">Operando con normalidad</p>
+            <p className="mt-2 text-xs text-gray-500">{t("Operando con normalidad")}</p>
           </Card.Body>
         </Card>
 
@@ -367,7 +369,7 @@ export function InstitutionsManagementPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                  Instituciones Inactivas
+                  {t("Instituciones Inactivas")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-amber-600">
                   {isLoading ? '...' : metrics.inactive}
@@ -377,7 +379,7 @@ export function InstitutionsManagementPage() {
                 <XCircle className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">Pausadas o en mantenimiento</p>
+            <p className="mt-2 text-xs text-gray-500">{t("Pausadas o en mantenimiento")}</p>
           </Card.Body>
         </Card>
       </div>
@@ -387,14 +389,14 @@ export function InstitutionsManagementPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="w-full sm:max-w-md relative">
               <Input
-                placeholder="Buscar por nombre, slug, correo o sede..."
+                placeholder={t("Buscar por nombre, slug, correo o sede...")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Estado:
+                {t("Estado:")}
               </span>
               <select
                 value={statusFilter}
@@ -403,9 +405,9 @@ export function InstitutionsManagementPage() {
                 }
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:border-primary-500 focus:outline-none"
               >
-                <option value="all">Todas las instituciones</option>
-                <option value="active">Solo activas</option>
-                <option value="inactive">Solo inactivas</option>
+                <option value="all">{t("Todas las instituciones")}</option>
+                <option value="active">{t("Solo activas")}</option>
+                <option value="inactive">{t("Solo inactivas")}</option>
               </select>
             </div>
           </div>
@@ -425,25 +427,25 @@ export function InstitutionsManagementPage() {
             </colgroup>
             <thead className="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
               <tr>
-                <th className="px-4 py-3">Institución</th>
-                <th className="px-4 py-3">Contacto Oficial</th>
-                <th className="px-4 py-3">Sede / Dirección</th>
-                <th className="px-4 py-3 text-center">Estado</th>
-                <th className="px-4 py-3">Registro</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
+                <th className="px-4 py-3">{t("Institución")}</th>
+                <th className="px-4 py-3">{t("Contacto Oficial")}</th>
+                <th className="px-4 py-3">{t("Sede / Dirección")}</th>
+                <th className="px-4 py-3 text-center">{t("Estado")}</th>
+                <th className="px-4 py-3">{t("Registro")}</th>
+                <th className="px-4 py-3 text-right">{t("Acciones")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-500">
-                    Cargando instituciones...
+                    {t("Cargando instituciones...")}
                   </td>
                 </tr>
               ) : filteredInstitutions.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-500">
-                    No se encontraron instituciones con el criterio seleccionado.
+                    {t("No se encontraron instituciones con el criterio seleccionado.")}
                   </td>
                 </tr>
               ) : (
@@ -467,8 +469,8 @@ export function InstitutionsManagementPage() {
 
                     <td className="px-4 py-3.5 text-xs text-gray-600">
                       <div className="min-w-0">
-                        <p className="truncate font-medium text-gray-900" title={inst.official_email || 'Sin correo'}>
-                          {inst.official_email || <span className="text-gray-400">Sin correo</span>}
+                        <p className="truncate font-medium text-gray-900" title={inst.official_email || t("Sin correo")}>
+                          {inst.official_email || <span className="text-gray-400">{t("Sin correo")}</span>}
                         </p>
                         {inst.phone && (
                           <p className="truncate text-gray-400 mt-0.5" title={inst.phone}>
@@ -479,25 +481,25 @@ export function InstitutionsManagementPage() {
                     </td>
 
                     <td className="px-4 py-3.5 text-xs text-gray-600">
-                      <p className="truncate" title={inst.address || 'No indicada'}>
-                        {inst.address || <span className="text-gray-400">No indicada</span>}
+                      <p className="truncate" title={inst.address || t("No indicada")}>
+                        {inst.address || <span className="text-gray-400">{t("No indicada")}</span>}
                       </p>
                     </td>
 
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       {inst.active ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
-                          <CheckCircle2 className="h-3 w-3" /> Activa
+                          <CheckCircle2 className="h-3 w-3" /> {t("Activa")}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-600">
-                          <XCircle className="h-3 w-3" /> Inactiva
+                          <XCircle className="h-3 w-3" /> {t("Inactiva")}
                         </span>
                       )}
                     </td>
 
                     <td className="px-4 py-3.5 text-xs text-gray-400 whitespace-nowrap">
-                      {new Date(inst.created_at).toLocaleDateString('es-ES', {
+                      {new Date(inst.created_at).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -512,10 +514,10 @@ export function InstitutionsManagementPage() {
                               variant="secondary"
                               size="xs"
                               onClick={() => setViewingInst(inst)}
-                              title="Ver detalles completos de la institución"
+                              title={t("Ver detalles completos de la institución")}
                             >
                               <Eye className="h-3.5 w-3.5 text-blue-600" />
-                              Ver
+                              {t("Ver")}
                             </Button>
                             <button
                               type="button"
@@ -523,20 +525,20 @@ export function InstitutionsManagementPage() {
                                 setSelectedInstitutionId(inst.id)
                                 navigate('/admin')
                               }}
-                              title="Seleccionar y administrar esta institución"
+                              title={t("Seleccionar y administrar esta institución")}
                               className="inline-flex items-center justify-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-900 transition-colors shrink-0 whitespace-nowrap"
                             >
                               <Shield className="h-3.5 w-3.5 text-blue-600" />
-                              Admin
+                              {t("Admin")}
                             </button>
                             <Button
                               variant="secondary"
                               size="xs"
                               onClick={() => handleOpenEdit(inst)}
-                              title="Editar datos de la institución"
+                              title={t("Editar datos de la institución")}
                             >
                               <Pencil className="h-3.5 w-3.5 text-gray-600" />
-                              Editar
+                              {t("Editar")}
                             </Button>
                             <Button
                               variant={inst.active ? 'ghost' : 'secondary'}
@@ -547,10 +549,10 @@ export function InstitutionsManagementPage() {
                                   ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
                                   : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
                               }
-                              title={inst.active ? 'Desactivar institución' : 'Activar institución'}
+                              title={inst.active ? t("Desactivar institución") : t("Activar institución")}
                             >
                               <Power className="h-3.5 w-3.5" />
-                              {inst.active ? 'Desactivar' : 'Activar'}
+                              {inst.active ? t("Desactivar") : t("Activar")}
                             </Button>
                           </>
                         )}
@@ -586,11 +588,11 @@ export function InstitutionsManagementPage() {
                     <span className="font-mono text-xs text-gray-400">/{viewingInst.slug}</span>
                     {viewingInst.active ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
-                        <CheckCircle2 className="h-3 w-3" /> Activa
+                        <CheckCircle2 className="h-3 w-3" /> {t("Activa")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-                        <XCircle className="h-3 w-3" /> Inactiva
+                        <XCircle className="h-3 w-3" /> {t("Inactiva")}
                       </span>
                     )}
                   </div>
@@ -609,25 +611,25 @@ export function InstitutionsManagementPage() {
               <div className="rounded-lg border border-gray-100 bg-gray-50/70 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Mail className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Correo Oficial:</span>
-                  <span className="text-gray-900 font-medium">{viewingInst.official_email || 'No registrado'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Correo Oficial:")}</span>
+                  <span className="text-gray-900 font-medium">{viewingInst.official_email || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Phone className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Teléfono:</span>
-                  <span className="text-gray-800">{viewingInst.phone || 'No registrado'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Teléfono:")}</span>
+                  <span className="text-gray-800">{viewingInst.phone || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <MapPin className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Sede Principal / Campus:</span>
-                  <span className="text-gray-800">{viewingInst.address || 'No indicada'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Sede Principal / Campus:")}</span>
+                  <span className="text-gray-800">{viewingInst.address || t("No indicada")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Globe className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Identificador Slug:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Identificador Slug:")}</span>
                   <span className="font-mono text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
                     /{viewingInst.slug}
                   </span>
@@ -635,9 +637,9 @@ export function InstitutionsManagementPage() {
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Fecha de Registro:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Fecha de Registro:")}</span>
                   <span className="text-gray-800">
-                    {new Date(viewingInst.created_at).toLocaleDateString('es-ES', {
+                    {new Date(viewingInst.created_at).toLocaleDateString(locale, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -646,7 +648,7 @@ export function InstitutionsManagementPage() {
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-xs text-gray-400 font-medium">ID Institucional:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("ID Institucional:")}</span>
                   <p className="font-mono text-xs text-gray-500 select-all mt-0.5">{viewingInst.id}</p>
                 </div>
               </div>
@@ -657,7 +659,7 @@ export function InstitutionsManagementPage() {
                 variant="ghost"
                 onClick={() => setViewingInst(null)}
               >
-                Cerrar
+                {t("Cerrar")}
               </Button>
               <Button
                 variant="secondary"
@@ -668,7 +670,7 @@ export function InstitutionsManagementPage() {
                 }}
               >
                 <Pencil className="h-3.5 w-3.5 mr-1" />
-                Editar
+                {t("Editar")}
               </Button>
               <Button
                 variant="primary"
@@ -678,7 +680,7 @@ export function InstitutionsManagementPage() {
                 }}
               >
                 <Shield className="h-3.5 w-3.5 mr-1" />
-                Administrar
+                {t("Administrar")}
               </Button>
             </div>
           </div>
@@ -691,10 +693,10 @@ export function InstitutionsManagementPage() {
             <div className="flex items-center justify-between border-b pb-3">
               <div>
                 <h3 className="text-lg font-bold text-gray-900">
-                  Crear Nueva Institución
+                  {t("Crear Nueva Institución")}
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Registra la universidad y su administrador institucional inicial
+                  {t("Registra la universidad y su administrador institucional inicial")}
                 </p>
               </div>
               <button
@@ -721,12 +723,12 @@ export function InstitutionsManagementPage() {
             <form onSubmit={handleCreateInstitution} className="mt-4 space-y-4">
               <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
-                  <Building2 className="h-4 w-4 text-blue-700" /> 1. Datos de la Universidad / Institución
+                  <Building2 className="h-4 w-4 text-blue-700" /> {t("1. Datos de la Universidad / Institución")}
                 </h4>
                 <div className="space-y-3">
                   <Input
-                    label="Nombre de la Institución"
-                    placeholder="Ej: Universidad de Costa Rica"
+                    label={t("Nombre de la Institución")}
+                    placeholder={t("Ej: Universidad de Costa Rica")}
                     value={newInstForm.name}
                     onChange={(e) => {
                       const name = e.target.value
@@ -740,8 +742,8 @@ export function InstitutionsManagementPage() {
                   />
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
-                      label="Slug (identificador web)"
-                      placeholder="ej: ucr"
+                      label={t("Slug (identificador web)")}
+                      placeholder={t("ej: ucr")}
                       value={newInstForm.slug}
                       onChange={(e) =>
                         setNewInstForm((prev) => ({ ...prev, slug: e.target.value }))
@@ -749,9 +751,9 @@ export function InstitutionsManagementPage() {
                       required
                     />
                     <Input
-                      label="Correo oficial institucional"
+                      label={t("Correo oficial institucional")}
                       type="email"
-                      placeholder="contacto@institucion.edu"
+                      placeholder={t("contacto@institucion.edu")}
                       value={newInstForm.officialEmail}
                       onChange={(e) =>
                         setNewInstForm((prev) => ({ ...prev, officialEmail: e.target.value }))
@@ -761,7 +763,7 @@ export function InstitutionsManagementPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
-                      label="Teléfono institucional"
+                      label={t("Teléfono institucional")}
                       type="tel"
                       placeholder="+506 2511-0000"
                       value={newInstForm.institutionPhone}
@@ -773,7 +775,7 @@ export function InstitutionsManagementPage() {
                       }
                     />
                     <Input
-                      label="Dirección o Campus principal"
+                      label={t("Dirección o Campus principal")}
                       placeholder="San Pedro, San José"
                       value={newInstForm.institutionAddress}
                       onChange={(e) =>
@@ -789,12 +791,12 @@ export function InstitutionsManagementPage() {
 
               <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
-                  <UserCheck className="h-4 w-4 text-blue-700" /> 2. Administrador de la Institución
+                  <UserCheck className="h-4 w-4 text-blue-700" /> {t("2. Administrador de la Institución")}
                 </h4>
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
-                      label="Nombre"
+                      label={t("Nombre")}
                       placeholder="Carlos"
                       value={newInstForm.adminFirstName}
                       onChange={(e) =>
@@ -806,7 +808,7 @@ export function InstitutionsManagementPage() {
                       required
                     />
                     <Input
-                      label="Apellido"
+                      label={t("Apellido")}
                       placeholder="Rodríguez"
                       value={newInstForm.adminLastName}
                       onChange={(e) =>
@@ -820,9 +822,9 @@ export function InstitutionsManagementPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <Input
-                      label="Correo electrónico del Administrador"
+                      label={t("Correo electrónico del Administrador")}
                       type="email"
-                      placeholder="admin@institucion.edu"
+                      placeholder={t("admin@institucion.edu")}
                       value={newInstForm.adminEmail}
                       onChange={(e) =>
                         setNewInstForm((prev) => ({
@@ -833,7 +835,7 @@ export function InstitutionsManagementPage() {
                       required
                     />
                     <Input
-                      label="Teléfono del Administrador"
+                      label={t("Teléfono del Administrador")}
                       type="tel"
                       placeholder="+506 8888-9999"
                       value={newInstForm.adminPhone}
@@ -846,9 +848,9 @@ export function InstitutionsManagementPage() {
                     />
                   </div>
                   <Input
-                    label="Contraseña inicial"
+                    label={t("Contraseña inicial")}
                     type="password"
-                    placeholder="Mínimo 8 caracteres"
+                    placeholder={t("Mínimo 8 caracteres")}
                     value={newInstForm.adminPassword}
                     onChange={(e) =>
                       setNewInstForm((prev) => ({
@@ -868,10 +870,10 @@ export function InstitutionsManagementPage() {
                   onClick={() => setIsCreateModalOpen(false)}
                   disabled={isCreating}
                 >
-                  Cerrar
+                  {t("Cerrar")}
                 </Button>
                 <Button variant="success" type="submit" isLoading={isCreating}>
-                  Crear Institución y Administrador
+                  {t("Crear Institución y Administrador")}
                 </Button>
               </div>
             </form>
@@ -885,10 +887,10 @@ export function InstitutionsManagementPage() {
             <div className="flex items-center justify-between border-b pb-3">
               <div>
                 <h3 className="text-lg font-bold text-gray-900">
-                  Editar Institución
+                  {t("Editar Institución")}
                 </h3>
                 <p className="text-xs text-gray-500">
-                  Modifica los datos principales y de contacto de la universidad
+                  {t("Modifica los datos principales y de contacto de la universidad")}
                 </p>
               </div>
               <button
@@ -902,7 +904,7 @@ export function InstitutionsManagementPage() {
 
             <form onSubmit={handleSaveEdit} className="mt-4 space-y-4">
               <Input
-                label="Nombre de la Institución"
+                label={t("Nombre de la Institución")}
                 value={editForm.name}
                 onChange={(e) => setEditForm((prev) => ({ ...prev, name: e.target.value }))}
                 required
@@ -910,13 +912,13 @@ export function InstitutionsManagementPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Input
-                  label="Slug"
+                  label={t("Slug")}
                   value={editForm.slug}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, slug: e.target.value }))}
                   required
                 />
                 <Input
-                  label="Correo oficial"
+                  label={t("Correo oficial")}
                   type="email"
                   value={editForm.officialEmail}
                   onChange={(e) =>
@@ -927,13 +929,13 @@ export function InstitutionsManagementPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Input
-                  label="Teléfono"
+                  label={t("Teléfono")}
                   type="tel"
                   value={editForm.phone}
                   onChange={(e) => setEditForm((prev) => ({ ...prev, phone: e.target.value }))}
                 />
                 <Input
-                  label="Dirección / Sede"
+                  label={t("Dirección / Sede")}
                   value={editForm.address}
                   onChange={(e) =>
                     setEditForm((prev) => ({ ...prev, address: e.target.value }))
@@ -951,7 +953,7 @@ export function InstitutionsManagementPage() {
                     }
                     className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
-                  <span>Institución Activa (permite inicio de sesión y tutorías)</span>
+                  <span>{t("Institución Activa (permite inicio de sesión y tutorías)")}</span>
                 </label>
               </div>
 
@@ -962,10 +964,10 @@ export function InstitutionsManagementPage() {
                   onClick={() => setEditingInst(null)}
                   disabled={isSavingEdit}
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button variant="primary" type="submit" isLoading={isSavingEdit}>
-                  Guardar Cambios
+                  {t("Guardar Cambios")}
                 </Button>
               </div>
             </form>

@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { Shield, ArrowLeft, CheckCircle2, BookOpen, X, Plus, Layers, GraduationCap, Pencil } from 'lucide-react'
@@ -37,6 +38,7 @@ interface InstSubjectRecord {
 }
 
 export function SubjectsManagementPage() {
+  const { t } = useTranslations()
   const { profile: currentProfile, isSuperAdmin } = useAuth()
   const { selectedInstitutionId, setSelectedInstitutionId } = useAdminStore()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -229,11 +231,11 @@ export function SubjectsManagementPage() {
       setCoursesList(coursesOptions)
     } catch (err) {
       console.error('Error al cargar catálogo de materias:', err)
-      toast.error('Error', 'No fue posible cargar el catálogo de materias.')
+      toast.error(t("Error"), t("No fue posible cargar el catálogo de materias."))
     } finally {
       setIsLoading(false)
     }
-  }, [targetInstId])
+  }, [targetInstId, t])
 
   useEffect(() => {
     void loadCatalogAndOffered()
@@ -267,7 +269,7 @@ export function SubjectsManagementPage() {
     if (!targetInstId || !enablingSubject) return
     const codeVal = offerCodeInput.trim().toUpperCase()
     if (!codeVal) {
-      toast.warning('Código requerido', 'Debes ingresar el código administrativo para esta institución.')
+      toast.warning(t("Código requerido"), t("Debes ingresar el código administrativo para esta institución."))
       return
     }
 
@@ -282,13 +284,13 @@ export function SubjectsManagementPage() {
 
       if (error) throw error
 
-      toast.success('Materia habilitada', `Materia habilitada con código institucional ${codeVal}.`)
+      toast.success(t("Materia habilitada"), t("Materia habilitada con código institucional {code}.", { code: codeVal }))
       setEnablingSubject(null)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al habilitar materia:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al habilitar materia.'
-      toast.error('Error', errorText)
+      const errorText = err instanceof Error ? err.message : t("Error al habilitar materia.")
+      toast.error(t("Error"), errorText)
     } finally {
       setIsSubmittingOffer(false)
     }
@@ -309,12 +311,12 @@ export function SubjectsManagementPage() {
 
       if (error) throw error
 
-      toast.info('Materia deshabilitada', 'La materia ya no se ofrece en esta institución.')
+      toast.info(t("Materia deshabilitada"), t("La materia ya no se ofrece en esta institución."))
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al deshabilitar materia:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al deshabilitar materia.'
-      toast.error('Error', errorText)
+      const errorText = err instanceof Error ? err.message : t("Error al deshabilitar materia.")
+      toast.error(t("Error"), errorText)
     } finally {
       setTogglingId(null)
     }
@@ -339,11 +341,11 @@ export function SubjectsManagementPage() {
 
           if (error) throw error
 
-          toast.success('Materia habilitada', `Materia habilitada con código institucional ${subject.customCode}.`)
+          toast.success(t("Materia habilitada"), t("Materia habilitada con código institucional {code}.", { code: subject.customCode }))
           await loadCatalogAndOffered()
         } catch (err) {
           console.error('Error al habilitar materia:', err)
-          toast.error('Error', err instanceof Error ? err.message : 'Error al habilitar materia.')
+          toast.error(t("Error"), err instanceof Error ? err.message : t("Error al habilitar materia."))
         } finally {
           setTogglingId(null)
         }
@@ -364,7 +366,7 @@ export function SubjectsManagementPage() {
   const handleCreateCareer = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newCareer.name.trim()) {
-      toast.warning('Campos incompletos', 'Por favor ingresa el nombre de la carrera o categoría.')
+      toast.warning(t("Campos incompletos"), t("Por favor ingresa el nombre de la carrera o categoría."))
       return
     }
 
@@ -383,16 +385,16 @@ export function SubjectsManagementPage() {
 
       if (careerError) throw careerError
 
-      const successMsg = `Carrera / Categoría "${createdCareer.name}" creada exitosamente.`
-      toast.success('Carrera registrada', successMsg)
+      const successMsg = t("Carrera / Categoría \"{name}\" creada exitosamente.", { name: createdCareer.name })
+      toast.success(t("Carrera registrada"), successMsg)
 
       setNewCareer({ name: '', description: '' })
       setIsCreateCareerModalOpen(false)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al crear carrera:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al crear la carrera.'
-      toast.error('Error al crear carrera', errorText)
+      const errorText = err instanceof Error ? err.message : t("Error al crear la carrera.")
+      toast.error(t("Error al crear carrera"), errorText)
     } finally {
       setIsCreatingCareer(false)
     }
@@ -411,7 +413,7 @@ export function SubjectsManagementPage() {
   const handleCreateCourse = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newCourse.careerId || !newCourse.name.trim()) {
-      toast.warning('Campos incompletos', 'Por favor selecciona la carrera padre e introduce el nombre del curso.')
+      toast.warning(t("Campos incompletos"), t("Por favor selecciona la carrera padre e introduce el nombre del curso."))
       return
     }
 
@@ -432,16 +434,16 @@ export function SubjectsManagementPage() {
 
       if (courseError) throw courseError
 
-      const successMsg = `Curso / Área "${createdCourse.name}" creado exitosamente.`
-      toast.success('Curso registrado', successMsg)
+      const successMsg = t("Curso / Área \"{name}\" creado exitosamente.", { name: createdCourse.name })
+      toast.success(t("Curso registrado"), successMsg)
 
       setNewCourse({ careerId: '', code: '', name: '', description: '' })
       setIsCreateCourseModalOpen(false)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al crear curso:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al crear el curso.'
-      toast.error('Error al crear curso', errorText)
+      const errorText = err instanceof Error ? err.message : t("Error al crear el curso.")
+      toast.error(t("Error al crear curso"), errorText)
     } finally {
       setIsCreatingCourse(false)
     }
@@ -461,7 +463,7 @@ export function SubjectsManagementPage() {
   const handleCreateSubject = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newSubject.courseId || !newSubject.name.trim() || !newSubject.code.trim()) {
-      toast.warning('Campos incompletos', 'Por favor completa todos los campos requeridos para la materia.')
+      toast.warning(t("Campos incompletos"), t("Por favor completa todos los campos requeridos para la materia."))
       return
     }
 
@@ -498,8 +500,8 @@ export function SubjectsManagementPage() {
         }
       }
 
-      const successMsg = `Materia "${createdSubject.name}" creada exitosamente${newSubject.offerImmediately ? ' y ofertada con código ' + enteredCode : ''}.`
-      toast.success('Materia registrada', successMsg)
+      const successMsg = t("Materia \"{name}\" creada exitosamente{offer}.", { name: createdSubject.name, offer: newSubject.offerImmediately ? t(" y ofertada con código {code}", { code: enteredCode }) : "" })
+      toast.success(t("Materia registrada"), successMsg)
 
       setNewSubject({
         courseId: '',
@@ -512,8 +514,8 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al crear materia:', err)
-      const errorText = err instanceof Error ? err.message : 'Error inesperado al crear la materia.'
-      toast.error('Error al crear materia', errorText)
+      const errorText = err instanceof Error ? err.message : t("Error inesperado al crear la materia.")
+      toast.error(t("Error al crear materia"), errorText)
     } finally {
       setIsCreatingSubject(false)
     }
@@ -538,12 +540,12 @@ export function SubjectsManagementPage() {
 
       if (error) throw error
 
-      toast.success('Carrera actualizada', 'Los cambios en la carrera se guardaron correctamente.')
+      toast.success(t("Carrera actualizada"), t("Los cambios en la carrera se guardaron correctamente."))
       setEditingCareer(null)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar carrera:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al actualizar carrera.')
+      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar carrera."))
     } finally {
       setIsUpdatingCareer(false)
     }
@@ -576,12 +578,12 @@ export function SubjectsManagementPage() {
 
       if (error) throw error
 
-      toast.success('Curso actualizado', 'Los cambios en el curso se guardaron correctamente.')
+      toast.success(t("Curso actualizado"), t("Los cambios en el curso se guardaron correctamente."))
       setEditingCourse(null)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar curso:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al actualizar curso.')
+      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar curso."))
     } finally {
       setIsUpdatingCourse(false)
     }
@@ -614,12 +616,12 @@ export function SubjectsManagementPage() {
 
       if (error) throw error
 
-      toast.success('Materia actualizada', 'Datos globales de la materia actualizados.')
+      toast.success(t("Materia actualizada"), t("Datos globales de la materia actualizados."))
       setEditingSubjectGlobal(null)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar materia global:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al actualizar materia.')
+      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar materia."))
     } finally {
       setIsUpdatingSubjectGlobal(false)
     }
@@ -638,7 +640,7 @@ export function SubjectsManagementPage() {
     if (!targetInstId || !editingInstitutionCode) return
     const newCode = editingInstitutionCode.customCode.trim().toUpperCase()
     if (!newCode) {
-      toast.warning('Código requerido', 'Debes ingresar un código administrativo para esta institución.')
+      toast.warning(t("Código requerido"), t("Debes ingresar un código administrativo para esta institución."))
       return
     }
 
@@ -658,12 +660,12 @@ export function SubjectsManagementPage() {
 
       if (error) throw error
 
-      toast.success('Código institucional actualizado', `El código para ${editingInstitutionCode.subjectName} ahora es ${newCode}.`)
+      toast.success(t("Código institucional actualizado"), t("El código para {name} ahora es {code}.", { name: editingInstitutionCode.subjectName, code: newCode }))
       setEditingInstitutionCode(null)
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar código institucional:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al actualizar código.')
+      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar código."))
     } finally {
       setIsUpdatingInstitutionCode(false)
     }
@@ -725,17 +727,17 @@ export function SubjectsManagementPage() {
       .filter((c): c is CareerWithCourses => c !== null)
   }, [catalog, searchTerm])
 
-  const selectedInstName = institutions.find((i) => i.id === targetInstId)?.name || 'Institución'
+  const selectedInstName = institutions.find((i) => i.id === targetInstId)?.name || t("Institución")
 
   return (
     <div className="space-y-6">
       {isSuperAdmin && (
         <div className="rounded-xl border border-primary-100 bg-primary-50/40 p-4">
           <div className="flex items-center gap-2 mb-2 text-primary-800 font-semibold text-sm">
-            <Shield className="h-4 w-4" /> Modo SuperAdmin: Selección de Campus / Institución
+            <Shield className="h-4 w-4" /> {t("Modo SuperAdmin: Selección de Campus / Institución")}
           </div>
           <p className="text-xs text-primary-700 mb-3">
-            Gestionando catálogo y códigos administrativos de la institución seleccionada:
+            {t("Gestionando catálogo y códigos administrativos de la institución seleccionada:")}
           </p>
           <select
             value={targetInstId || ''}
@@ -755,14 +757,14 @@ export function SubjectsManagementPage() {
         <div>
           <div className="flex items-center gap-2">
             <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800">
-              <ArrowLeft className="h-4 w-4" /> Panel de Administración
+              <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
             </Link>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mt-1">
-            Catálogo Académico y Materias
+            {t("Catálogo Académico y Materias")}
           </h1>
           <p className="text-sm text-gray-500">
-            Gestión en 3 niveles: Carreras (Nivel 1), Cursos/Áreas (Nivel 2) y Materias con código institucional (Nivel 3).
+            {t("Gestión en 3 niveles: Carreras (Nivel 1), Cursos/Áreas (Nivel 2) y Materias con código institucional (Nivel 3).")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -772,7 +774,7 @@ export function SubjectsManagementPage() {
             className="flex items-center gap-2 cursor-pointer shadow-xs"
           >
             <GraduationCap className="h-4 w-4" />
-            Crear Carrera
+            {t("Crear Carrera")}
           </Button>
           <Button
             variant="success"
@@ -781,7 +783,7 @@ export function SubjectsManagementPage() {
             disabled={careersList.length === 0}
           >
             <Layers className="h-4 w-4" />
-            Crear Curso / Área
+            {t("Crear Curso / Área")}
           </Button>
           <Button
             variant="success"
@@ -790,10 +792,10 @@ export function SubjectsManagementPage() {
             disabled={coursesList.length === 0}
           >
             <BookOpen className="h-4 w-4" />
-            Crear Materia
+            {t("Crear Materia")}
           </Button>
           <div className="rounded-lg bg-primary-50 px-3.5 py-1.5 border border-primary-200">
-            <span className="text-xs font-semibold uppercase text-primary-700">Ofertadas:</span>
+            <span className="text-xs font-semibold uppercase text-primary-700">{t("Ofertadas:")}</span>
             <span className="ml-1.5 text-base font-bold text-primary-900">
               {offeredCount}
             </span>
@@ -805,7 +807,7 @@ export function SubjectsManagementPage() {
         <Card.Body>
           <div className="max-w-md">
             <Input
-              placeholder="Buscar por carrera, curso o código institucional (ej: Idiomas, MA-1001, Cálculo)..."
+              placeholder={t("Buscar por carrera, curso o código institucional (ej: Idiomas, MA-1001, Cálculo)...")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -814,15 +816,15 @@ export function SubjectsManagementPage() {
       </Card>
 
       {isLoading ? (
-        <div className="py-12 text-center text-gray-500">Cargando catálogo académico...</div>
+        <div className="py-12 text-center text-gray-500">{t("Cargando catálogo académico...")}</div>
       ) : filteredCatalog.length === 0 ? (
         <Card>
           <Card.Body>
             <div className="text-center py-8 space-y-3">
               <p className="text-gray-500">
                 {catalog.length === 0
-                  ? 'No hay carreras registradas en el catálogo académico.'
-                  : 'No se encontraron resultados con ese criterio de búsqueda.'}
+                  ? t("No hay carreras registradas en el catálogo académico.")
+                  : t("No se encontraron resultados con ese criterio de búsqueda.")}
               </p>
               {catalog.length === 0 && (
                 <Button
@@ -831,7 +833,7 @@ export function SubjectsManagementPage() {
                   className="inline-flex items-center gap-2 cursor-pointer"
                 >
                   <Plus className="h-4 w-4" />
-                  Crear la primera carrera (Nivel 1)
+                  {t("Crear la primera carrera (Nivel 1)")}
                 </Button>
               )}
             </div>
@@ -846,14 +848,14 @@ export function SubjectsManagementPage() {
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
                       <span className="inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-800">
-                        <GraduationCap className="h-3 w-3" /> Nivel 1: Carrera
+                        <GraduationCap className="h-3 w-3" /> {t("Nivel 1: Carrera")}
                       </span>
                       <h2 className="text-lg font-bold text-gray-900">{career.name}</h2>
                       {isSuperAdmin && (
                         <button
                           type="button"
                           onClick={() => handleOpenEditCareer(career)}
-                          title="Editar carrera"
+                          title={t("Editar carrera")}
                           className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer"
                         >
                           <Pencil className="h-3.5 w-3.5" />
@@ -871,7 +873,7 @@ export function SubjectsManagementPage() {
                     className="text-primary-700 hover:text-primary-800 hover:bg-primary-50 self-start sm:self-auto flex items-center gap-1.5 border border-primary-200 bg-white cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
-                    Añadir Curso / Área
+                    {t("Añadir Curso / Área")}
                   </Button>
                 </div>
               </Card.Header>
@@ -880,7 +882,7 @@ export function SubjectsManagementPage() {
                 {career.courses.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center bg-gray-50/50">
                     <p className="text-sm text-gray-500 mb-2">
-                      Esta carrera aún no cuenta con cursos o áreas académicas (Nivel 2).
+                      {t("Esta carrera aún no cuenta con cursos o áreas académicas (Nivel 2).")}
                     </p>
                     <Button
                       variant="secondary"
@@ -889,7 +891,7 @@ export function SubjectsManagementPage() {
                       className="inline-flex items-center gap-1.5 cursor-pointer"
                     >
                       <Plus className="h-3.5 w-3.5" />
-                      Crear primer curso para {career.name}
+                      {t("Crear primer curso para")} {career.name}
                     </Button>
                   </div>
                 ) : (
@@ -912,7 +914,7 @@ export function SubjectsManagementPage() {
                             <button
                               type="button"
                               onClick={() => handleOpenEditCourse(course)}
-                              title="Editar curso"
+                              title={t("Editar curso")}
                               className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer"
                             >
                               <Pencil className="h-3.5 w-3.5" />
@@ -926,14 +928,14 @@ export function SubjectsManagementPage() {
                           className="text-primary-700 hover:text-primary-800 hover:bg-primary-50 self-start sm:self-auto flex items-center gap-1 text-xs cursor-pointer"
                         >
                           <Plus className="h-3 w-3" />
-                          Añadir Materia
+                          {t("Añadir Materia")}
                         </Button>
                       </div>
 
                       {course.subjects.length === 0 ? (
                         <div className="rounded-md border border-dashed border-gray-200 bg-white p-4 text-center">
                           <p className="text-xs text-gray-500 mb-2">
-                            No hay materias registradas en este curso (Nivel 3).
+                            {t("No hay materias registradas en este curso (Nivel 3).")}
                           </p>
                           <Button
                             variant="ghost"
@@ -942,7 +944,7 @@ export function SubjectsManagementPage() {
                             className="text-xs inline-flex items-center gap-1 text-primary-600 hover:underline cursor-pointer"
                           >
                             <Plus className="h-3 w-3" />
-                            Crear primera materia
+                            {t("Crear primera materia")}
                           </Button>
                         </div>
                       ) : (
@@ -973,10 +975,10 @@ export function SubjectsManagementPage() {
                                       }`}
                                       title={
                                         isOffered
-                                          ? 'Código institucional activo'
+                                          ? t("Código institucional activo")
                                           : subject.customCode
                                             ? `Código institucional asignado: ${subject.customCode}`
-                                            : 'Código de referencia global'
+                                            : t("Código de referencia global")
                                       }
                                     >
                                       {displayCode}
@@ -988,7 +990,7 @@ export function SubjectsManagementPage() {
                                       <button
                                         type="button"
                                         onClick={() => handleOpenEditSubjectGlobal(subject)}
-                                        title="Editar materia global"
+                                        title={t("Editar materia global")}
                                         className="text-gray-400 hover:text-gray-700 p-0.5 cursor-pointer"
                                       >
                                         <Pencil className="h-3 w-3" />
@@ -1004,10 +1006,10 @@ export function SubjectsManagementPage() {
                                       {isOffered ? (
                                         <>
                                           <CheckCircle2 className="h-3 w-3 text-primary-600" />
-                                          Ofertada
+                                          {t("Ofertada")}
                                         </>
                                       ) : (
-                                        'No ofertada'
+                                        t("No ofertada")
                                       )}
                                     </span>
                                     <button
@@ -1020,10 +1022,10 @@ export function SubjectsManagementPage() {
                                         )
                                       }
                                       className="text-[11px] text-blue-700 hover:text-blue-900 underline flex items-center gap-0.5 cursor-pointer"
-                                      title="Cambiar código para esta institución"
+                                      title={t("Cambiar código para esta institución")}
                                     >
                                       <Pencil className="h-2.5 w-2.5" />
-                                      Editar código
+                                      {t("Editar código")}
                                     </button>
                                   </div>
                                 </div>
@@ -1035,7 +1037,7 @@ export function SubjectsManagementPage() {
                                   onClick={() => handleToggleOrEnable(subject)}
                                   className="cursor-pointer shrink-0"
                                 >
-                                  {isOffered ? 'Quitar' : 'Habilitar'}
+                                  {isOffered ? t("Quitar") : t("Habilitar")}
                                 </Button>
                               </div>
                             )
@@ -1055,7 +1057,7 @@ export function SubjectsManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900">Habilitar Materia en Institución</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("Habilitar Materia en Institución")}</h3>
               <button
                 type="button"
                 onClick={() => setEnablingSubject(null)}
@@ -1068,14 +1070,14 @@ export function SubjectsManagementPage() {
               <div>
                 <p className="text-sm font-medium text-gray-900 mb-1">{enablingSubject.name}</p>
                 <p className="text-xs text-gray-500 mb-3">
-                  Establece el código administrativo oficial con el que se impartirá en esta institución.
+                  {t("Establece el código administrativo oficial con el que se impartirá en esta institución.")}
                 </p>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Código en esta Institución <span className="text-red-500">*</span>
+                  {t("Código en esta Institución")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
-                  placeholder="Ej: MA-1001, MAT-001, 00801..."
+                  placeholder={t("Ej: MA-1001, MAT-001, 00801...")}
                   value={offerCodeInput}
                   onChange={(e) => setOfferCodeInput(e.target.value)}
                 />
@@ -1088,7 +1090,7 @@ export function SubjectsManagementPage() {
                   disabled={isSubmittingOffer}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1096,7 +1098,7 @@ export function SubjectsManagementPage() {
                   isLoading={isSubmittingOffer}
                   className="cursor-pointer"
                 >
-                  Confirmar y Habilitar
+                  {t("Confirmar y Habilitar")}
                 </Button>
               </div>
             </form>
@@ -1108,7 +1110,7 @@ export function SubjectsManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900">Editar Código Institucional</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("Editar Código Institucional")}</h3>
               <button
                 type="button"
                 onClick={() => setEditingInstitutionCode(null)}
@@ -1121,14 +1123,14 @@ export function SubjectsManagementPage() {
               <div>
                 <p className="text-sm font-medium text-gray-900 mb-1">{editingInstitutionCode.subjectName}</p>
                 <p className="text-xs text-gray-500 mb-3">
-                  Este código es exclusivo para esta institución y no afectará el catálogo de otras universidades.
+                  {t("Este código es exclusivo para esta institución y no afectará el catálogo de otras universidades.")}
                 </p>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nuevo Código Oficial <span className="text-red-500">*</span>
+                  {t("Nuevo Código Oficial")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
-                  placeholder="Ej: MA-1001, MAT-001..."
+                  placeholder={t("Ej: MA-1001, MAT-001...")}
                   value={editingInstitutionCode.customCode}
                   onChange={(e) =>
                     setEditingInstitutionCode({
@@ -1146,7 +1148,7 @@ export function SubjectsManagementPage() {
                   disabled={isUpdatingInstitutionCode}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1154,7 +1156,7 @@ export function SubjectsManagementPage() {
                   isLoading={isUpdatingInstitutionCode}
                   className="cursor-pointer"
                 >
-                  Guardar Código
+                  {t("Guardar Código")}
                 </Button>
               </div>
             </form>
@@ -1166,7 +1168,7 @@ export function SubjectsManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900">Editar Carrera (SuperAdmin)</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("Editar Carrera (SuperAdmin)")}</h3>
               <button
                 type="button"
                 onClick={() => setEditingCareer(null)}
@@ -1178,7 +1180,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleUpdateCareer} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nombre de la Carrera <span className="text-red-500">*</span>
+                  {t("Nombre de la Carrera")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
@@ -1188,7 +1190,7 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Descripción (Opcional)
+                  {t("Descripción (Opcional)")}
                 </label>
                 <textarea
                   rows={3}
@@ -1205,7 +1207,7 @@ export function SubjectsManagementPage() {
                   disabled={isUpdatingCareer}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1213,7 +1215,7 @@ export function SubjectsManagementPage() {
                   isLoading={isUpdatingCareer}
                   className="cursor-pointer"
                 >
-                  Guardar Cambios
+                  {t("Guardar Cambios")}
                 </Button>
               </div>
             </form>
@@ -1225,7 +1227,7 @@ export function SubjectsManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900">Editar Curso / Área (SuperAdmin)</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("Editar Curso / Área (SuperAdmin)")}</h3>
               <button
                 type="button"
                 onClick={() => setEditingCourse(null)}
@@ -1237,7 +1239,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleUpdateCourse} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Carrera Padre <span className="text-red-500">*</span>
+                  {t("Carrera Padre")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -1254,7 +1256,7 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nombre del Curso <span className="text-red-500">*</span>
+                  {t("Nombre del Curso")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
@@ -1264,20 +1266,20 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Sigla o Código de Referencia (Opcional)
+                  {t("Sigla o Código de Referencia (Opcional)")}
                 </label>
                 <Input
-                  placeholder="Ej: CALC, FRA, ENG..."
+                  placeholder={t("Ej: CALC, FRA, ENG...")}
                   value={editingCourse.code}
                   onChange={(e) => setEditingCourse({ ...editingCourse, code: e.target.value })}
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
-                  Los códigos administrativos oficiales se asignan individualmente a nivel de cada materia por institución.
+                  {t("Los códigos administrativos oficiales se asignan individualmente a nivel de cada materia por institución.")}
                 </p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Descripción (Opcional)
+                  {t("Descripción (Opcional)")}
                 </label>
                 <textarea
                   rows={3}
@@ -1294,7 +1296,7 @@ export function SubjectsManagementPage() {
                   disabled={isUpdatingCourse}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1302,7 +1304,7 @@ export function SubjectsManagementPage() {
                   isLoading={isUpdatingCourse}
                   className="cursor-pointer"
                 >
-                  Guardar Cambios
+                  {t("Guardar Cambios")}
                 </Button>
               </div>
             </form>
@@ -1314,7 +1316,7 @@ export function SubjectsManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900">Editar Materia Global (SuperAdmin)</h3>
+              <h3 className="text-lg font-bold text-gray-900">{t("Editar Materia Global (SuperAdmin)")}</h3>
               <button
                 type="button"
                 onClick={() => setEditingSubjectGlobal(null)}
@@ -1326,7 +1328,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleUpdateSubjectGlobal} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Curso Padre <span className="text-red-500">*</span>
+                  {t("Curso Padre")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -1345,7 +1347,7 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nombre de la Materia <span className="text-red-500">*</span>
+                  {t("Nombre de la Materia")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
@@ -1357,7 +1359,7 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Código de Referencia Global <span className="text-red-500">*</span>
+                  {t("Código de Referencia Global")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
@@ -1369,7 +1371,7 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Descripción (Opcional)
+                  {t("Descripción (Opcional)")}
                 </label>
                 <textarea
                   rows={3}
@@ -1388,7 +1390,7 @@ export function SubjectsManagementPage() {
                   disabled={isUpdatingSubjectGlobal}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1396,7 +1398,7 @@ export function SubjectsManagementPage() {
                   isLoading={isUpdatingSubjectGlobal}
                   className="cursor-pointer"
                 >
-                  Guardar Cambios
+                  {t("Guardar Cambios")}
                 </Button>
               </div>
             </form>
@@ -1413,9 +1415,9 @@ export function SubjectsManagementPage() {
                   <GraduationCap className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Crear Carrera / Categoría</h3>
+                  <h3 className="text-lg font-bold text-gray-900">{t("Crear Carrera / Categoría")}</h3>
                   <p className="text-xs text-gray-500">
-                    Nivel 1 de la jerarquía académica (ej: Idiomas, Ingeniería, Salud)
+                    {t("Nivel 1 de la jerarquía académica (ej: Idiomas, Ingeniería, Salud)")}
                   </p>
                 </div>
               </div>
@@ -1431,22 +1433,22 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleCreateCareer} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nombre de la Carrera o Categoría <span className="text-red-500">*</span>
+                  {t("Nombre de la Carrera o Categoría")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
-                  placeholder="Ej: Idiomas, Ciencias Exactas, Humanidades..."
+                  placeholder={t("Ej: Idiomas, Ciencias Exactas, Humanidades...")}
                   value={newCareer.name}
                   onChange={(e) => setNewCareer({ ...newCareer, name: e.target.value })}
                 />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Descripción (Opcional)
+                  {t("Descripción (Opcional)")}
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Breve descripción o propósito de esta área del catálogo..."
+                  placeholder={t("Breve descripción o propósito de esta área del catálogo...")}
                   value={newCareer.description}
                   onChange={(e) => setNewCareer({ ...newCareer, description: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
@@ -1460,7 +1462,7 @@ export function SubjectsManagementPage() {
                   disabled={isCreatingCareer}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1468,7 +1470,7 @@ export function SubjectsManagementPage() {
                   isLoading={isCreatingCareer}
                   className="cursor-pointer"
                 >
-                  Crear Carrera
+                  {t("Crear Carrera")}
                 </Button>
               </div>
             </form>
@@ -1485,9 +1487,9 @@ export function SubjectsManagementPage() {
                   <Layers className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Crear Curso / Área Académica</h3>
+                  <h3 className="text-lg font-bold text-gray-900">{t("Crear Curso / Área Académica")}</h3>
                   <p className="text-xs text-gray-500">
-                    Nivel 2 de la jerarquía académica (agrupa materias temáticas)
+                    {t("Nivel 2 de la jerarquía académica (agrupa materias temáticas)")}
                   </p>
                 </div>
               </div>
@@ -1503,7 +1505,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleCreateCourse} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Carrera Padre (Nivel 1) <span className="text-red-500">*</span>
+                  {t("Carrera Padre (Nivel 1)")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -1520,35 +1522,35 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nombre del Curso o Área <span className="text-red-500">*</span>
+                  {t("Nombre del Curso o Área")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
-                  placeholder="Ej: Francés, Cálculo, Álgebra, Programación..."
+                  placeholder={t("Ej: Francés, Cálculo, Álgebra, Programación...")}
                   value={newCourse.name}
                   onChange={(e) => setNewCourse({ ...newCourse, name: e.target.value })}
                 />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Sigla o Código de Referencia (Opcional)
+                  {t("Sigla o Código de Referencia (Opcional)")}
                 </label>
                 <Input
-                  placeholder="Ej: CALC, FRA, ENG (Opcional)..."
+                  placeholder={t("Ej: CALC, FRA, ENG (Opcional)...")}
                   value={newCourse.code}
                   onChange={(e) => setNewCourse({ ...newCourse, code: e.target.value })}
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
-                  Los códigos administrativos oficiales se asignan individualmente a nivel de cada materia por institución.
+                  {t("Los códigos administrativos oficiales se asignan individualmente a nivel de cada materia por institución.")}
                 </p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Descripción (Opcional)
+                  {t("Descripción (Opcional)")}
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Breve descripción del área académica..."
+                  placeholder={t("Breve descripción del área académica...")}
                   value={newCourse.description}
                   onChange={(e) => setNewCourse({ ...newCourse, description: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
@@ -1562,7 +1564,7 @@ export function SubjectsManagementPage() {
                   disabled={isCreatingCourse}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1570,7 +1572,7 @@ export function SubjectsManagementPage() {
                   isLoading={isCreatingCourse}
                   className="cursor-pointer"
                 >
-                  Crear Curso
+                  {t("Crear Curso")}
                 </Button>
               </div>
             </form>
@@ -1587,9 +1589,9 @@ export function SubjectsManagementPage() {
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Crear Materia Académica</h3>
+                  <h3 className="text-lg font-bold text-gray-900">{t("Crear Materia Académica")}</h3>
                   <p className="text-xs text-gray-500">
-                    Nivel 3 con código administrativo asignado a {selectedInstName}
+                    {t("Nivel 3 con código administrativo asignado a")} {selectedInstName}
                   </p>
                 </div>
               </div>
@@ -1605,7 +1607,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleCreateSubject} className="mt-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Curso / Área Perteneciente (Nivel 2) <span className="text-red-500">*</span>
+                  {t("Curso / Área Perteneciente (Nivel 2)")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   required
@@ -1622,36 +1624,36 @@ export function SubjectsManagementPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Nombre de la Materia <span className="text-red-500">*</span>
+                  {t("Nombre de la Materia")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
-                  placeholder="Ej: Francés Integrado I, Cálculo Diferencial, Química Orgánica..."
+                  placeholder={t("Ej: Francés Integrado I, Cálculo Diferencial, Química Orgánica...")}
                   value={newSubject.name}
                   onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })}
                 />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Código Administrativo Institucional <span className="text-red-500">*</span>
+                  {t("Código Administrativo Institucional")} <span className="text-red-500">*</span>
                 </label>
                 <Input
                   required
-                  placeholder="Ej: FL-0101, MA-1001, MAT-001..."
+                  placeholder={t("Ej: FL-0101, MA-1001, MAT-001...")}
                   value={newSubject.code}
                   onChange={(e) => setNewSubject({ ...newSubject, code: e.target.value })}
                 />
                 <p className="text-[11px] text-gray-400 mt-1">
-                  Se asignará este código directamente para {selectedInstName}. Cada universidad puede tener códigos distintos.
+                  {t("Se asignará este código directamente para")} {selectedInstName}{t(". Cada universidad puede tener códigos distintos.")}
                 </p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
-                  Descripción (Opcional)
+                  {t("Descripción (Opcional)")}
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Temario breve, prerrequisitos o detalles de la asignatura..."
+                  placeholder={t("Temario breve, prerrequisitos o detalles de la asignatura...")}
                   value={newSubject.description}
                   onChange={(e) => setNewSubject({ ...newSubject, description: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
@@ -1666,7 +1668,7 @@ export function SubjectsManagementPage() {
                   className="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
                 />
                 <label htmlFor="offerImmediately" className="text-xs text-gray-700 cursor-pointer select-none">
-                  Ofertada activamente en <span className="font-semibold text-gray-900">{selectedInstName}</span>
+                  {t("Ofertada activamente en")} <span className="font-semibold text-gray-900">{selectedInstName}</span>
                 </label>
               </div>
               <div className="mt-6 flex justify-end gap-3 pt-2">
@@ -1677,7 +1679,7 @@ export function SubjectsManagementPage() {
                   disabled={isCreatingSubject}
                   className="cursor-pointer"
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
@@ -1685,7 +1687,7 @@ export function SubjectsManagementPage() {
                   isLoading={isCreatingSubject}
                   className="cursor-pointer"
                 >
-                  Crear Materia
+                  {t("Crear Materia")}
                 </Button>
               </div>
             </form>
