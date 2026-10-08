@@ -211,6 +211,84 @@ export interface Database {
           active?: boolean
         }
       }
+
+      tutor_subjects: {
+        Row: {
+          id: string
+          tutor_id: string
+          subject_id: string
+          institution_id: string
+          active: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          tutor_id: string
+          subject_id: string
+          institution_id: string
+          active?: boolean
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          tutor_id?: string
+          subject_id?: string
+          institution_id?: string
+          active?: boolean
+          created_at?: string
+        }
+      }
+
+      tutoring_sessions: {
+        Row: {
+          id: string
+          tutor_id: string
+          subject_id: string
+          institution_id: string
+          title: string
+          description: string | null
+          date: string
+          start_time: string
+          end_time: string
+          modality: 'virtual' | 'presencial' | 'hibrida'
+          location_or_link: string
+          max_students: number
+          status: 'programada' | 'en_curso' | 'completada' | 'cancelada'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          tutor_id: string
+          subject_id: string
+          institution_id: string
+          title: string
+          description?: string | null
+          date: string
+          start_time: string
+          end_time: string
+          modality?: 'virtual' | 'presencial' | 'hibrida'
+          location_or_link: string
+          max_students?: number
+          status?: 'programada' | 'en_curso' | 'completada' | 'cancelada'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          tutor_id?: string
+          subject_id?: string
+          institution_id?: string
+          title?: string
+          description?: string | null
+          date?: string
+          start_time?: string
+          end_time?: string
+          modality?: 'virtual' | 'presencial' | 'hibrida'
+          location_or_link?: string
+          max_students?: number
+          status?: 'programada' | 'en_curso' | 'completada' | 'cancelada'
+          created_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -230,5 +308,8 @@ export type UserRoleRecord = Database['public']['Tables']['user_roles']['Row']
 export type Career = Database['public']['Tables']['careers']['Row']
 export type Course = Database['public']['Tables']['courses']['Row']
 export type Subject = Database['public']['Tables']['subjects']['Row']
-
 export type InstitutionSubject = Database['public']['Tables']['institution_subjects']['Row']
+export type TutorSubject = Database['public']['Tables']['tutor_subjects']['Row']
+export type TutoringSession = Database['public']['Tables']['tutoring_sessions']['Row']
+export type SessionModality = 'virtual' | 'presencial' | 'hibrida'
+export type SessionStatus = 'programada' | 'en_curso' | 'completada' | 'cancelada'

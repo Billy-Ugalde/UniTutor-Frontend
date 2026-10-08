@@ -32,10 +32,9 @@ interface UserWithRoles extends Profile {
 
 export function UsersManagementPage() {
   const { t, locale } = useTranslations()
-  const allRoles = useMemo<{ role: UserRole; label: string; description: string }[]>(() => [
+  const academicRoles = useMemo<{ role: UserRole; label: string; description: string }[]>(() => [
     { role: 'estudiante', label: t("Estudiante"), description: t("Puede buscar tutores y solicitar tutorías") },
-    { role: 'tutor', label: t("Tutor"), description: t("Puede ofrecer tutorías en las materias activas") },
-    { role: 'inst_admin', label: t("Administrador"), description: t("Gestión total de la institución y catálogo") },
+    { role: 'tutor', label: t("Tutor"), description: t("Puede impartir tutorías en las materias activas habilitadas") },
   ], [t])
   const { profile: currentProfile, isSuperAdmin } = useAuth()
   const { selectedInstitutionId, setSelectedInstitutionId } = useAdminStore()
@@ -169,26 +168,25 @@ export function UsersManagementPage() {
     return filteredUsers.slice(start, start + PAGE_SIZE)
   }, [filteredUsers, currentPage])
 
-  const assignableRoles = useMemo(() => {
-    if (!editingUser) return []
-    const isAlreadyAdmin = editingUser.roles.includes('inst_admin')
-    if (!isAlreadyAdmin) {
-      return allRoles.filter((r) => r.role !== 'inst_admin')
-    }
-    return allRoles
-  }, [editingUser, allRoles])
+
 
   const handleOpenEdit = (user: UserWithRoles) => {
+    if (user.roles.includes('inst_admin')) {
+      toast.warning(t("Acción no permitida"), t("El rol de administrador es exclusivo y no se puede modificar."))
+      return
+    }
     setEditingUser(user)
     setSelectedRoles([...user.roles])
     setActionMessage(null)
   }
 
   const handleToggleRole = (role: UserRole) => {
-    if (role === 'inst_admin' && !editingUser?.roles.includes('inst_admin')) {
-      return
-    }
+    if (role === 'inst_admin') return
     if (selectedRoles.includes(role)) {
+      if (selectedRoles.length === 1) {
+        toast.warning(t("Rol requerido"), t("El usuario debe tener al menos un rol asignado (Estudiante o Tutor)."))
+        return
+      }
       setSelectedRoles(selectedRoles.filter((r) => r !== role))
     } else {
       setSelectedRoles([...selectedRoles, role])
@@ -197,6 +195,14 @@ export function UsersManagementPage() {
 
   const handleSaveRoles = async () => {
     if (!editingUser || !targetInstId) return
+    if (editingUser.roles.includes('inst_admin')) {
+      toast.warning(t("Acción no permitida"), t("El rol de administrador es exclusivo y no se puede modificar."))
+      return
+    }
+    if (selectedRoles.length === 0) {
+      toast.warning(t("Rol requerido"), t("El usuario debe tener al menos un rol asignado (Estudiante o Tutor)."))
+      return
+    }
     setIsSavingRoles(true)
     setActionMessage(null)
 
@@ -248,6 +254,11 @@ export function UsersManagementPage() {
   const handleToggleUserActive = async (user: UserWithRoles) => {
     if (user.id === currentProfile?.id) {
       toast.warning(t("Acción denegada"), t("No puedes desactivar tu propia cuenta de usuario."))
+      return
+    }
+
+    if (!isSuperAdmin && user.roles.includes('inst_admin')) {
+      toast.warning(t("Acción no permitida"), t("Solo el Super Administrador puede cambiar el estado de usuarios administradores."))
       return
     }
 
@@ -478,29 +489,33 @@ export function UsersManagementPage() {
                           <Eye className="h-3.5 w-3.5 text-blue-600" />
                           {t("Ver")}
                         </Button>
-                        <Button
-                          variant="secondary"
-                          size="xs"
-                          onClick={() => handleOpenEdit(u)}
-                          title={t("Modificar roles del usuario")}
-                        >
-                          <Settings className="h-3.5 w-3.5 text-gray-600" />
-                          {t("Roles")}
-                        </Button>
-                        <Button
-                          variant={u.active ? 'ghost' : 'secondary'}
-                          size="xs"
-                          onClick={() => handleToggleUserActive(u)}
-                          className={
-                            u.active
-                              ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
-                              : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
-                          }
-                          title={u.active ? t("Desactivar acceso del usuario") : t("Activar acceso del usuario")}
-                        >
-                          <Power className="h-3.5 w-3.5" />
-                          {u.active ? t("Desactivar") : t("Activar")}
-                        </Button>
+                        {!u.roles.includes('inst_admin') && (
+                          <Button
+                            variant="secondary"
+                            size="xs"
+                            onClick={() => handleOpenEdit(u)}
+                            title={t("Modificar roles del usuario")}
+                          >
+                            <Settings className="h-3.5 w-3.5 text-gray-600" />
+                            {t("Roles")}
+                          </Button>
+                        )}
+                        {(isSuperAdmin || !u.roles.includes('inst_admin')) && (
+                          <Button
+                            variant={u.active ? 'ghost' : 'secondary'}
+                            size="xs"
+                            onClick={() => handleToggleUserActive(u)}
+                            className={
+                              u.active
+                                ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
+                                : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
+                            }
+                            title={u.active ? t("Desactivar acceso del usuario") : t("Activar acceso del usuario")}
+                          >
+                            <Power className="h-3.5 w-3.5" />
+                            {u.active ? t("Desactivar") : t("Activar")}
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -616,6 +631,12 @@ export function UsersManagementPage() {
               </div>
             </div>
 
+            {viewingUser.roles.includes('inst_admin') && (
+              <p className="mt-3 text-[11px] text-gray-500 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+                {t("El rol de administrador institucional es exclusivo y fijo; no puede combinarse ni cambiarse a otros roles.")}
+              </p>
+            )}
+
             <div className="mt-6 flex justify-end gap-3 pt-3 border-t">
               <Button
                 variant="ghost"
@@ -623,35 +644,39 @@ export function UsersManagementPage() {
               >
                 {t("Cerrar")}
               </Button>
-              <Button
-                variant={viewingUser.active ? 'secondary' : 'primary'}
-                onClick={async () => {
-                  const targetUser = viewingUser
-                  await handleToggleUserActive(targetUser)
-                  setViewingUser((prev) =>
-                    prev ? { ...prev, active: !prev.active } : null
-                  )
-                }}
-                className={
-                  viewingUser.active
-                    ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
-                    : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
-                }
-              >
-                <Power className="h-3.5 w-3.5 mr-1" />
-                {viewingUser.active ? t("Desactivar Cuenta") : t("Activar Cuenta")}
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  const userToEdit = viewingUser
-                  setViewingUser(null)
-                  handleOpenEdit(userToEdit)
-                }}
-              >
-                <Settings className="h-3.5 w-3.5 mr-1" />
-                {t("Modificar Roles")}
-              </Button>
+              {(isSuperAdmin || !viewingUser.roles.includes('inst_admin')) && (
+                <Button
+                  variant={viewingUser.active ? 'secondary' : 'primary'}
+                  onClick={async () => {
+                    const targetUser = viewingUser
+                    await handleToggleUserActive(targetUser)
+                    setViewingUser((prev) =>
+                      prev ? { ...prev, active: !prev.active } : null
+                    )
+                  }}
+                  className={
+                    viewingUser.active
+                      ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
+                      : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
+                  }
+                >
+                  <Power className="h-3.5 w-3.5 mr-1" />
+                  {viewingUser.active ? t("Desactivar Cuenta") : t("Activar Cuenta")}
+                </Button>
+              )}
+              {!viewingUser.roles.includes('inst_admin') && (
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    const userToEdit = viewingUser
+                    setViewingUser(null)
+                    handleOpenEdit(userToEdit)
+                  }}
+                >
+                  <Settings className="h-3.5 w-3.5 mr-1" />
+                  {t("Modificar Roles")}
+                </Button>
+              )}
             </div>
           </div>
         </div>
@@ -661,14 +686,17 @@ export function UsersManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-bold text-gray-900">
-              {t("Modificar Roles")}
+              {t("Modificar Roles Académicos")}
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {editingUser.first_name} {editingUser.last_name} ({editingUser.email})
             </p>
+            <p className="mt-2 text-xs text-gray-500">
+              {t("Configura los roles académicos del usuario. Puede desempeñarse como Estudiante, Tutor o ambos simultáneamente.")}
+            </p>
 
             <div className="mt-4 space-y-3">
-              {assignableRoles.map(({ role, label, description }) => {
+              {academicRoles.map(({ role, label, description }) => {
                 const isChecked = selectedRoles.includes(role)
                 return (
                   <label
@@ -683,7 +711,7 @@ export function UsersManagementPage() {
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => handleToggleRole(role)}
-                      className="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                      className="mt-1 h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 cursor-pointer"
                     />
                     <div>
                       <span className="text-sm font-semibold text-gray-900">{label}</span>
@@ -694,11 +722,9 @@ export function UsersManagementPage() {
               })}
             </div>
 
-            {!editingUser.roles.includes('inst_admin') && (
-              <p className="mt-3 text-[11px] text-gray-500 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
-                {t("Los roles de administración institucional no pueden asignarse a tutores o estudiantes. Se configuran al dar de alta la institución.")}
-              </p>
-            )}
+            <p className="mt-3 text-[11px] text-gray-500 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+              {t("Un usuario puede ser Estudiante, Tutor o ambos. Debe conservar al menos un rol asignado.")}
+            </p>
 
             <div className="mt-6 flex justify-end gap-3">
               <Button

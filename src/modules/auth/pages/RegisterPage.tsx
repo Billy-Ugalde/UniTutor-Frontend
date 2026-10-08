@@ -1,7 +1,7 @@
 import { useTranslations } from '@/i18n/useTranslations'
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { GraduationCap, UserCheck } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { GraduationCap, UserCheck, AlertCircle } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
@@ -11,7 +11,6 @@ import type { Institution } from '@/types/database.types'
 
 export function RegisterPage() {
   const { t } = useTranslations()
-  const navigate = useNavigate()
 
   const [institutions, setInstitutions] = useState<Institution[]>([])
   const [form, setForm] = useState({
@@ -23,9 +22,6 @@ export function RegisterPage() {
     institutionId: '',
     role: 'estudiante' as 'estudiante' | 'tutor',
   })
-  const [errors, setErrors] = useState<Partial<typeof form>>({})
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
   const [loadingInstitutions, setLoadingInstitutions] = useState(true)
 
   useEffect(() => {
@@ -45,68 +41,14 @@ export function RegisterPage() {
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setForm((prev) => ({ ...prev, [name]: value }))
-    setErrors((prev) => ({ ...prev, [name]: undefined }))
   }
 
-  const validate = (): boolean => {
-    const newErrors: Partial<typeof form> = {}
-    if (!form.firstName.trim()) newErrors.firstName = t("El nombre es requerido.")
-    if (!form.lastName.trim()) newErrors.lastName = t("El apellido es requerido.")
-    if (!form.email.trim()) newErrors.email = t("El correo es requerido.")
-    if (!form.institutionId) newErrors.institutionId = t("Selecciona una institución.")
-    if (form.password.length < 8)
-      newErrors.password = t("Mínimo 8 caracteres.")
-    if (form.password !== form.confirmPassword)
-      newErrors.confirmPassword = t("Las contraseñas no coinciden.")
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    setServerError(null)
-    if (!validate()) return
-    setIsLoading(true)
-
-    try {
-      const { error: registerError } = await supabase.rpc('register_user', {
-        p_email: form.email.trim(),
-        p_password: form.password,
-        p_first_name: form.firstName.trim(),
-        p_last_name: form.lastName.trim(),
-        p_institution_id: form.institutionId,
-        p_role: form.role,
-      })
-
-      if (registerError) throw registerError
-
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: form.email.trim(),
-        password: form.password,
-      })
-
-      if (!signInError) {
-        toast.success(t("¡Cuenta creada exitosamente!"), t("Bienvenido a UniTutor."))
-        navigate('/dashboard')
-      } else {
-        toast.success(t("¡Registro completado!"), t("Ya puedes iniciar sesión con tus credenciales."))
-        navigate('/login', {
-          state: { messageKey: '¡Cuenta creada exitosamente! Ya puedes iniciar sesión con tus credenciales.' },
-        })
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : t("Error al crear la cuenta.")
-      if (message.includes('Ya existe una cuenta') || message.includes('already registered')) {
-        const errorText = t("Ya existe una cuenta con ese correo electrónico.")
-        setServerError(errorText)
-        toast.error(t("Correo ya registrado"), errorText)
-      } else {
-        setServerError(message)
-        toast.error(t("Error al registrarse"), message)
-      }
-    } finally {
-      setIsLoading(false)
-    }
+    toast.info(
+      t("Próximamente"),
+      t("El registro público de usuarios se implementará próximamente. Por favor contacta al administrador de tu institución.")
+    )
   }
 
   return (
@@ -129,6 +71,20 @@ export function RegisterPage() {
           </Card.Header>
 
           <Card.Body>
+            <div className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-semibold text-amber-900">
+                    {t("Registro público no disponible")}
+                  </p>
+                  <p className="mt-1 text-xs text-amber-800 leading-relaxed">
+                    {t("Próximamente se implementará el autoregistro para estudiantes y tutores. Actualmente, la asignación de cuentas es gestionada directamente por los administradores de cada institución.")}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-gray-700">
@@ -169,7 +125,6 @@ export function RegisterPage() {
                   placeholder="Juan"
                   value={form.firstName}
                   onChange={handleChange}
-                  error={errors.firstName}
                   required
                   autoComplete="given-name"
                 />
@@ -179,7 +134,6 @@ export function RegisterPage() {
                   placeholder="Pérez"
                   value={form.lastName}
                   onChange={handleChange}
-                  error={errors.lastName}
                   required
                   autoComplete="family-name"
                 />
@@ -192,7 +146,6 @@ export function RegisterPage() {
                 placeholder={t("usuario@universidad.edu")}
                 value={form.email}
                 onChange={handleChange}
-                error={errors.email}
                 required
                 autoComplete="email"
               />
@@ -207,14 +160,7 @@ export function RegisterPage() {
                   value={form.institutionId}
                   onChange={handleChange}
                   disabled={loadingInstitutions}
-                  className={[
-                    'rounded-md border px-3 py-2 text-sm text-gray-900',
-                    'focus:outline-none focus:ring-2 focus:ring-primary-300',
-                    errors.institutionId
-                      ? 'border-red-400 focus:border-red-400'
-                      : 'border-gray-300 focus:border-primary-500',
-                    'disabled:cursor-not-allowed disabled:bg-gray-50',
-                  ].join(' ')}
+                  className="rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:border-primary-500 disabled:cursor-not-allowed disabled:bg-gray-50"
                 >
                   <option value="">
                     {loadingInstitutions ? t("Cargando...") : t("-- Selecciona tu institución --")}
@@ -225,9 +171,6 @@ export function RegisterPage() {
                     </option>
                   ))}
                 </select>
-                {errors.institutionId && (
-                  <p className="text-xs text-red-600">{errors.institutionId}</p>
-                )}
                 {institutions.length === 0 && !loadingInstitutions && (
                   <p className="text-xs text-amber-600">
                     {t("No hay instituciones disponibles. Contacta al administrador.")}
@@ -242,7 +185,6 @@ export function RegisterPage() {
                 placeholder={t("Mínimo 8 caracteres")}
                 value={form.password}
                 onChange={handleChange}
-                error={errors.password}
                 required
                 autoComplete="new-password"
               />
@@ -254,19 +196,18 @@ export function RegisterPage() {
                 placeholder={t("Repite tu contraseña")}
                 value={form.confirmPassword}
                 onChange={handleChange}
-                error={errors.confirmPassword}
                 required
                 autoComplete="new-password"
               />
 
-              {serverError && (
-                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {serverError}
-                </div>
-              )}
-
-              <Button type="submit" variant="success" fullWidth isLoading={isLoading}>
-                {t("Crear cuenta")}
+              <Button
+                type="submit"
+                variant="secondary"
+                fullWidth
+                disabled
+                className="cursor-not-allowed opacity-75 mt-2"
+              >
+                {t("Registro próximamente disponible")}
               </Button>
             </form>
           </Card.Body>

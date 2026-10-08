@@ -8,6 +8,10 @@ import { AdminDashboardPage } from '@/modules/admin/pages/AdminDashboardPage'
 import { InstitutionsManagementPage } from '@/modules/admin/pages/InstitutionsManagementPage'
 import { UsersManagementPage } from '@/modules/admin/pages/UsersManagementPage'
 import { SubjectsManagementPage } from '@/modules/admin/pages/SubjectsManagementPage'
+import { TutorRoute } from '@/modules/tutor/components/TutorRoute'
+import { TutorSubjectsPage } from '@/modules/tutor/pages/TutorSubjectsPage'
+import { TutorSubjectDetailPage } from '@/modules/tutor/pages/TutorSubjectDetailPage'
+import { TutorSessionsPage } from '@/modules/tutor/pages/TutorSessionsPage'
 import { PublicLayout } from '@/shared/layouts/PublicLayout'
 import { AppLayout } from '@/shared/layouts/AppLayout'
 import { NotFoundPage } from '@/shared/pages/NotFoundPage'
@@ -27,6 +31,15 @@ const router = createBrowserRouter([
         element: <AppLayout />,
         children: [
           { path: '/dashboard', element: <DashboardPage /> },
+          {
+            element: <TutorRoute />,
+            children: [
+              { path: '/tutor', element: <Navigate to="/tutor/sesiones" replace /> },
+              { path: '/tutor/sesiones', element: <TutorSessionsPage /> },
+              { path: '/tutor/materias', element: <TutorSubjectsPage /> },
+              { path: '/tutor/materias/:subjectId', element: <TutorSubjectDetailPage /> },
+            ],
+          },
           {
             element: <AdminRoute />,
             children: [
