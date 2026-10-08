@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { AppRouter } from '@/router'
 import { useAuthStore } from '@/modules/auth/store/auth.store'
 import { ToastContainer } from '@/shared/components/ui/ToastContainer'
+import { UserWayWidget } from '@/shared/components/UserWayWidget'
 
 export default function App() {
   const initialize = useAuthStore((s) => s.initialize)
@@ -23,6 +24,7 @@ export default function App() {
     <>
       <AppRouter />
       <ToastContainer />
+      <UserWayWidget />
     </>
   )
 }
