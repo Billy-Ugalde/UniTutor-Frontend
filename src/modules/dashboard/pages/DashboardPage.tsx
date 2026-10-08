@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
@@ -27,6 +28,7 @@ import { toast } from '@/shared/store/toast.store'
 import type { Institution } from '@/types/database.types'
 
 export function DashboardPage() {
+  const { t, locale } = useTranslations()
   const { fullName, profile, roles, hasRole, isSuperAdmin, signOut } = useAuth()
   const navigate = useNavigate()
   const [institution, setInstitution] = useState<Institution | null>(null)
@@ -50,7 +52,7 @@ export function DashboardPage() {
   }, [profile?.institution_id])
 
   const roleLabel = (role: string) =>
-    ({ inst_admin: 'Administrador', tutor: 'Tutor', estudiante: 'Estudiante' }[role] ?? role)
+    ({ inst_admin: t("Administrador"), tutor: t("Tutor"), estudiante: t("Estudiante") }[role] ?? role)
 
   const roleColor = (role: string) =>
     ({
@@ -78,12 +80,12 @@ export function DashboardPage() {
     if (isAdmin) {
       modules.push({
         id: 'admin-panel',
-        label: 'Panel de Administración',
+        label: t("Panel de Administración"),
         icon: Shield,
         href: '/admin',
         available: true,
-        badgeText: 'Disponible',
-        description: 'Centro de gestión institucional: instituciones, usuarios y materias.',
+        badgeText: t("Disponible"),
+        description: t("Centro de gestión institucional: instituciones, usuarios y materias."),
       })
     }
 
@@ -91,30 +93,30 @@ export function DashboardPage() {
       modules.push(
         {
           id: 'tutor-sessions',
-          label: 'Mis Tutorías Impartidas',
+          label: t("Mis Tutorías Impartidas"),
           icon: Calendar,
           href: '/sessions',
           available: false,
-          badgeText: 'Próximamente',
-          description: 'Consulta tus sesiones asignadas y calendario',
+          badgeText: t("Próximamente"),
+          description: t("Consulta tus sesiones asignadas y calendario"),
         },
         {
           id: 'tutor-requests',
-          label: 'Solicitudes Recibidas',
+          label: t("Solicitudes Recibidas"),
           icon: ClipboardList,
           href: '/requests',
           available: false,
-          badgeText: 'Próximamente',
-          description: 'Revisa y responde a solicitudes de estudiantes',
+          badgeText: t("Próximamente"),
+          description: t("Revisa y responde a solicitudes de estudiantes"),
         },
         {
           id: 'tutor-availability',
-          label: 'Mi Disponibilidad y Materias',
+          label: t("Mi Disponibilidad y Materias"),
           icon: Clock,
           href: '/availability',
           available: false,
-          badgeText: 'Próximamente',
-          description: 'Configura tus horarios y asignaturas de dominio',
+          badgeText: t("Próximamente"),
+          description: t("Configura tus horarios y asignaturas de dominio"),
         }
       )
     }
@@ -123,47 +125,47 @@ export function DashboardPage() {
       modules.push(
         {
           id: 'student-search',
-          label: 'Buscar Tutores',
+          label: t("Buscar Tutores"),
           icon: Search,
           href: '/tutors',
           available: false,
-          badgeText: 'Próximamente',
-          description: 'Encuentra tutores calificados por materia',
+          badgeText: t("Próximamente"),
+          description: t("Encuentra tutores calificados por materia"),
         },
         {
           id: 'student-requests',
-          label: 'Mis Solicitudes',
+          label: t("Mis Solicitudes"),
           icon: ClipboardList,
           href: '/requests',
           available: false,
-          badgeText: 'Próximamente',
-          description: 'Estado de tus solicitudes de tutoría enviadas',
+          badgeText: t("Próximamente"),
+          description: t("Estado de tus solicitudes de tutoría enviadas"),
         },
         {
           id: 'student-sessions',
-          label: 'Mis Sesiones de Tutoría',
+          label: t("Mis Sesiones de Tutoría"),
           icon: BookOpen,
           href: '/sessions',
           available: false,
-          badgeText: 'Próximamente',
-          description: 'Horarios de tus tutorías confirmadas',
+          badgeText: t("Próximamente"),
+          description: t("Horarios de tus tutorías confirmadas"),
         }
       )
     }
 
     return modules
-  }, [isAdmin, isTutor, isStudent])
+  }, [isAdmin, isTutor, isStudent, t])
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
 
     if (newPassword.length < 8) {
-      toast.warning('Contraseña muy corta', 'La nueva contraseña debe tener al menos 8 caracteres.')
+      toast.warning(t("Contraseña muy corta"), t("La nueva contraseña debe tener al menos 8 caracteres."))
       return
     }
 
     if (newPassword !== confirmPassword) {
-      toast.warning('Validación fallida', 'Las contraseñas no coinciden.')
+      toast.warning(t("Validación fallida"), t("Las contraseñas no coinciden."))
       return
     }
 
@@ -179,8 +181,8 @@ export function DashboardPage() {
       }
 
       toast.success(
-        'Contraseña actualizada',
-        'Tu contraseña ha sido cambiada. Inicia sesión con tus nuevas credenciales.'
+        t("Contraseña actualizada"),
+        t("Tu contraseña ha sido cambiada. Inicia sesión con tus nuevas credenciales.")
       )
       setIsPasswordModalOpen(false)
       setNewPassword('')
@@ -189,8 +191,8 @@ export function DashboardPage() {
       await signOut()
       navigate('/login', { replace: true })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Error inesperado al cambiar la contraseña.'
-      toast.error('Error al cambiar contraseña', msg)
+      const msg = err instanceof Error ? err.message : t("Error inesperado al cambiar la contraseña.")
+      toast.error(t("Error al cambiar contraseña"), msg)
     } finally {
       setIsUpdatingPassword(false)
     }
@@ -201,9 +203,9 @@ export function DashboardPage() {
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">
-            ¡Bienvenido, {fullName}!
+            {t('¡Bienvenido, {name}!', { name: fullName ?? '' })}
           </h1>
-          <p className="mt-1 text-gray-500">Este es tu panel de control en UniTutor.</p>
+          <p className="mt-1 text-gray-500">{t("Este es tu panel de control en UniTutor.")}</p>
         </div>
         <Button
           variant="secondary"
@@ -211,7 +213,7 @@ export function DashboardPage() {
           className="self-start sm:self-auto flex items-center gap-1.5 cursor-pointer shadow-xs"
         >
           <KeyRound className="h-4 w-4 text-gray-600" />
-          Cambiar contraseña
+          {t("Cambiar contraseña")}
         </Button>
       </div>
 
@@ -223,12 +225,12 @@ export function DashboardPage() {
                 {profile?.first_name?.charAt(0).toUpperCase() ?? '?'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-gray-500">Tu perfil</p>
+                <p className="text-sm font-medium text-gray-500">{t("Tu perfil")}</p>
                 <p className="mt-0.5 truncate font-semibold text-gray-900">{fullName}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {isSuperAdmin && (
                     <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800">
-                      <Shield className="h-3 w-3 text-blue-700" /> Super Administrador
+                      <Shield className="h-3 w-3 text-blue-700" /> {t("Super Administrador")}
                     </span>
                   )}
                   {roles.map((role) => (
@@ -242,7 +244,7 @@ export function DashboardPage() {
                     </span>
                   ))}
                   {!isSuperAdmin && roles.length === 0 && (
-                    <span className="text-xs text-gray-400">Sin roles asignados</span>
+                    <span className="text-xs text-gray-400">{t("Sin roles asignados")}</span>
                   )}
                 </div>
               </div>
@@ -254,7 +256,7 @@ export function DashboardPage() {
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-700 hover:text-primary-800 transition-colors cursor-pointer"
               >
                 <Eye className="h-3.5 w-3.5" />
-                Ver detalles
+                {t("Ver detalles")}
               </button>
             </div>
           </Card.Body>
@@ -262,12 +264,12 @@ export function DashboardPage() {
 
         <Card>
           <Card.Body>
-            <p className="text-sm font-medium text-gray-500">Tu institución</p>
+            <p className="text-sm font-medium text-gray-500">{t("Tu institución")}</p>
             {isSuperAdmin ? (
               <>
-                <p className="mt-0.5 font-semibold text-blue-900">Plataforma Global</p>
+                <p className="mt-0.5 font-semibold text-blue-900">{t("Plataforma Global")}</p>
                 <p className="mt-1 text-xs text-blue-700">
-                  Acceso de Super Administrador a todas las instituciones
+                  {t("Acceso de Super Administrador a todas las instituciones")}
                 </p>
               </>
             ) : institution ? (
@@ -279,7 +281,7 @@ export function DashboardPage() {
               </>
             ) : (
               <p className="mt-0.5 text-sm text-gray-400">
-                {profile?.institution_id ? 'Cargando...' : 'No asignado a ninguna institución'}
+                {profile?.institution_id ? t("Cargando...") : t("No asignado a ninguna institución")}
               </p>
             )}
           </Card.Body>
@@ -287,11 +289,11 @@ export function DashboardPage() {
 
         <Card>
           <Card.Body>
-            <p className="text-sm font-medium text-gray-500">Estado de la plataforma</p>
+            <p className="text-sm font-medium text-gray-500">{t("Estado de la plataforma")}</p>
             <div className="mt-2 space-y-2">
               {[
-                { label: 'Supabase conectado', ok: true },
-                { label: 'Autenticación activa', ok: true },
+                { label: t("Supabase conectado"), ok: true },
+                { label: t("Autenticación activa"), ok: true },
               ].map(({ label, ok }) => (
                 <div key={label} className="flex items-center gap-2">
                   <div className={`h-2 w-2 rounded-full ${ok ? 'bg-green-500' : 'bg-red-500'}`} />
@@ -350,10 +352,10 @@ export function DashboardPage() {
                 <div className="mt-4 pt-3 border-t border-gray-100/80">
                   {item.available ? (
                     <span className="inline-flex items-center text-xs font-semibold text-blue-600 group-hover:text-blue-700">
-                      Acceder al módulo <ArrowRight className="h-3.5 w-3.5 ml-1" />
+                      {t("Acceder al módulo")} <ArrowRight className="h-3.5 w-3.5 ml-1" />
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-400">En desarrollo</span>
+                    <span className="text-xs text-gray-400">{t("En desarrollo")}</span>
                   )}
                 </div>
               </div>
@@ -380,10 +382,10 @@ export function DashboardPage() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">
-                    Cambiar Contraseña
+                    {t("Cambiar Contraseña")}
                   </h3>
                   <p className="text-xs text-gray-500">
-                    Actualiza las credenciales de acceso a tu cuenta
+                    {t("Actualiza las credenciales de acceso a tu cuenta")}
                   </p>
                 </div>
               </div>
@@ -405,9 +407,9 @@ export function DashboardPage() {
 
             <form onSubmit={handleUpdatePassword} className="mt-4 space-y-4">
               <Input
-                label="Nueva contraseña"
+                label={t("Nueva contraseña")}
                 type="password"
-                placeholder="Mínimo 8 caracteres"
+                placeholder={t("Mínimo 8 caracteres")}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 required
@@ -416,9 +418,9 @@ export function DashboardPage() {
               />
 
               <Input
-                label="Confirmar nueva contraseña"
+                label={t("Confirmar nueva contraseña")}
                 type="password"
-                placeholder="Repite tu nueva contraseña"
+                placeholder={t("Repite tu nueva contraseña")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
@@ -437,14 +439,14 @@ export function DashboardPage() {
                   }}
                   disabled={isUpdatingPassword}
                 >
-                  Cancelar
+                  {t("Cancelar")}
                 </Button>
                 <Button
                   type="submit"
                   variant="primary"
                   isLoading={isUpdatingPassword}
                 >
-                  Actualizar Contraseña
+                  {t("Actualizar Contraseña")}
                 </Button>
               </div>
             </form>
@@ -463,14 +465,14 @@ export function DashboardPage() {
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{fullName}</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-gray-500">{profile?.email || 'Sin correo electrónico'}</p>
+                    <p className="text-xs text-gray-500">{profile?.email || t("Sin correo electrónico")}</p>
                     {profile?.active !== false ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
-                        <CheckCircle2 className="h-3 w-3" /> Activo
+                        <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
-                        <XCircle className="h-3 w-3" /> Inactivo
+                        <XCircle className="h-3 w-3" /> {t("Inactivo")}
                       </span>
                     )}
                   </div>
@@ -489,54 +491,54 @@ export function DashboardPage() {
               <div className="rounded-lg border border-gray-100 bg-gray-50/70 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Institución:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Institución:")}</span>
                   <span className="font-semibold text-gray-900">
                     {isSuperAdmin
-                      ? 'Plataforma Global (Super Administrador)'
-                      : institution?.name || (profile?.institution_id ? 'Cargando...' : 'Institución no asignada')}
+                      ? t("Plataforma Global (Super Administrador)")
+                      : institution?.name || (profile?.institution_id ? t("Cargando...") : t("Institución no asignada"))}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Mail className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Correo:</span>
-                  <span className="text-gray-800">{profile?.email || 'No registrado'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Correo:")}</span>
+                  <span className="text-gray-800">{profile?.email || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Phone className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Teléfono:</span>
-                  <span className="text-gray-800">{profile?.phone || 'No registrado'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Teléfono:")}</span>
+                  <span className="text-gray-800">{profile?.phone || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Fecha de Registro:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Fecha de Registro:")}</span>
                   <span className="text-gray-800">
                     {profile?.created_at
-                      ? new Date(profile.created_at).toLocaleDateString('es-ES', {
+                      ? new Date(profile.created_at).toLocaleDateString(locale, {
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric',
                         })
-                      : 'No disponible'}
+                      : t("No disponible")}
                   </span>
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-xs text-gray-400 font-medium">ID de Usuario:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("ID de Usuario:")}</span>
                   <p className="font-mono text-xs text-gray-500 select-all mt-0.5">{profile?.id}</p>
                 </div>
               </div>
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                  Roles Asignados
+                  {t("Roles Asignados")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {isSuperAdmin && (
                     <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                      <Shield className="h-3.5 w-3.5 text-blue-700" /> Super Administrador
+                      <Shield className="h-3.5 w-3.5 text-blue-700" /> {t("Super Administrador")}
                     </span>
                   )}
                   {roles.map((role) => (
@@ -551,7 +553,7 @@ export function DashboardPage() {
                     </span>
                   ))}
                   {!isSuperAdmin && roles.length === 0 && (
-                    <span className="text-xs text-gray-400 italic">Sin roles asignados</span>
+                    <span className="text-xs text-gray-400 italic">{t("Sin roles asignados")}</span>
                   )}
                 </div>
               </div>
@@ -562,7 +564,7 @@ export function DashboardPage() {
                 variant="secondary"
                 onClick={() => setIsProfileModalOpen(false)}
               >
-                Cerrar
+                {t("Cerrar")}
               </Button>
             </div>
           </div>

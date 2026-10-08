@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from './Button'
 
@@ -14,6 +15,7 @@ export function Pagination({
   pageSize = 10,
   onPageChange,
 }: PaginationProps) {
+  const { t } = useTranslations()
   const totalPages = Math.max(1, Math.ceil(totalItems / pageSize))
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1
   const endItem = Math.min(currentPage * pageSize, totalItems)
@@ -25,9 +27,9 @@ export function Pagination({
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-gray-200 bg-white px-6 py-3 text-xs text-gray-500">
       <div>
-        Mostrando <span className="font-semibold text-gray-700">{startItem}</span> a{' '}
-        <span className="font-semibold text-gray-700">{endItem}</span> de{' '}
-        <span className="font-semibold text-gray-700">{totalItems}</span> registros
+        {t('Mostrando {start} a {end} de {total} registros', {
+          start: startItem, end: endItem, total: totalItems,
+        })}
       </div>
 
       {totalPages > 1 ? (
@@ -39,10 +41,10 @@ export function Pagination({
             disabled={currentPage <= 1}
             onClick={() => onPageChange(currentPage - 1)}
             className="h-7 px-2 text-xs"
-            title="Página anterior"
+            title={t("Página anterior")}
           >
             <ChevronLeft className="h-3.5 w-3.5 mr-0.5" />
-            Anterior
+            {t("Anterior")}
           </Button>
 
           <div className="flex items-center gap-1 px-1">
@@ -88,15 +90,17 @@ export function Pagination({
             disabled={currentPage >= totalPages}
             onClick={() => onPageChange(currentPage + 1)}
             className="h-7 px-2 text-xs"
-            title="Página siguiente"
+            title={t("Página siguiente")}
           >
-            Siguiente
+            {t("Siguiente")}
             <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
           </Button>
         </div>
       ) : (
         <div className="text-xs text-gray-400">
-          Página 1 de 1 (10 registros por página)
+          {t('Página {page} de {total} ({size} registros por página)', {
+            page: currentPage, total: totalPages, size: pageSize,
+          })}
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from 'lucide-react'
 import { useToastStore, type ToastItem } from '@/shared/store/toast.store'
 
@@ -41,6 +42,7 @@ const toastStyles = {
 }
 
 function ToastCard({ toast }: { toast: ToastItem }) {
+  const { t } = useTranslations()
   const removeToast = useToastStore((s) => s.removeToast)
   const config = toastStyles[toast.type]
   const Icon = config.icon
@@ -67,7 +69,7 @@ function ToastCard({ toast }: { toast: ToastItem }) {
         type="button"
         onClick={() => removeToast(toast.id)}
         className={`-mr-1 -mt-1 rounded-md p-1 transition-colors focus:outline-none cursor-pointer ${config.close}`}
-        aria-label="Cerrar notificación"
+        aria-label={t("Cerrar notificación")}
       >
         <X className="h-4 w-4" />
       </button>

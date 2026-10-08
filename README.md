@@ -1,5 +1,8 @@
 # React + TypeScript + Vite
 
+La aplicación incluye español por defecto e inglés como segundo idioma.
+Consulta [la guía de i18n](docs/i18n.md) para agregar textos y verificar las traducciones.
+
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
 Currently, two official plugins are available:

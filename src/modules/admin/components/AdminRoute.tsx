@@ -1,7 +1,9 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 
 export function AdminRoute() {
+  const { t } = useTranslations()
   const { isAuthenticated, isLoading, hasRole, isSuperAdmin } = useAuth()
 
   if (isLoading) {
@@ -9,7 +11,7 @@ export function AdminRoute() {
       <div className="flex min-h-[50vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
-          <span className="text-sm text-gray-500">Verificando permisos de administración...</span>
+          <span className="text-sm text-gray-500">{t("Verificando permisos de administración...")}</span>
         </div>
       </div>
     )

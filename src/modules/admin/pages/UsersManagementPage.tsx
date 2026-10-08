@@ -1,3 +1,4 @@
+import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
@@ -29,13 +30,13 @@ interface UserWithRoles extends Profile {
   roles: UserRole[]
 }
 
-const ALL_ROLES: { role: UserRole; label: string; description: string }[] = [
-  { role: 'estudiante', label: 'Estudiante', description: 'Puede buscar tutores y solicitar tutorías' },
-  { role: 'tutor', label: 'Tutor', description: 'Puede ofrecer tutorías en las materias activas' },
-  { role: 'inst_admin', label: 'Administrador', description: 'Gestión total de la institución y catálogo' },
-]
-
 export function UsersManagementPage() {
+  const { t, locale } = useTranslations()
+  const allRoles = useMemo<{ role: UserRole; label: string; description: string }[]>(() => [
+    { role: 'estudiante', label: t("Estudiante"), description: t("Puede buscar tutores y solicitar tutorías") },
+    { role: 'tutor', label: t("Tutor"), description: t("Puede ofrecer tutorías en las materias activas") },
+    { role: 'inst_admin', label: t("Administrador"), description: t("Gestión total de la institución y catálogo") },
+  ], [t])
   const { profile: currentProfile, isSuperAdmin } = useAuth()
   const { selectedInstitutionId, setSelectedInstitutionId } = useAdminStore()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -134,7 +135,7 @@ export function UsersManagementPage() {
       setUsers(combined)
     } catch (err) {
       console.error('Error al cargar usuarios:', err)
-      setActionMessage({ type: 'error', text: 'No fue posible cargar la lista de usuarios.' })
+      setActionMessage({ type: 'error', text: t("No fue posible cargar la lista de usuarios.") })
     } finally {
       setIsLoading(false)
     }
@@ -172,10 +173,10 @@ export function UsersManagementPage() {
     if (!editingUser) return []
     const isAlreadyAdmin = editingUser.roles.includes('inst_admin')
     if (!isAlreadyAdmin) {
-      return ALL_ROLES.filter((r) => r.role !== 'inst_admin')
+      return allRoles.filter((r) => r.role !== 'inst_admin')
     }
-    return ALL_ROLES
-  }, [editingUser])
+    return allRoles
+  }, [editingUser, allRoles])
 
   const handleOpenEdit = (user: UserWithRoles) => {
     setEditingUser(user)
@@ -227,18 +228,18 @@ export function UsersManagementPage() {
         }
       }
 
-      setActionMessage({ type: 'success', text: `Roles actualizados para ${editingUser.first_name}.` })
-      toast.success('Roles actualizados', `Se han actualizado los roles de ${editingUser.first_name} ${editingUser.last_name}.`)
+      setActionMessage({ type: 'success', text: t("Roles actualizados para {name}.", { name: editingUser.first_name }) })
+      toast.success(t("Roles actualizados"), t("Se han actualizado los roles de {first} {last}.", { first: editingUser.first_name, last: editingUser.last_name }))
       setEditingUser(null)
       await loadUsersAndRoles()
     } catch (err) {
       console.error('Error al guardar roles:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al actualizar roles.'
+      const errorText = err instanceof Error ? err.message : t("Error al actualizar roles.")
       setActionMessage({
         type: 'error',
         text: errorText,
       })
-      toast.error('Error al actualizar roles', errorText)
+      toast.error(t("Error al actualizar roles"), errorText)
     } finally {
       setIsSavingRoles(false)
     }
@@ -246,14 +247,14 @@ export function UsersManagementPage() {
 
   const handleToggleUserActive = async (user: UserWithRoles) => {
     if (user.id === currentProfile?.id) {
-      toast.warning('Acción denegada', 'No puedes desactivar tu propia cuenta de usuario.')
+      toast.warning(t("Acción denegada"), t("No puedes desactivar tu propia cuenta de usuario."))
       return
     }
 
     const nextState = !user.active
     const confirmText = nextState
-      ? `¿Deseas activar la cuenta de ${user.first_name} ${user.last_name}? Podrá iniciar sesión en la plataforma.`
-      : `¿Estás seguro de desactivar la cuenta de ${user.first_name} ${user.last_name}? No podrá iniciar sesión hasta ser reactivado.`
+      ? t("¿Deseas activar la cuenta de {first} {last}? Podrá iniciar sesión en la plataforma.", { first: user.first_name, last: user.last_name })
+      : t("¿Estás seguro de desactivar la cuenta de {first} {last}? No podrá iniciar sesión hasta ser reactivado.", { first: user.first_name, last: user.last_name })
 
     if (!window.confirm(confirmText)) return
 
@@ -265,24 +266,24 @@ export function UsersManagementPage() {
 
       if (error) throw error
 
-      const statusMsg = `Usuario "${user.first_name} ${user.last_name}" ahora está ${nextState ? 'activo' : 'desactivado'}.`
+      const statusMsg = t("Usuario \"{first} {last}\" ahora está {status}.", { first: user.first_name, last: user.last_name, status: nextState ? t("activo") : t("desactivado") })
       setActionMessage({
         type: 'success',
         text: statusMsg,
       })
-      toast.success(nextState ? 'Usuario activado' : 'Usuario desactivado', statusMsg)
+      toast.success(nextState ? t("Usuario activado") : t("Usuario desactivado"), statusMsg)
 
       setUsers((prev) =>
         prev.map((u) => (u.id === user.id ? { ...u, active: nextState } : u))
       )
     } catch (err) {
       console.error('Error al cambiar estado del usuario:', err)
-      const errorText = err instanceof Error ? err.message : 'Error al cambiar estado del usuario.'
+      const errorText = err instanceof Error ? err.message : t("Error al cambiar estado del usuario.")
       setActionMessage({
         type: 'error',
         text: errorText,
       })
-      toast.error('Error de operación', errorText)
+      toast.error(t("Error de operación"), errorText)
     }
   }
 
@@ -306,8 +307,8 @@ export function UsersManagementPage() {
           <div className="flex items-center gap-2">
             <Shield className="h-5 w-5 text-blue-700" />
             <div>
-              <p className="text-sm font-bold text-blue-900">Institución activa</p>
-              <p className="text-xs text-blue-700">Gestionando usuarios de:</p>
+              <p className="text-sm font-bold text-blue-900">{t("Institución activa")}</p>
+              <p className="text-xs text-blue-700">{t("Gestionando usuarios de:")}</p>
             </div>
           </div>
           <select
@@ -328,12 +329,12 @@ export function UsersManagementPage() {
         <div>
           <div className="flex items-center gap-2">
             <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800">
-              <ArrowLeft className="h-4 w-4" /> Panel de Administración
+              <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
             </Link>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mt-1">Gestión de Usuarios</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-1">{t("Gestión de Usuarios")}</h1>
           <p className="text-sm text-gray-500">
-            Supervisa perfiles y administra los roles de la institución
+            {t("Supervisa perfiles y administra los roles de la institución")}
           </p>
         </div>
       </div>
@@ -355,24 +356,24 @@ export function UsersManagementPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="w-full sm:max-w-xs relative">
               <Input
-                placeholder="Buscar por nombre o correo..."
+                placeholder={t("Buscar por nombre o correo...")}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-                Filtrar por rol:
+                {t("Filtrar por rol:")}
               </span>
               <select
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:border-primary-500 focus:outline-none"
               >
-                <option value="all">Todos los roles</option>
-                <option value="estudiante">Estudiantes</option>
-                <option value="tutor">Tutores</option>
-                <option value="inst_admin">Administradores</option>
+                <option value="all">{t("Todos los roles")}</option>
+                <option value="estudiante">{t("Estudiantes")}</option>
+                <option value="tutor">{t("Tutores")}</option>
+                <option value="inst_admin">{t("Administradores")}</option>
               </select>
             </div>
           </div>
@@ -392,25 +393,25 @@ export function UsersManagementPage() {
             </colgroup>
             <thead className="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
               <tr>
-                <th className="px-4 py-3">Usuario</th>
-                <th className="px-4 py-3">Correo</th>
-                <th className="px-4 py-3">Roles</th>
-                <th className="px-4 py-3 text-center">Estado</th>
-                <th className="px-4 py-3">Registro</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
+                <th className="px-4 py-3">{t("Usuario")}</th>
+                <th className="px-4 py-3">{t("Correo")}</th>
+                <th className="px-4 py-3">{t("Roles")}</th>
+                <th className="px-4 py-3 text-center">{t("Estado")}</th>
+                <th className="px-4 py-3">{t("Registro")}</th>
+                <th className="px-4 py-3 text-right">{t("Acciones")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-500">
-                    Cargando usuarios...
+                    {t("Cargando usuarios...")}
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-gray-500">
-                    No se encontraron usuarios en esta institución.
+                    {t("No se encontraron usuarios en esta institución.")}
                   </td>
                 </tr>
               ) : (
@@ -427,8 +428,8 @@ export function UsersManagementPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3.5 text-xs text-gray-600">
-                      <p className="truncate" title={u.email || 'Sin correo'}>
-                        {u.email || <span className="text-gray-400">Sin correo</span>}
+                      <p className="truncate" title={u.email || t("Sin correo")}>
+                        {u.email || <span className="text-gray-400">{t("Sin correo")}</span>}
                       </p>
                     </td>
                     <td className="px-4 py-3.5">
@@ -440,27 +441,27 @@ export function UsersManagementPage() {
                               r
                             )}`}
                           >
-                            {r === 'inst_admin' ? 'Admin' : r}
+                            {r === 'inst_admin' ? t("Admin") : r}
                           </span>
                         ))}
                         {u.roles.length === 0 && (
-                          <span className="text-xs text-gray-400 whitespace-nowrap">Sin roles</span>
+                          <span className="text-xs text-gray-400 whitespace-nowrap">{t("Sin roles")}</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       {u.active ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
-                          <CheckCircle2 className="h-3 w-3" /> Activo
+                          <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
-                          <XCircle className="h-3 w-3" /> Inactivo
+                          <XCircle className="h-3 w-3" /> {t("Inactivo")}
                         </span>
                       )}
                     </td>
                     <td className="px-4 py-3.5 text-xs text-gray-400 whitespace-nowrap">
-                      {new Date(u.created_at).toLocaleDateString('es-ES', {
+                      {new Date(u.created_at).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
                         day: 'numeric',
@@ -472,19 +473,19 @@ export function UsersManagementPage() {
                           variant="secondary"
                           size="xs"
                           onClick={() => setViewingUser(u)}
-                          title="Ver detalles completos del usuario"
+                          title={t("Ver detalles completos del usuario")}
                         >
                           <Eye className="h-3.5 w-3.5 text-blue-600" />
-                          Ver
+                          {t("Ver")}
                         </Button>
                         <Button
                           variant="secondary"
                           size="xs"
                           onClick={() => handleOpenEdit(u)}
-                          title="Modificar roles del usuario"
+                          title={t("Modificar roles del usuario")}
                         >
                           <Settings className="h-3.5 w-3.5 text-gray-600" />
-                          Roles
+                          {t("Roles")}
                         </Button>
                         <Button
                           variant={u.active ? 'ghost' : 'secondary'}
@@ -495,10 +496,10 @@ export function UsersManagementPage() {
                               ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
                               : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
                           }
-                          title={u.active ? 'Desactivar acceso del usuario' : 'Activar acceso del usuario'}
+                          title={u.active ? t("Desactivar acceso del usuario") : t("Activar acceso del usuario")}
                         >
                           <Power className="h-3.5 w-3.5" />
-                          {u.active ? 'Desactivar' : 'Activar'}
+                          {u.active ? t("Desactivar") : t("Activar")}
                         </Button>
                       </div>
                     </td>
@@ -529,14 +530,14 @@ export function UsersManagementPage() {
                     {viewingUser.first_name} {viewingUser.last_name}
                   </h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-gray-500">{viewingUser.email || 'Sin correo electrónico'}</p>
+                    <p className="text-xs text-gray-500">{viewingUser.email || t("Sin correo electrónico")}</p>
                     {viewingUser.active ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
-                        <CheckCircle2 className="h-3 w-3" /> Activo
+                        <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                       </span>
                     ) : (
                       <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
-                        <XCircle className="h-3 w-3" /> Desactivado
+                        <XCircle className="h-3 w-3" /> {t("Desactivado")}
                       </span>
                     )}
                   </div>
@@ -555,30 +556,30 @@ export function UsersManagementPage() {
               <div className="rounded-lg border border-gray-100 bg-gray-50/70 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Institución:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Institución:")}</span>
                   <span className="font-semibold text-gray-900">
                     {institutions.find((i) => i.id === viewingUser.institution_id)?.name ||
-                      'Institución no especificada'}
+                      t("Institución no especificada")}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Mail className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Correo:</span>
-                  <span className="text-gray-800">{viewingUser.email || 'No registrado'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Correo:")}</span>
+                  <span className="text-gray-800">{viewingUser.email || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Phone className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Teléfono:</span>
-                  <span className="text-gray-800">{viewingUser.phone || 'No registrado'}</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Teléfono:")}</span>
+                  <span className="text-gray-800">{viewingUser.phone || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">Fecha de Registro:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("Fecha de Registro:")}</span>
                   <span className="text-gray-800">
-                    {new Date(viewingUser.created_at).toLocaleDateString('es-ES', {
+                    {new Date(viewingUser.created_at).toLocaleDateString(locale, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -587,14 +588,14 @@ export function UsersManagementPage() {
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-xs text-gray-400 font-medium">ID de Usuario:</span>
+                  <span className="text-xs text-gray-400 font-medium">{t("ID de Usuario:")}</span>
                   <p className="font-mono text-xs text-gray-500 select-all mt-0.5">{viewingUser.id}</p>
                 </div>
               </div>
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
-                  Roles Asignados en la Institución
+                  {t("Roles Asignados en la Institución")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {viewingUser.roles.map((r) => (
@@ -605,11 +606,11 @@ export function UsersManagementPage() {
                       )}`}
                     >
                       <UserCheck className="h-3.5 w-3.5" />
-                      {r === 'inst_admin' ? 'Administrador' : r}
+                      {r === 'inst_admin' ? t("Administrador") : r}
                     </span>
                   ))}
                   {viewingUser.roles.length === 0 && (
-                    <span className="text-xs text-gray-400 italic">No tiene roles activos asignados</span>
+                    <span className="text-xs text-gray-400 italic">{t("No tiene roles activos asignados")}</span>
                   )}
                 </div>
               </div>
@@ -620,7 +621,7 @@ export function UsersManagementPage() {
                 variant="ghost"
                 onClick={() => setViewingUser(null)}
               >
-                Cerrar
+                {t("Cerrar")}
               </Button>
               <Button
                 variant={viewingUser.active ? 'secondary' : 'primary'}
@@ -638,7 +639,7 @@ export function UsersManagementPage() {
                 }
               >
                 <Power className="h-3.5 w-3.5 mr-1" />
-                {viewingUser.active ? 'Desactivar Cuenta' : 'Activar Cuenta'}
+                {viewingUser.active ? t("Desactivar Cuenta") : t("Activar Cuenta")}
               </Button>
               <Button
                 variant="primary"
@@ -649,7 +650,7 @@ export function UsersManagementPage() {
                 }}
               >
                 <Settings className="h-3.5 w-3.5 mr-1" />
-                Modificar Roles
+                {t("Modificar Roles")}
               </Button>
             </div>
           </div>
@@ -660,7 +661,7 @@ export function UsersManagementPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
             <h3 className="text-lg font-bold text-gray-900">
-              Modificar Roles
+              {t("Modificar Roles")}
             </h3>
             <p className="mt-1 text-sm text-gray-500">
               {editingUser.first_name} {editingUser.last_name} ({editingUser.email})
@@ -695,7 +696,7 @@ export function UsersManagementPage() {
 
             {!editingUser.roles.includes('inst_admin') && (
               <p className="mt-3 text-[11px] text-gray-500 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
-                Los roles de administración institucional no pueden asignarse a tutores o estudiantes. Se configuran al dar de alta la institución.
+                {t("Los roles de administración institucional no pueden asignarse a tutores o estudiantes. Se configuran al dar de alta la institución.")}
               </p>
             )}
 
@@ -705,14 +706,14 @@ export function UsersManagementPage() {
                 onClick={() => setEditingUser(null)}
                 disabled={isSavingRoles}
               >
-                Cancelar
+                {t("Cancelar")}
               </Button>
               <Button
                 variant="primary"
                 onClick={handleSaveRoles}
                 isLoading={isSavingRoles}
               >
-                Guardar Cambios
+                {t("Guardar Cambios")}
               </Button>
             </div>
           </div>
