@@ -127,9 +127,9 @@ export function DashboardPage() {
           id: 'student-search',
           label: t("Buscar Tutores"),
           icon: Search,
-          href: '/tutors',
-          available: false,
-          badgeText: t("Próximamente"),
+          href: '/tutores',
+          available: true,
+          badgeText: t("Disponible"),
           description: t("Encuentra tutores calificados por materia"),
         },
         {

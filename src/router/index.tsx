@@ -13,6 +13,9 @@ import { TutorRoute } from '@/modules/tutor/components/TutorRoute'
 import { TutorSubjectsPage } from '@/modules/tutor/pages/TutorSubjectsPage'
 import { TutorSubjectDetailPage } from '@/modules/tutor/pages/TutorSubjectDetailPage'
 import { TutorSessionsPage } from '@/modules/tutor/pages/TutorSessionsPage'
+import { StudentRoute } from '@/modules/student/components/StudentRoute'
+import { TutorSearchPage } from '@/modules/student/pages/TutorSearchPage'
+import { TutorProfilePage } from '@/modules/student/pages/TutorProfilePage'
 import { PublicLayout } from '@/shared/layouts/PublicLayout'
 import { AppLayout } from '@/shared/layouts/AppLayout'
 import { NotFoundPage } from '@/shared/pages/NotFoundPage'
@@ -40,6 +43,13 @@ const router = createBrowserRouter([
               { path: '/tutor/sesiones', element: <TutorSessionsPage /> },
               { path: '/tutor/materias', element: <TutorSubjectsPage /> },
               { path: '/tutor/materias/:subjectId', element: <TutorSubjectDetailPage /> },
+            ],
+          },
+          {
+            element: <StudentRoute />,
+            children: [
+              { path: '/tutores', element: <TutorSearchPage /> },
+              { path: '/tutores/:tutorId', element: <TutorProfilePage /> },
             ],
           },
           {

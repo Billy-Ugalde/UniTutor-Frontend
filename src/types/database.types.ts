@@ -289,12 +289,97 @@ export interface Database {
           created_at?: string
         }
       }
+
+      tutoring_requests: {
+        Row: {
+          id: string
+          session_id: string
+          student_id: string
+          tutor_id: string
+          subject_id: string
+          institution_id: string
+          message: string | null
+          status: 'pendiente' | 'aceptada' | 'rechazada' | 'cancelada'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          student_id: string
+          tutor_id: string
+          subject_id: string
+          institution_id: string
+          message?: string | null
+          status?: 'pendiente' | 'aceptada' | 'rechazada' | 'cancelada'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          student_id?: string
+          tutor_id?: string
+          subject_id?: string
+          institution_id?: string
+          message?: string | null
+          status?: 'pendiente' | 'aceptada' | 'rechazada' | 'cancelada'
+          created_at?: string
+        }
+      }
+
+      notifications: {
+        Row: {
+          id: string
+          user_id: string
+          type: string
+          request_id: string | null
+          payload: Json
+          read: boolean
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          type: string
+          request_id?: string | null
+          payload?: Json
+          read?: boolean
+          created_at?: string
+        }
+        Update: {
+          read?: boolean
+        }
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_tutors: {
+        Args: {
+          p_query?: string | null
+          p_institution_id?: string | null
+          p_course_id?: string | null
+          p_subject_id?: string | null
+          p_only_available?: boolean
+          p_tutor_id?: string | null
+        }
+        Returns: TutorSearchRow[]
+      }
+      get_tutor_availability: {
+        Args: {
+          p_tutor_id: string
+          p_institution_id?: string | null
+          p_subject_id?: string | null
+        }
+        Returns: TutorSlotRow[]
+      }
+      create_tutoring_request: {
+        Args: {
+          p_session_id: string
+          p_message?: string | null
+        }
+        Returns: { request_id: string; status: TutoringRequestStatus; success: boolean }
+      }
     }
     Enums: {
       user_role: UserRole
@@ -311,5 +396,56 @@ export type Subject = Database['public']['Tables']['subjects']['Row']
 export type InstitutionSubject = Database['public']['Tables']['institution_subjects']['Row']
 export type TutorSubject = Database['public']['Tables']['tutor_subjects']['Row']
 export type TutoringSession = Database['public']['Tables']['tutoring_sessions']['Row']
+export type TutoringRequest = Database['public']['Tables']['tutoring_requests']['Row']
+export type AppNotification = Database['public']['Tables']['notifications']['Row']
 export type SessionModality = 'virtual' | 'presencial' | 'hibrida'
 export type SessionStatus = 'programada' | 'en_curso' | 'completada' | 'cancelada'
+export type TutoringRequestStatus = 'pendiente' | 'aceptada' | 'rechazada' | 'cancelada'
+
+export interface TutorSearchSubject {
+  id: string
+  name: string
+  code: string
+  course_id: string | null
+  course_name: string | null
+  career_name: string | null
+}
+
+export interface TutorSearchRow {
+  tutor_id: string
+  first_name: string
+  last_name: string
+  avatar_url: string | null
+  institution_id: string
+  institution_name: string
+  subjects: TutorSearchSubject[]
+  upcoming_slots: number
+}
+
+export interface TutorSlotRow {
+  session_id: string
+  subject_id: string
+  subject_name: string
+  subject_code: string
+  title: string
+  description: string | null
+  session_date: string
+  start_time: string
+  end_time: string
+  modality: SessionModality
+  max_students: number
+  taken_spots: number
+  available_spots: number
+  my_request_status: 'pendiente' | 'aceptada' | null
+}
+
+export interface NewRequestNotificationPayload {
+  student_name?: string
+  subject_name?: string
+  subject_code?: string
+  session_title?: string
+  date?: string
+  start_time?: string
+  end_time?: string
+  message?: string | null
+}
