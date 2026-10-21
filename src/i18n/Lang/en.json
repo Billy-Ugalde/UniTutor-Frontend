@@ -727,5 +727,20 @@
   "Estado de respuesta inválido.": "Invalid response status.",
   "La sesión no está disponible.": "The session is not available.",
   "La sesión ya no admite respuestas.": "The session no longer accepts responses.",
-  "La sesión ya no tiene cupos disponibles.": "The session has no available places."
+  "La sesión ya no tiene cupos disponibles.": "The session has no available places.",
+  "¿Deseas cancelar esta solicitud pendiente? Podrás volver a solicitar otro horario disponible.": "Do you want to cancel this pending request? You can request another available time slot later.",
+  "Confirmar cancelación": "Confirm cancellation",
+  "Volver": "Back",
+  "Cancelar solicitud": "Cancel request",
+  "Solicitud cancelada": "Request cancelled",
+  "Tu solicitud de tutoría fue cancelada correctamente.": "Your tutoring request was successfully cancelled.",
+  "No se pudo cancelar la solicitud": "Could not cancel the request",
+  "No tienes permiso para cancelar esta solicitud.": "You do not have permission to cancel this request.",
+  "La sesión ya no admite cancelaciones.": "The session no longer accepts cancellations.",
+  "Buscar por materia, código, título o estudiante...": "Search by subject, code, title or student...",
+  "Buscar por materia, código, título o tutor...": "Search by subject, code, title or tutor...",
+  "Limpiar búsqueda": "Clear search",
+  "Filtrar por estado de la sesión": "Filter by session status",
+  "Filtrar por modalidad": "Filter by modality",
+  "Todas las modalidades": "All modalities"
 }

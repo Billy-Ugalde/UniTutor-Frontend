@@ -7,7 +7,15 @@ const file = 'src/modules/requests/utils/request-state.ts'
 const js = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.ESNext },
 }).outputText
-const { canRespond, isConfirmed, safeMeetingUrl, requestLoadErrorKey } = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`)
+const {
+  canCancel,
+  canRespond,
+  filterConfirmedSessions,
+  isConfirmed,
+  matchesRequestQuery,
+  requestLoadErrorKey,
+  safeMeetingUrl,
+} = await import(`data:text/javascript;base64,${Buffer.from(js).toString('base64')}`)
 
 test('a missing requests API is reported as unavailable instead of an empty inbox', () => {
   assert.equal(requestLoadErrorKey({ code: 'PGRST202' }), 'El módulo de solicitudes todavía no está habilitado. Contacta al administrador.')
@@ -17,17 +25,21 @@ test('a missing requests API is reported as unavailable instead of an empty inbo
   }
 })
 
-test('only pending requests for future scheduled sessions can be answered', () => {
+test('only pending requests for future scheduled sessions can be answered or cancelled', () => {
   const now = new Date('2026-10-20T12:00:00-06:00')
   const row = { status: 'pendiente', session_status: 'programada', session_date: '2026-10-21', start_time: '12:00:00' }
   assert.equal(canRespond(row, now), true)
+  assert.equal(canCancel(row, now), true)
   for (const status of ['aceptada', 'rechazada', 'cancelada']) {
     assert.equal(canRespond({ ...row, status }, now), false)
+    assert.equal(canCancel({ ...row, status }, now), false)
   }
   for (const session_status of ['cancelada', 'completada', 'en_curso']) {
     assert.equal(canRespond({ ...row, session_status }, now), false)
+    assert.equal(canCancel({ ...row, session_status }, now), false)
   }
   assert.equal(canRespond({ ...row, session_date: '2026-10-20', start_time: '12:00:00' }, now), false)
+  assert.equal(canCancel({ ...row, session_date: '2026-10-20', start_time: '12:00:00' }, now), false)
 })
 
 test('cancelled sessions and unaccepted requests are not confirmed', () => {
@@ -41,4 +53,41 @@ test('meeting links permit only absolute HTTP and HTTPS URLs', () => {
   for (const url of ['javascript:alert(1)', 'data:text/html,test', '/local', 'Aula 12', '']) {
     assert.equal(safeMeetingUrl(url), null)
   }
+})
+
+test('search query matches subject, code, title, counterpart name, and message', () => {
+  const item = {
+    subject_name: 'Cálculo Diferencial',
+    subject_code: 'MA-1001',
+    title: 'Repaso Parcial 1',
+    tutor_name: 'Ana Gómez',
+    student_name: 'Carlos Ruiz',
+    message: 'Dudas con derivadas implícitas',
+  }
+  assert.equal(matchesRequestQuery(item, '', false), true)
+  assert.equal(matchesRequestQuery(item, 'ma-1001', false), true)
+  assert.equal(matchesRequestQuery(item, 'ana gómez', false), true)
+  assert.equal(matchesRequestQuery(item, 'carlos', false), false)
+  assert.equal(matchesRequestQuery(item, 'carlos', true), true)
+  assert.equal(matchesRequestQuery(item, 'derivadas', false), true)
+})
+
+test('filterConfirmedSessions filters by session status, modality, and query', () => {
+  const base = {
+    subject_name: 'Álgebra Lineal',
+    subject_code: 'MA-1004',
+    title: 'Vectores y Matrices',
+    tutor_name: 'Luis Pérez',
+    student_name: 'María Solís',
+    message: null,
+  }
+  const rows = [
+    { ...base, status: 'aceptada', session_status: 'programada', modality: 'virtual' },
+    { ...base, title: 'Laboratorio Presencial', status: 'aceptada', session_status: 'completada', modality: 'presencial' },
+    { ...base, status: 'pendiente', session_status: 'programada', modality: 'virtual' },
+  ]
+  assert.equal(filterConfirmedSessions(rows, {}).length, 2)
+  assert.equal(filterConfirmedSessions(rows, { sessionStatus: 'programada' }).length, 1)
+  assert.equal(filterConfirmedSessions(rows, { modality: 'presencial' }).length, 1)
+  assert.equal(filterConfirmedSessions(rows, { query: 'laboratorio' }).length, 1)
 })

@@ -727,5 +727,20 @@
   "Estado de respuesta inválido.": "Estado de respuesta inválido.",
   "La sesión no está disponible.": "La sesión no está disponible.",
   "La sesión ya no admite respuestas.": "La sesión ya no admite respuestas.",
-  "La sesión ya no tiene cupos disponibles.": "La sesión ya no tiene cupos disponibles."
+  "La sesión ya no tiene cupos disponibles.": "La sesión ya no tiene cupos disponibles.",
+  "¿Deseas cancelar esta solicitud pendiente? Podrás volver a solicitar otro horario disponible.": "¿Deseas cancelar esta solicitud pendiente? Podrás volver a solicitar otro horario disponible.",
+  "Confirmar cancelación": "Confirmar cancelación",
+  "Volver": "Volver",
+  "Cancelar solicitud": "Cancelar solicitud",
+  "Solicitud cancelada": "Solicitud cancelada",
+  "Tu solicitud de tutoría fue cancelada correctamente.": "Tu solicitud de tutoría fue cancelada correctamente.",
+  "No se pudo cancelar la solicitud": "No se pudo cancelar la solicitud",
+  "No tienes permiso para cancelar esta solicitud.": "No tienes permiso para cancelar esta solicitud.",
+  "La sesión ya no admite cancelaciones.": "La sesión ya no admite cancelaciones.",
+  "Buscar por materia, código, título o estudiante...": "Buscar por materia, código, título o estudiante...",
+  "Buscar por materia, código, título o tutor...": "Buscar por materia, código, título o tutor...",
+  "Limpiar búsqueda": "Limpiar búsqueda",
+  "Filtrar por estado de la sesión": "Filtrar por estado de la sesión",
+  "Filtrar por modalidad": "Filtrar por modalidad",
+  "Todas las modalidades": "Todas las modalidades"
 }

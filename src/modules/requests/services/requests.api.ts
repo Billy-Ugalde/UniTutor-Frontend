@@ -33,3 +33,29 @@ export async function respondToRequest(id: string, status: 'aceptada' | 'rechaza
   if (error) throw error
   if (!data?.success) throw new Error('No se pudo guardar la respuesta.')
 }
+
+export async function cancelRequest(id: string): Promise<void> {
+  const { data, error } = await supabase.rpc('cancel_tutoring_request', {
+    p_request_id: id,
+  })
+
+  if (error) {
+    const code = typeof error === 'object' && 'code' in error ? error.code : undefined
+    if (code === 'PGRST202' || code === '42883') {
+      const { data: updated, error: updateError } = await supabase
+        .from('tutoring_requests')
+        .update({ status: 'cancelada' })
+        .eq('id', id)
+        .eq('status', 'pendiente')
+        .select('id')
+        .maybeSingle()
+
+      if (updateError) throw updateError
+      if (!updated) throw new Error('La solicitud ya fue respondida o cancelada.')
+      return
+    }
+    throw error
+  }
+
+  if (!data?.success) throw new Error('No se pudo cancelar la solicitud.')
+}
