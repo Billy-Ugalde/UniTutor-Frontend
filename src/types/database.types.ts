@@ -354,6 +354,14 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
+      get_my_tutoring_requests: {
+        Args: { p_as_tutor?: boolean }
+        Returns: Json
+      }
+      respond_tutoring_request: {
+        Args: { p_request_id: string; p_status: 'aceptada' | 'rechazada' }
+        Returns: { request_id: string; status: TutoringRequestStatus; success: boolean }
+      }
       search_tutors: {
         Args: {
           p_query?: string | null

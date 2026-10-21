@@ -226,28 +226,48 @@ export function TutorProfilePage() {
             {t("Elige un día del calendario y selecciona el horario que prefieras.")}
           </p>
         </div>
-
-        {tutor.subjects.length > 1 && (
-          <div className="w-full sm:w-64">
-            <label htmlFor="profile-subject-filter" className="mb-1 block text-xs font-semibold uppercase tracking-wider text-gray-600">
-              {t("Materia")}
-            </label>
-            <select
-              id="profile-subject-filter"
-              value={subjectFilter}
-              onChange={(event) => setSubjectFilter(event.target.value)}
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            >
-              <option value="">{t("Todas las materias")}</option>
-              {tutor.subjects.map((subject) => (
-                <option key={subject.id} value={subject.id}>
-                  {subject.code} - {subject.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
       </div>
+
+      {tutor.subjects.length > 1 && (
+        <div role="group" aria-label={t("Filtrar horarios por materia")} className="space-y-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-gray-600">
+            {t("Filtrar horarios por materia")}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {[{ id: '', label: t("Todas las materias"), count: slots.length }].concat(
+              tutor.subjects.map((subject) => ({
+                id: subject.id,
+                label: `${subject.code} · ${subject.name}`,
+                count: slots.filter((slot) => slot.subject_id === subject.id).length,
+              })),
+            ).map((option) => {
+              const isActive = subjectFilter === option.id
+              return (
+                <button
+                  key={option.id || 'all'}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setSubjectFilter(option.id)}
+                  className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    isActive
+                      ? 'border-primary-600 bg-primary-600 text-white'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-primary-400 hover:bg-primary-50'
+                  }`}
+                >
+                  {option.label}
+                  <span
+                    className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
+                      isActive ? 'bg-white/25 text-white' : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {option.count}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {visibleSlots.length === 0 ? (
         <Card className="p-12 text-center">
@@ -311,15 +331,15 @@ export function TutorProfilePage() {
 
                     <div className="shrink-0">
                       {slot.my_request_status === 'pendiente' ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+                        <Link to="/solicitudes" className="inline-flex items-center gap-1.5 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800 hover:bg-amber-100">
                           <Hourglass className="h-4 w-4" />
                           {t("Solicitud pendiente")}
-                        </span>
+                        </Link>
                       ) : slot.my_request_status === 'aceptada' ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs font-semibold text-green-800">
+                        <Link to="/sesiones" className="inline-flex items-center gap-1.5 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-xs font-semibold text-green-800 hover:bg-green-100">
                           <CheckCircle2 className="h-4 w-4" />
                           {t("Solicitud aceptada")}
-                        </span>
+                        </Link>
                       ) : isFull ? (
                         <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-500">
                           {t("Sin cupos")}

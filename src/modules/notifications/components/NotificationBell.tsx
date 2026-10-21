@@ -1,5 +1,6 @@
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Bell, CheckCheck, ClipboardList } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { toast } from '@/shared/store/toast.store'
@@ -11,6 +12,7 @@ export function NotificationBell() {
   const { profile, hasRole } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const navigate = useNavigate()
 
   const isTutor = hasRole('tutor')
 
@@ -114,6 +116,8 @@ export function NotificationBell() {
                       type="button"
                       onClick={() => {
                         if (!notification.read) void markAsRead(notification.id)
+                        setIsOpen(false)
+                        navigate('/tutor/solicitudes')
                       }}
                       className={`flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-gray-50 cursor-pointer ${
                         notification.read ? '' : 'bg-primary-50/50'

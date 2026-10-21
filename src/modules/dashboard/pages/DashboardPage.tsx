@@ -113,9 +113,9 @@ export function DashboardPage() {
           id: 'tutor-requests',
           label: t("Solicitudes Recibidas"),
           icon: ClipboardList,
-          href: '/requests',
-          available: false,
-          badgeText: t("Próximamente"),
+          href: '/tutor/solicitudes',
+          available: true,
+          badgeText: t("Disponible"),
           description: t("Revisa y responde a solicitudes de estudiantes"),
         }
       )
@@ -136,18 +136,18 @@ export function DashboardPage() {
           id: 'student-requests',
           label: t("Mis Solicitudes"),
           icon: ClipboardList,
-          href: '/requests',
-          available: false,
-          badgeText: t("Próximamente"),
+          href: '/solicitudes',
+          available: true,
+          badgeText: t("Disponible"),
           description: t("Estado de tus solicitudes de tutoría enviadas"),
         },
         {
           id: 'student-sessions',
           label: t("Mis Sesiones de Tutoría"),
           icon: BookOpen,
-          href: '/sessions',
-          available: false,
-          badgeText: t("Próximamente"),
+          href: '/sesiones',
+          available: true,
+          badgeText: t("Disponible"),
           description: t("Horarios de tus tutorías confirmadas"),
         }
       )

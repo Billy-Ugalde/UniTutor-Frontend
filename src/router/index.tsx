@@ -7,6 +7,7 @@ import { AdminRoute } from '@/modules/admin/components/AdminRoute'
 import { AdminDashboardPage } from '@/modules/admin/pages/AdminDashboardPage'
 import { InstitutionsManagementPage } from '@/modules/admin/pages/InstitutionsManagementPage'
 import { UsersManagementPage } from '@/modules/admin/pages/UsersManagementPage'
+import { TutorsManagementPage } from '@/modules/admin/pages/TutorsManagementPage'
 import { SubjectsManagementPage } from '@/modules/admin/pages/SubjectsManagementPage'
 import { LandingPage } from '@/modules/landing/pages/LandingPage'
 import { TutorRoute } from '@/modules/tutor/components/TutorRoute'
@@ -19,6 +20,7 @@ import { TutorProfilePage } from '@/modules/student/pages/TutorProfilePage'
 import { PublicLayout } from '@/shared/layouts/PublicLayout'
 import { AppLayout } from '@/shared/layouts/AppLayout'
 import { NotFoundPage } from '@/shared/pages/NotFoundPage'
+import { RequestsPage } from '@/modules/requests/pages/RequestsPage'
 
 const router = createBrowserRouter([
   { path: '/', element: <LandingPage /> },
@@ -41,6 +43,7 @@ const router = createBrowserRouter([
             children: [
               { path: '/tutor', element: <Navigate to="/tutor/sesiones" replace /> },
               { path: '/tutor/sesiones', element: <TutorSessionsPage /> },
+              { path: '/tutor/solicitudes', element: <RequestsPage key="tutor-requests" asTutor /> },
               { path: '/tutor/materias', element: <TutorSubjectsPage /> },
               { path: '/tutor/materias/:subjectId', element: <TutorSubjectDetailPage /> },
             ],
@@ -49,6 +52,8 @@ const router = createBrowserRouter([
             element: <StudentRoute />,
             children: [
               { path: '/tutores', element: <TutorSearchPage /> },
+              { path: '/solicitudes', element: <RequestsPage key="student-requests" /> },
+              { path: '/sesiones', element: <RequestsPage key="student-sessions" sessionsOnly /> },
               { path: '/tutores/:tutorId', element: <TutorProfilePage /> },
             ],
           },
@@ -58,6 +63,7 @@ const router = createBrowserRouter([
               { path: '/admin', element: <AdminDashboardPage /> },
               { path: '/admin/institutions', element: <InstitutionsManagementPage /> },
               { path: '/admin/users', element: <UsersManagementPage /> },
+              { path: '/admin/tutors', element: <TutorsManagementPage /> },
               { path: '/admin/subjects', element: <SubjectsManagementPage /> },
             ],
           },

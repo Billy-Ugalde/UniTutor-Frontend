@@ -1,6 +1,6 @@
 import { useTranslations } from '@/i18n/useTranslations'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { GraduationCap, Shield, LogOut, BookOpen, Calendar, Search } from 'lucide-react'
+import { GraduationCap, Shield, LogOut, BookOpen, Calendar, Search, ClipboardList } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { LanguageSelector } from '@/shared/components/LanguageSelector'
 import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
@@ -70,6 +70,16 @@ export function AppLayout() {
               </Link>
             )}
           </nav>
+
+          {(hasRole('tutor') || hasRole('estudiante')) && (
+            <nav aria-label={t('Solicitudes y confirmaciones')} className="order-last flex w-full flex-wrap gap-4 border-t border-gray-100 pt-3 text-sm font-medium text-gray-600">
+              {hasRole('tutor') && <Link to="/tutor/solicitudes" className="inline-flex items-center gap-1.5 hover:text-primary-700"><ClipboardList className="h-4 w-4" />{t('Solicitudes Recibidas')}</Link>}
+              {hasRole('estudiante') && <>
+                <Link to="/solicitudes" className="inline-flex items-center gap-1.5 hover:text-primary-700"><ClipboardList className="h-4 w-4" />{t('Mis Solicitudes')}</Link>
+                <Link to="/sesiones" className="inline-flex items-center gap-1.5 hover:text-primary-700"><Calendar className="h-4 w-4" />{t('Mis Sesiones de Tutoría')}</Link>
+              </>}
+            </nav>
+          )}
 
           <div className="flex items-center gap-3">
             <LanguageSelector />

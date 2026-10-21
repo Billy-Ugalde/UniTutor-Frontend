@@ -77,10 +77,12 @@ export function useTutorNotifications({ userId, enabled, onNew }: UseTutorNotifi
       if (document.visibilityState === 'visible') void load()
     }
     document.addEventListener('visibilitychange', refreshWhenVisible)
+    window.addEventListener('tutoring-requests-updated', refreshWhenVisible)
 
     return () => {
       clearTimeout(initialLoad)
       document.removeEventListener('visibilitychange', refreshWhenVisible)
+      window.removeEventListener('tutoring-requests-updated', refreshWhenVisible)
       void supabase.removeChannel(channel)
     }
   }, [enabled, userId, load])

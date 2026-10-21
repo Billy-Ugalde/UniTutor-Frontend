@@ -2,7 +2,6 @@ import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, CalendarClock, CalendarX2, Building2, SearchX, ArrowRight } from 'lucide-react'
-import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Card } from '@/shared/components/ui/Card'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
@@ -24,10 +23,8 @@ const SELECT_CLASS =
 
 export function TutorSearchPage() {
   const { t } = useTranslations()
-  const { profile } = useAuth()
-
   const [catalog, setCatalog] = useState<SearchCatalog | null>(null)
-  const [filtersReady, setFiltersReady] = useState(false)
+  const filtersReady = catalog !== null
 
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')
@@ -61,16 +58,6 @@ export function TutorSearchPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  // El filtro de institución arranca en la institución del estudiante.
-  useEffect(() => {
-    if (!catalog || !profile || filtersReady) return
-    const own = profile.institution_id
-    if (own && catalog.institutions.some((inst) => inst.id === own)) {
-      setInstitutionId(own)
-    }
-    setFiltersReady(true)
-  }, [catalog, profile, filtersReady])
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -148,7 +135,7 @@ export function TutorSearchPage() {
   }, [catalog, offeredBySelectedInstitution, courseId])
 
   const hasActiveFilters = Boolean(
-    queryInput.trim() || courseId || subjectId || onlyAvailable || institutionId !== (profile?.institution_id ?? ''),
+    queryInput.trim() || courseId || subjectId || onlyAvailable || institutionId,
   )
 
   const clearFilters = () => {
@@ -157,11 +144,7 @@ export function TutorSearchPage() {
     setCourseId('')
     setSubjectId('')
     setOnlyAvailable(false)
-    setInstitutionId(
-      catalog?.institutions.some((inst) => inst.id === profile?.institution_id)
-        ? (profile?.institution_id ?? '')
-        : '',
-    )
+    setInstitutionId('')
     setPage(1)
   }
 
