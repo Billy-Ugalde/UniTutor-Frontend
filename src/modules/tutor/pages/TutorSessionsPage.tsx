@@ -229,6 +229,26 @@ export function TutorSessionsPage() {
 
     setIsSubmitting(true)
     try {
+      const { data: overlappingSessions, error: overlapError } = await supabase
+        .from('tutoring_sessions')
+        .select('id, title, start_time, end_time')
+        .eq('tutor_id', tutorId)
+        .eq('date', sessionForm.date)
+        .neq('status', 'cancelada')
+        .lt('start_time', sessionForm.endTime)
+        .gt('end_time', sessionForm.startTime)
+
+      if (overlapError) throw overlapError
+
+      const conflict = overlappingSessions?.find((s) => !editingSession || s.id !== editingSession.id)
+      if (conflict) {
+        toast.warning(
+          t("Conflicto de horario"),
+          t("Ya tienes una tutoría programada en ese rango horario.")
+        )
+        return
+      }
+
       if (editingSession) {
         const { error } = await supabase
           .from('tutoring_sessions')
@@ -270,9 +290,13 @@ export function TutorSessionsPage() {
 
       setIsSessionModalOpen(false)
       await loadData()
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Error al guardar sesión de tutoría:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al guardar la tutoría.')
+      const message =
+        err instanceof Error
+          ? err.message
+          : (err as { message?: string })?.message || t("Error al guardar la tutoría.")
+      toast.error(t("Error"), message)
     } finally {
       setIsSubmitting(false)
     }
@@ -453,7 +477,7 @@ export function TutorSessionsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            {t("Mis Tutorías Impartidas")}
+            {t("Mis Tutorías")}
           </h1>
           <p className="mt-1 text-sm text-gray-500">
             {t("Agenda general y control de todas tus sesiones de tutoría en tus materias habilitadas.")}
@@ -576,7 +600,7 @@ export function TutorSessionsPage() {
 
       {isLoading ? (
         <div className="py-12 text-center text-gray-500">
-          Cargando agenda de tutorías...
+          {t("Cargando agenda de tutorías...")}
         </div>
       ) : filteredSessions.length === 0 ? (
         <Card className="p-12 text-center">
@@ -802,7 +826,7 @@ export function TutorSessionsPage() {
                 </label>
                 <Input
                   required
-                  placeholder="Ej: Repaso para Examen Parcial 1, Taller de Ejercicios..."
+                  placeholder={t("Ej: Repaso para Examen Parcial 1, Taller de Ejercicios...")}
                   value={sessionForm.title}
                   onChange={(e) => setSessionForm({ ...sessionForm, title: e.target.value })}
                 />
@@ -814,7 +838,7 @@ export function TutorSessionsPage() {
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Temas específicos a repasar, materiales requeridos..."
+                  placeholder={t("Temas específicos a repasar, materiales requeridos...")}
                   value={sessionForm.description}
                   onChange={(e) => setSessionForm({ ...sessionForm, description: e.target.value })}
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"

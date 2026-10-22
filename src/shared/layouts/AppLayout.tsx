@@ -22,7 +22,7 @@ export function AppLayout() {
     <div className="flex min-h-screen flex-col bg-gray-50">
       <header className="border-b border-gray-200 bg-white shadow-sm">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
-          <Link to="/dashboard" className="flex items-center gap-2">
+          <Link to="/" className="flex items-center gap-2">
             <GraduationCap className="h-6 w-6 text-primary-600" />
             <span className="text-xl font-bold text-primary-700">UniTutor</span>
           </Link>
