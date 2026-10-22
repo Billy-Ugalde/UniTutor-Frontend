@@ -150,6 +150,15 @@ export function AdminDashboardPage() {
       href: '/admin/users',
     },
     {
+      id: 'tutors',
+      label: t("Gestión de Tutores"),
+      icon: UserCheck,
+      badge: t("Disponible"),
+      description:
+        t("Consulta los tutores de la institución con filtros y elimina el rol de tutor. No permite editar su información."),
+      href: '/admin/tutors',
+    },
+    {
       id: 'subjects',
       label: t("Catálogo de Materias"),
       icon: BookOpen,

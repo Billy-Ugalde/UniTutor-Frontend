@@ -1,8 +1,9 @@
 import { useTranslations } from '@/i18n/useTranslations'
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { GraduationCap, Shield, LogOut, BookOpen, Calendar } from 'lucide-react'
+import { GraduationCap, Shield, LogOut, BookOpen, Calendar, Search, ClipboardList } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { LanguageSelector } from '@/shared/components/LanguageSelector'
+import { NotificationBell } from '@/modules/notifications/components/NotificationBell'
 
 export function AppLayout() {
   const { t } = useTranslations()
@@ -51,6 +52,15 @@ export function AppLayout() {
               </>
             )}
 
+            {hasRole('estudiante') && (
+              <Link
+                to="/tutores"
+                className="text-sm font-medium text-amber-700 hover:text-amber-900 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Search className="h-4 w-4 text-amber-600" /> {t("Buscar Tutores")}
+              </Link>
+            )}
+
             {(hasRole('inst_admin') || isSuperAdmin) && (
               <Link
                 to="/admin"
@@ -61,8 +71,19 @@ export function AppLayout() {
             )}
           </nav>
 
+          {(hasRole('tutor') || hasRole('estudiante')) && (
+            <nav aria-label={t('Solicitudes y confirmaciones')} className="order-last flex w-full flex-wrap gap-4 border-t border-gray-100 pt-3 text-sm font-medium text-gray-600">
+              {hasRole('tutor') && <Link to="/tutor/solicitudes" className="inline-flex items-center gap-1.5 hover:text-primary-700"><ClipboardList className="h-4 w-4" />{t('Solicitudes Recibidas')}</Link>}
+              {hasRole('estudiante') && <>
+                <Link to="/solicitudes" className="inline-flex items-center gap-1.5 hover:text-primary-700"><ClipboardList className="h-4 w-4" />{t('Mis Solicitudes')}</Link>
+                <Link to="/sesiones" className="inline-flex items-center gap-1.5 hover:text-primary-700"><Calendar className="h-4 w-4" />{t('Mis Sesiones de Tutoría')}</Link>
+              </>}
+            </nav>
+          )}
+
           <div className="flex items-center gap-3">
             <LanguageSelector />
+            <NotificationBell />
             <div className="hidden flex-col items-end sm:flex">
               <span className="text-sm font-medium text-gray-900">{fullName}</span>
               <span className="text-xs text-gray-500">
