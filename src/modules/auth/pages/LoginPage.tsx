@@ -12,7 +12,7 @@ import { toast } from '@/shared/store/toast.store'
 
 export function LoginPage() {
   const { t } = useTranslations()
-  const { signIn } = useAuth()
+  const { signIn, isAuthenticated, isLoading: isAuthLoading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -27,6 +27,23 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [showResendConfirmation, setShowResendConfirmation] = useState(false)
   const [isResending, setIsResending] = useState(false)
+
+  useEffect(() => {
+    if (location.hash.includes('type=recovery')) {
+      navigate('/reset-password' + location.hash, { replace: true })
+      return
+    }
+
+    if (isAuthenticated && !isAuthLoading) {
+      if (location.hash.includes('type=signup')) {
+        toast.success(
+          t("¡Cuenta verificada!"),
+          t("Tu correo ha sido confirmado exitosamente. Bienvenido a UniTutor.")
+        )
+      }
+      navigate('/dashboard', { replace: true })
+    }
+  }, [isAuthenticated, isAuthLoading, location.hash, navigate, t])
 
   useEffect(() => {
     if (successMessage && notifiedRegistration.current !== location.key) {

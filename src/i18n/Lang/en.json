@@ -790,5 +790,7 @@
   "Se ha enviado un nuevo enlace de confirmación a tu correo.": "A new confirmation link has been sent to your email.",
   "Error al reenviar correo.": "Error resending email.",
   "Reenviar correo de activación": "Resend activation email",
-  "Hemos enviado un nuevo enlace de activación a tu correo.": "We have sent a new activation link to your email."
+  "Hemos enviado un nuevo enlace de activación a tu correo.": "We have sent a new activation link to your email.",
+  "¡Cuenta verificada!": "Account verified!",
+  "Tu correo ha sido confirmado exitosamente. Bienvenido a UniTutor.": "Your email has been successfully confirmed. Welcome to UniTutor."
 }
