@@ -2,8 +2,9 @@ import { useTranslations } from '@/i18n/useTranslations'
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import type { TranslationKey } from '@/i18n/core'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { GraduationCap } from 'lucide-react'
+import { GraduationCap, RefreshCw } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { Card } from '@/shared/components/ui/Card'
@@ -24,6 +25,8 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [showResendConfirmation, setShowResendConfirmation] = useState(false)
+  const [isResending, setIsResending] = useState(false)
 
   useEffect(() => {
     if (successMessage && notifiedRegistration.current !== location.key) {
@@ -35,6 +38,7 @@ export function LoginPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setError(null)
+    setShowResendConfirmation(false)
     setIsLoading(true)
 
     try {
@@ -54,6 +58,7 @@ export function LoginPage() {
       } else if (message.includes('Email not confirmed')) {
         const warnText = t("Debes confirmar tu correo electrónico antes de ingresar.")
         setError(warnText)
+        setShowResendConfirmation(true)
         toast.warning(t("Confirmación requerida"), warnText)
       } else {
         setError(message)
@@ -61,6 +66,31 @@ export function LoginPage() {
       }
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleResendConfirmation = async () => {
+    if (!email.trim()) return
+    setIsResending(true)
+    try {
+      const cleanEmail = email.trim().toLowerCase()
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: cleanEmail,
+        options: {
+          emailRedirectTo: `${window.location.origin}/login`,
+        },
+      })
+      if (resendError) throw resendError
+      toast.success(
+        t("Correo reenviado"),
+        t("Hemos enviado un nuevo enlace de activación a tu correo.")
+      )
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : t("Error al reenviar correo.")
+      toast.error(t("Error"), msg)
+    } finally {
+      setIsResending(false)
     }
   }
 
@@ -101,19 +131,42 @@ export function LoginPage() {
                 autoComplete="email"
               />
 
-              <Input
-                label={t("Contraseña")}
-                type="password"
-                placeholder={t("Tu contraseña")}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-              />
+              <div className="flex flex-col gap-1">
+                <Input
+                  label={t("Contraseña")}
+                  type="password"
+                  placeholder={t("Tu contraseña")}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoComplete="current-password"
+                />
+                <div className="flex justify-end pt-1">
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-medium text-primary-600 hover:text-primary-700 cursor-pointer"
+                  >
+                    {t("¿Olvidaste tu contraseña?")}
+                  </Link>
+                </div>
+              </div>
 
               {error && (
-                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {error}
+                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 space-y-2">
+                  <p>{error}</p>
+                  {showResendConfirmation && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleResendConfirmation}
+                      isLoading={isResending}
+                      className="text-xs text-primary-700 hover:bg-red-100/50 p-1 font-semibold"
+                    >
+                      <RefreshCw className="h-3 w-3 mr-1" />
+                      {t("Reenviar correo de activación")}
+                    </Button>
+                  )}
                 </div>
               )}
 
@@ -139,4 +192,3 @@ export function LoginPage() {
     </div>
   )
 }
-
