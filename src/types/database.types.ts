@@ -362,6 +362,10 @@ export interface Database {
         Args: { p_request_id: string; p_status: 'aceptada' | 'rechazada' }
         Returns: { request_id: string; status: TutoringRequestStatus; success: boolean }
       }
+      cancel_tutoring_request: {
+        Args: { p_request_id: string }
+        Returns: { request_id: string; status: TutoringRequestStatus; success: boolean }
+      }
       search_tutors: {
         Args: {
           p_query?: string | null

@@ -2,6 +2,8 @@ import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import { ProtectedRoute } from '@/modules/auth/components/ProtectedRoute'
 import { LoginPage } from '@/modules/auth/pages/LoginPage'
 import { RegisterPage } from '@/modules/auth/pages/RegisterPage'
+import { ForgotPasswordPage } from '@/modules/auth/pages/ForgotPasswordPage'
+import { ResetPasswordPage } from '@/modules/auth/pages/ResetPasswordPage'
 import { DashboardPage } from '@/modules/dashboard/pages/DashboardPage'
 import { AdminRoute } from '@/modules/admin/components/AdminRoute'
 import { AdminDashboardPage } from '@/modules/admin/pages/AdminDashboardPage'
@@ -29,6 +31,8 @@ const router = createBrowserRouter([
     children: [
       { path: '/login', element: <LoginPage /> },
       { path: '/register', element: <RegisterPage /> },
+      { path: '/forgot-password', element: <ForgotPasswordPage /> },
+      { path: '/reset-password', element: <ResetPasswordPage /> },
     ],
   },
   {

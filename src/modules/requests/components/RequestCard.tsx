@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Calendar, Clock, CheckCircle2, MapPin } from 'lucide-react'
+import { Calendar, Clock, CheckCircle2, MapPin, XCircle } from 'lucide-react'
 import { useTranslations } from '@/i18n/useTranslations'
 import { Button } from '@/shared/components/ui/Button'
 import { formatTime, parseISODate } from '@/modules/student/utils/date-utils'
-import { canRespond, isConfirmed, safeMeetingUrl, requestStatusLabels } from '../utils/request-state'
+import { canCancel, canRespond, isConfirmed, safeMeetingUrl, requestStatusLabels } from '../utils/request-state'
 import type { RequestRow } from '../services/requests.api'
 
 const statusStyles = {
@@ -19,11 +19,13 @@ interface Props {
   busy: boolean
   saving: boolean
   onRespond: (id: string, status: 'aceptada' | 'rechazada') => Promise<boolean>
+  onCancel?: (id: string) => Promise<boolean>
 }
 
-export function RequestCard({ request, asTutor, busy, saving, onRespond }: Props) {
+export function RequestCard({ request, asTutor, busy, saving, onRespond, onCancel }: Props) {
   const { t, locale } = useTranslations()
   const [decision, setDecision] = useState<'aceptada' | 'rechazada' | null>(null)
+  const [confirmingCancel, setConfirmingCancel] = useState(false)
   const meetingUrl = safeMeetingUrl(request.location_or_link ?? '')
   const confirmed = isConfirmed(request)
 
@@ -80,6 +82,30 @@ export function RequestCard({ request, asTutor, busy, saving, onRespond }: Props
             <div className="flex flex-wrap gap-2">
               <Button disabled={busy} onClick={() => setDecision('aceptada')}>{t('Aceptar solicitud')}</Button>
               <Button variant="secondary" disabled={busy} onClick={() => setDecision('rechazada')}>{t('Rechazar solicitud')}</Button>
+            </div>
+          )}
+        </div>
+      )}
+      {!asTutor && onCancel && canCancel(request) && (
+        <div className="mt-4 border-t border-gray-100 pt-4">
+          {confirmingCancel ? (
+            <div className="space-y-3" onKeyDown={(event) => { if (event.key === 'Escape' && !busy) setConfirmingCancel(false) }}>
+              <p className="text-sm text-gray-700" role="status">
+                {t('¿Deseas cancelar esta solicitud pendiente? Podrás volver a solicitar otro horario disponible.')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button variant="danger" autoFocus disabled={busy} isLoading={saving} onClick={async () => {
+                  if (await onCancel(request.id)) setConfirmingCancel(false)
+                }}>{t('Confirmar cancelación')}</Button>
+                <Button variant="secondary" disabled={busy} onClick={() => setConfirmingCancel(false)}>{t('Volver')}</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="secondary" disabled={busy} onClick={() => setConfirmingCancel(true)}>
+                <XCircle className="h-4 w-4 text-red-600" />
+                {t('Cancelar solicitud')}
+              </Button>
             </div>
           )}
         </div>
