@@ -792,5 +792,17 @@
   "Reenviar correo de activación": "Resend activation email",
   "Hemos enviado un nuevo enlace de activación a tu correo.": "We have sent a new activation link to your email.",
   "¡Cuenta verificada!": "Account verified!",
-  "Tu correo ha sido confirmado exitosamente. Bienvenido a UniTutor.": "Your email has been successfully confirmed. Welcome to UniTutor."
+  "Tu correo ha sido confirmado exitosamente. Bienvenido a UniTutor.": "Your email has been successfully confirmed. Welcome to UniTutor.",
+  "Mis Tutorías": "My Tutoring Sessions",
+  "Todos los servicios operando con normalidad": "All services operating normally",
+  "La plataforma se encuentra activa y disponible.": "The platform is active and available.",
+  "Portal público": "Public Portal",
+  "Conflicto de horario": "Schedule Conflict",
+  "Ya tienes una tutoría programada en ese rango horario.": "You already have a tutoring session scheduled in that time range.",
+  "Error al guardar la tutoría.": "Error saving tutoring session.",
+  "Cargando agenda de tutorías...": "Loading tutoring schedule...",
+  "Ej: Repaso para Examen Parcial 1, Taller de Ejercicios...": "E.g.: Midterm 1 Review, Exercise Workshop...",
+  "Temas específicos a repasar, materiales requeridos...": "Specific topics to review, required materials...",
+  "Cargando información de la materia...": "Loading subject information...",
+  "Descripción de la materia:": "Subject description:"
 }

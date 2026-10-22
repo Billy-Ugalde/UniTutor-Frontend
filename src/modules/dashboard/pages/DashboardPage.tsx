@@ -93,7 +93,7 @@ export function DashboardPage() {
       modules.push(
         {
           id: 'tutor-sessions',
-          label: t("Mis Tutorías Impartidas"),
+          label: t("Mis Tutorías"),
           icon: Calendar,
           href: '/tutor/sesiones',
           available: true,
@@ -290,17 +290,15 @@ export function DashboardPage() {
         <Card>
           <Card.Body>
             <p className="text-sm font-medium text-gray-500">{t("Estado de la plataforma")}</p>
-            <div className="mt-2 space-y-2">
-              {[
-                { label: t("Supabase conectado"), ok: true },
-                { label: t("Autenticación activa"), ok: true },
-              ].map(({ label, ok }) => (
-                <div key={label} className="flex items-center gap-2">
-                  <div className={`h-2 w-2 rounded-full ${ok ? 'bg-green-500' : 'bg-red-500'}`} />
-                  <span className="text-sm text-gray-700">{label}</span>
-                </div>
-              ))}
+            <div className="mt-2 flex items-center gap-2">
+              <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+              <span className="text-sm font-medium text-gray-800">
+                {t("Todos los servicios operando con normalidad")}
+              </span>
             </div>
+            <p className="mt-1 text-xs text-gray-500">
+              {t("La plataforma se encuentra activa y disponible.")}
+            </p>
           </Card.Body>
         </Card>
       </div>

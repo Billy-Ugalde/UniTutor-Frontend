@@ -273,7 +273,7 @@ export function LandingPage() {
                   <div className="mt-5 flex items-center justify-between rounded-xl bg-gray-50 p-3.5">
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 font-semibold text-white">
-                        <span>U</span>
+                        <span>{'U'}</span>
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">{t("Tutor asignado")}</p>
