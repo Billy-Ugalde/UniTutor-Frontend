@@ -1,6 +1,6 @@
 import { useTranslations } from '@/i18n/useTranslations'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Building2,
@@ -13,6 +13,7 @@ import {
   Users,
   Video,
 } from 'lucide-react'
+import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Card } from '@/shared/components/ui/Card'
 import { Button } from '@/shared/components/ui/Button'
 import { toast } from '@/shared/store/toast.store'
@@ -28,9 +29,9 @@ const REFRESH_INTERVAL_MS = 30_000
 
 export function TutorProfilePage() {
   const { t, locale } = useTranslations()
+  const { profile, isLoading: isAuthLoading } = useAuth()
   const { tutorId } = useParams<{ tutorId: string }>()
-  const [searchParams] = useSearchParams()
-  const institutionId = searchParams.get('institucion') ?? undefined
+  const institutionId = profile?.institution_id ?? undefined
 
   const [tutor, setTutor] = useState<TutorSearchRow | null>(null)
   const [slots, setSlots] = useState<TutorSlotRow[]>([])
@@ -42,13 +43,18 @@ export function TutorProfilePage() {
   const [requestSlot, setRequestSlot] = useState<TutorSlotRow | null>(null)
 
   const loadSlots = useCallback(async () => {
-    if (!tutorId) return
+    if (!tutorId || !institutionId) return
     const rows = await getTutorAvailability(tutorId, institutionId)
     setSlots(rows)
   }, [tutorId, institutionId])
 
   useEffect(() => {
-    if (!tutorId) return
+    if (isAuthLoading) return
+    if (!tutorId || !institutionId) {
+      setNotFound(true)
+      setIsLoading(false)
+      return
+    }
     let cancelled = false
     const load = async () => {
       setIsLoading(true)
@@ -58,11 +64,12 @@ export function TutorProfilePage() {
           getTutorAvailability(tutorId, institutionId),
         ])
         if (cancelled) return
-        if (tutors.length === 0) {
+        const matchingTutor = tutors.find((item) => item.institution_id === institutionId)
+        if (!matchingTutor) {
           setNotFound(true)
           return
         }
-        setTutor(tutors[0])
+        setTutor(matchingTutor)
         setSlots(rows)
       } catch (err) {
         console.error('Error al cargar el perfil del tutor:', err)
@@ -80,7 +87,7 @@ export function TutorProfilePage() {
     }
     // `t` solo cambia con el idioma; no debe recargar el perfil.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tutorId, institutionId])
+  }, [tutorId, institutionId, isAuthLoading])
 
   // Refresco periódico y al volver a la pestaña.
   useEffect(() => {
