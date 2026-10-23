@@ -2,6 +2,7 @@ import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, CalendarClock, CalendarX2, Building2, SearchX, ArrowRight } from 'lucide-react'
+import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Card } from '@/shared/components/ui/Card'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
@@ -23,12 +24,14 @@ const SELECT_CLASS =
 
 export function TutorSearchPage() {
   const { t } = useTranslations()
+  const { profile, isLoading: isAuthLoading } = useAuth()
+  const institutionId = profile?.institution_id ?? ''
+
   const [catalog, setCatalog] = useState<SearchCatalog | null>(null)
-  const filtersReady = catalog !== null
+  const filtersReady = catalog !== null && !isAuthLoading
 
   const [queryInput, setQueryInput] = useState('')
   const [query, setQuery] = useState('')
-  const [institutionId, setInstitutionId] = useState('')
   const [courseId, setCourseId] = useState('')
   const [subjectId, setSubjectId] = useState('')
   const [onlyAvailable, setOnlyAvailable] = useState(false)
@@ -69,6 +72,11 @@ export function TutorSearchPage() {
 
   useEffect(() => {
     if (!filtersReady) return
+    if (!institutionId) {
+      setResults([])
+      setIsLoading(false)
+      return
+    }
     const requestId = ++requestCounter.current
     const run = async () => {
       setIsLoading(true)
@@ -80,7 +88,9 @@ export function TutorSearchPage() {
           subjectId,
           onlyAvailable,
         })
-        if (requestId === requestCounter.current) setResults(rows)
+        if (requestId === requestCounter.current) {
+          setResults(rows.filter((row) => row.institution_id === institutionId))
+        }
       } catch (err) {
         console.error('Error al buscar tutores:', err)
         if (requestId === requestCounter.current) {
@@ -101,7 +111,7 @@ export function TutorSearchPage() {
   }, [filtersReady, query, institutionId, courseId, subjectId, onlyAvailable])
 
   const offeredBySelectedInstitution = useMemo(() => {
-    if (!catalog || !institutionId) return null
+    if (!catalog || !institutionId) return new Map<string, string | null>()
     return new Map(
       catalog.offers
         .filter((offer) => offer.institutionId === institutionId)
@@ -115,7 +125,7 @@ export function TutorSearchPage() {
       catalog.subjects.some(
         (subject) =>
           subject.courseId === area.id &&
-          (!offeredBySelectedInstitution || offeredBySelectedInstitution.has(subject.id)),
+          offeredBySelectedInstitution.has(subject.id),
       ),
     )
   }, [catalog, offeredBySelectedInstitution])
@@ -125,17 +135,17 @@ export function TutorSearchPage() {
     return catalog.subjects
       .filter(
         (subject) =>
-          (!offeredBySelectedInstitution || offeredBySelectedInstitution.has(subject.id)) &&
+          offeredBySelectedInstitution.has(subject.id) &&
           (!courseId || subject.courseId === courseId),
       )
       .map((subject) => ({
         id: subject.id,
-        label: `${offeredBySelectedInstitution?.get(subject.id) || subject.code} - ${subject.name}`,
+        label: `${offeredBySelectedInstitution.get(subject.id) || subject.code} - ${subject.name}`,
       }))
   }, [catalog, offeredBySelectedInstitution, courseId])
 
   const hasActiveFilters = Boolean(
-    queryInput.trim() || courseId || subjectId || onlyAvailable || institutionId,
+    queryInput.trim() || courseId || subjectId || onlyAvailable,
   )
 
   const clearFilters = () => {
@@ -144,7 +154,6 @@ export function TutorSearchPage() {
     setCourseId('')
     setSubjectId('')
     setOnlyAvailable(false)
-    setInstitutionId('')
     setPage(1)
   }
 
@@ -176,31 +185,7 @@ export function TutorSearchPage() {
           />
         </div>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-          <div className="space-y-1">
-            <label htmlFor="tutor-search-institution" className="text-xs font-semibold uppercase tracking-wider text-gray-600">
-              {t("Institución")}
-            </label>
-            <select
-              id="tutor-search-institution"
-              value={institutionId}
-              onChange={(e) => {
-                setInstitutionId(e.target.value)
-                setCourseId('')
-                setSubjectId('')
-                setPage(1)
-              }}
-              className={SELECT_CLASS}
-            >
-              <option value="">{t("Todas las instituciones")}</option>
-              {catalog?.institutions.map((inst) => (
-                <option key={inst.id} value={inst.id}>
-                  {inst.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <div className="space-y-1">
             <label htmlFor="tutor-search-area" className="text-xs font-semibold uppercase tracking-wider text-gray-600">
               {t("Área")}
@@ -280,7 +265,7 @@ export function TutorSearchPage() {
           <SearchX className="mx-auto h-12 w-12 text-gray-300" />
           <h2 className="mt-4 text-base font-semibold text-gray-900">{t("No se encontraron tutores")}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
-            {t("Prueba con otros filtros o amplía la búsqueda a todas las instituciones.")}
+            {t("No se encontraron tutores en esta institución.")}
           </p>
           {hasActiveFilters && (
             <div className="mt-6 flex justify-center">
