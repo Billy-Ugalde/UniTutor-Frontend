@@ -29,10 +29,18 @@ export function LoginPage() {
   const [isResending, setIsResending] = useState(false)
 
   useEffect(() => {
-    if (location.hash.includes('type=recovery')) {
-      navigate('/reset-password' + location.hash, { replace: true })
+    const isRecovery =
+      location.hash.includes('type=recovery') ||
+      location.search.includes('type=recovery') ||
+      location.search.includes('code=') ||
+      location.hash.includes('otp_expired') ||
+      location.search.includes('otp_expired')
+
+    if (isRecovery) {
+      navigate('/reset-password' + location.search + location.hash, { replace: true })
       return
     }
+
 
     if (isAuthenticated && !isAuthLoading) {
       if (location.hash.includes('type=signup')) {

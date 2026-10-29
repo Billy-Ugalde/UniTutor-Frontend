@@ -804,5 +804,18 @@
   "Ej: Repaso para Examen Parcial 1, Taller de Ejercicios...": "E.g.: Midterm 1 Review, Exercise Workshop...",
   "Temas específicos a repasar, materiales requeridos...": "Specific topics to review, required materials...",
   "Cargando información de la materia...": "Loading subject information...",
-  "Descripción de la materia:": "Subject description:"
+  "Descripción de la materia:": "Subject description:",
+  "Este enlace de recuperación ya ha sido utilizado para actualizar la contraseña.": "This recovery link has already been used to update the password.",
+  "El enlace de recuperación ha expirado. Por seguridad los enlaces vencen tras 15 minutos.": "The recovery link has expired. For security reasons links expire after 15 minutes.",
+  "El enlace de recuperación no es válido o ya fue utilizado anteriormente.": "The recovery link is invalid or has already been used previously.",
+  "El enlace de recuperación ha expirado. Por favor solicita uno nuevo.": "The recovery link has expired. Please request a new one.",
+  "El enlace de recuperación ha superado el tiempo límite de validez (15 minutos).": "The recovery link has exceeded the validity time limit (15 minutes).",
+  "No se detectó un enlace de recuperación válido. Para cambiar tu contraseña ingresa desde tu perfil o solicita un enlace.": "No valid recovery link detected. To change your password sign in from your profile or request a link.",
+  "Enlace invalidado y protegido": "Link invalidated and secured",
+  "Este enlace es de uso único y expirará inmediatamente tras guardar tu contraseña.": "This link is single-use and will expire immediately after saving your password.",
+  "Por motivos de seguridad, el enlace es de un solo uso y vencerá automáticamente tras 15 minutos.": "For security reasons, the link is single-use and will expire automatically after 15 minutes.",
+  "Tu contraseña se ha restablecido correctamente. Inicia sesión con tus nuevas credenciales.": "Your password has been successfully reset. Sign in with your new credentials.",
+  "Tu contraseña ha sido actualizada exitosamente. Por motivos de seguridad, todas las sesiones anteriores han sido finalizadas.": "Your password has been updated successfully. For security reasons, all previous sessions have been terminated.",
+  "El enlace de recuperación es de un solo uso y caduca automáticamente a los 15 minutos por seguridad. Solicita un nuevo enlace para continuar.": "The recovery link is single-use and expires automatically after 15 minutes for security. Request a new link to continue.",
+  "Haz clic en el enlace del mensaje para establecer una nueva contraseña. Por seguridad, el enlace es de un solo uso y caduca en 15 minutos. Si no lo encuentras, revisa tu carpeta de spam.": "Click the link in the message to set a new password. For security, the link is single-use and expires in 15 minutes. If you cannot find it, check your spam folder."
 }
