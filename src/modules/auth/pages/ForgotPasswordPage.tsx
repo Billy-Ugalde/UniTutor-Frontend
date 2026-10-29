@@ -77,7 +77,7 @@ export function ForgotPasswordPage() {
                     {email}
                   </p>
                   <p className="text-xs text-gray-500 leading-relaxed pt-2">
-                    {t("Haz clic en el enlace del mensaje para establecer una nueva contraseña. Si no lo encuentras en unos minutos, revisa tu carpeta de spam o correo no deseado.")}
+                    {t("Haz clic en el enlace del mensaje para establecer una nueva contraseña. Por seguridad, el enlace es de un solo uso y caduca en 15 minutos. Si no lo encuentras, revisa tu carpeta de spam.")}
                   </p>
                 </div>
                 <div className="pt-2">

@@ -804,5 +804,18 @@
   "Ej: Repaso para Examen Parcial 1, Taller de Ejercicios...": "Ej: Repaso para Examen Parcial 1, Taller de Ejercicios...",
   "Temas específicos a repasar, materiales requeridos...": "Temas específicos a repasar, materiales requeridos...",
   "Cargando información de la materia...": "Cargando información de la materia...",
-  "Descripción de la materia:": "Descripción de la materia:"
+  "Descripción de la materia:": "Descripción de la materia:",
+  "Este enlace de recuperación ya ha sido utilizado para actualizar la contraseña.": "Este enlace de recuperación ya ha sido utilizado para actualizar la contraseña.",
+  "El enlace de recuperación ha expirado. Por seguridad los enlaces vencen tras 15 minutos.": "El enlace de recuperación ha expirado. Por seguridad los enlaces vencen tras 15 minutos.",
+  "El enlace de recuperación no es válido o ya fue utilizado anteriormente.": "El enlace de recuperación no es válido o ya fue utilizado anteriormente.",
+  "El enlace de recuperación ha expirado. Por favor solicita uno nuevo.": "El enlace de recuperación ha expirado. Por favor solicita uno nuevo.",
+  "El enlace de recuperación ha superado el tiempo límite de validez (15 minutos).": "El enlace de recuperación ha superado el tiempo límite de validez (15 minutos).",
+  "No se detectó un enlace de recuperación válido. Para cambiar tu contraseña ingresa desde tu perfil o solicita un enlace.": "No se detectó un enlace de recuperación válido. Para cambiar tu contraseña ingresa desde tu perfil o solicita un enlace.",
+  "Enlace invalidado y protegido": "Enlace invalidado y protegido",
+  "Este enlace es de uso único y expirará inmediatamente tras guardar tu contraseña.": "Este enlace es de uso único y expirará inmediatamente tras guardar tu contraseña.",
+  "Por motivos de seguridad, el enlace es de un solo uso y vencerá automáticamente tras 15 minutos.": "Por motivos de seguridad, el enlace es de un solo uso y vencerá automáticamente tras 15 minutos.",
+  "Tu contraseña se ha restablecido correctamente. Inicia sesión con tus nuevas credenciales.": "Tu contraseña se ha restablecido correctamente. Inicia sesión con tus nuevas credenciales.",
+  "Tu contraseña ha sido actualizada exitosamente. Por motivos de seguridad, todas las sesiones anteriores han sido finalizadas.": "Tu contraseña ha sido actualizada exitosamente. Por motivos de seguridad, todas las sesiones anteriores han sido finalizadas.",
+  "El enlace de recuperación es de un solo uso y caduca automáticamente a los 15 minutos por seguridad. Solicita un nuevo enlace para continuar.": "El enlace de recuperación es de un solo uso y caduca automáticamente a los 15 minutos por seguridad. Solicita un nuevo enlace para continuar.",
+  "Haz clic en el enlace del mensaje para establecer una nueva contraseña. Por seguridad, el enlace es de un solo uso y caduca en 15 minutos. Si no lo encuentras, revisa tu carpeta de spam.": "Haz clic en el enlace del mensaje para establecer una nueva contraseña. Por seguridad, el enlace es de un solo uso y caduca en 15 minutos. Si no lo encuentras, revisa tu carpeta de spam."
 }
