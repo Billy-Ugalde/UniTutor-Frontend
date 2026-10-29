@@ -1,0 +1,28 @@
+name: Sync Fork on PR Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+  # Permite probarlo manualmente con un botón desde la pestaña Actions
+  workflow_dispatch:
+
+jobs:
+  sync-fork:
+    # Se ejecuta si el PR se mergeó exitosamente o si se lanza manualmente
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repositorio origen
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Enviar cambios al Fork
+        env:
+          FORK_PAT: ${{ secrets.FORK_SYNC_PAT }}
+        run: |
+          git remote add fork https://x-access-token:${FORK_PAT}@github.com/RobertoUNA/UniTutor-Frontend.git
+          git push fork main --force
