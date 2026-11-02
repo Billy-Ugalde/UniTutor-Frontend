@@ -71,6 +71,13 @@ export function useTutorNotifications({ userId, enabled, onNew }: UseTutorNotifi
           void load()
         },
       )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'tutoring_requests', filter: `tutor_id=eq.${userId}` },
+        () => {
+          void load()
+        },
+      )
       .subscribe()
 
     const refreshWhenVisible = () => {
