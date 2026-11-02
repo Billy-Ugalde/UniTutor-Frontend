@@ -6,6 +6,7 @@ import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Button } from '@/shared/components/ui/Button'
 import { toast } from '@/shared/store/toast.store'
 import { backendErrorMessage } from '@/modules/student/services/tutor-search.api'
+import { supabase } from '@/lib/supabase'
 import type { SessionModality, TutoringRequestStatus } from '@/types/database.types'
 import { RequestCard } from '../components/RequestCard'
 import { useRequests } from '../hooks/useRequests'
@@ -54,6 +55,7 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
     setSavingId(id)
     try {
       await respondToRequest(id, status)
+      void supabase.from('notifications').update({ read: true }).eq('request_id', id)
       toast.success(status === 'aceptada' ? t('Tutoría confirmada') : t('Solicitud rechazada'))
       await refresh()
       // Refresh the notification badge even without Realtime configured.
