@@ -59,10 +59,10 @@ export function DashboardPage() {
 
   const roleColor = (role: string) =>
     ({
-      inst_admin: 'bg-blue-100 text-blue-800 border border-blue-200',
+      inst_admin: 'bg-blue-100 text-blue-950 border border-blue-300 font-bold',
       tutor: 'bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold',
-      estudiante: 'bg-amber-100 text-amber-800 border border-amber-200',
-    }[role] ?? 'bg-gray-100 text-gray-700 border border-gray-200')
+      estudiante: 'bg-amber-100 text-amber-950 border border-amber-300 font-bold',
+    }[role] ?? 'bg-gray-100 text-gray-900 border border-gray-300 font-bold')
 
   const isInstAdmin = hasRole('inst_admin')
   const isAdmin = isSuperAdmin || isInstAdmin
@@ -259,7 +259,7 @@ export function DashboardPage() {
                 <p className="mt-0.5 truncate font-semibold text-gray-900">{fullName}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {isSuperAdmin && (
-                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800">
+                    <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold bg-blue-100 text-blue-950 border border-blue-300">
                       <Shield className="h-3 w-3 text-blue-900" /> {t("Super Administrador")}
                     </span>
                   )}
@@ -572,7 +572,7 @@ export function DashboardPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {isSuperAdmin && (
-                    <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
+                    <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-bold bg-blue-100 text-blue-950 border border-blue-300">
                       <Shield className="h-3.5 w-3.5 text-blue-900" /> {t("Super Administrador")}
                     </span>
                   )}

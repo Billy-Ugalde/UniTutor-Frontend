@@ -479,13 +479,13 @@ export function TutorSessionsPage() {
   const getStatusBadge = (status: SessionStatus) => {
     switch (status) {
       case 'programada':
-        return <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 border border-blue-200">{t("Programada")}</span>
+        return <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-950 border border-blue-300">{t("Programada")}</span>
       case 'en_curso':
-        return <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 border border-amber-200">{t("En curso")}</span>
+        return <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-950 border border-amber-300">{t("En curso")}</span>
       case 'completada':
-        return <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 border border-green-200">{t("Completada")}</span>
+        return <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-950 border border-emerald-300">{t("Completada")}</span>
       case 'cancelada':
-        return <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800 border border-red-200">{t("Cancelada")}</span>
+        return <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-950 border border-red-300">{t("Cancelada")}</span>
     }
   }
 
@@ -834,12 +834,12 @@ export function TutorSessionsPage() {
                         <span className="text-xs font-bold text-gray-900">
                           {sessionRatings[session.id].average_rating.toFixed(1)}
                         </span>
-                        <span className="text-xs text-gray-500 font-medium">
+                        <span className="text-xs text-gray-700 font-medium">
                           ({sessionRatings[session.id].total_reviews})
                         </span>
                       </div>
                     ) : (
-                      <span className="text-xs text-gray-500 italic font-medium">
+                      <span className="text-xs text-gray-700 italic font-medium">
                         {t("Sin calificaciones aún")}
                       </span>
                     )}
@@ -880,7 +880,7 @@ export function TutorSessionsPage() {
 
             <form onSubmit={handleSubmitSession} className="p-5 overflow-y-auto space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                <label htmlFor="session-subject-select" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                   {t("Materia")} <span className="text-red-500">*</span>
                 </label>
                 {editingSession ? (
@@ -889,6 +889,7 @@ export function TutorSessionsPage() {
                   </div>
                 ) : (
                   <select
+                    id="session-subject-select"
                     aria-label={t("Materia")}
                     required
                     value={sessionForm.subjectId}
@@ -905,10 +906,12 @@ export function TutorSessionsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                <label htmlFor="session-title-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                   {t("Título de la tutoría")} <span className="text-red-500">*</span>
                 </label>
                 <Input
+                  id="session-title-input"
+                  aria-label={t("Título de la tutoría")}
                   required
                   placeholder={t("Ej: Repaso para Examen Parcial 1, Taller de Ejercicios...")}
                   value={sessionForm.title}
@@ -917,10 +920,12 @@ export function TutorSessionsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                <label htmlFor="session-description-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                   {t("Descripción o temario")}
                 </label>
                 <textarea
+                  id="session-description-input"
+                  aria-label={t("Descripción o temario")}
                   rows={2}
                   placeholder={t("Temas específicos a repasar, materiales requeridos...")}
                   value={sessionForm.description}
@@ -931,10 +936,12 @@ export function TutorSessionsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="session-date-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                     {t("Fecha")} <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id="session-date-input"
+                    aria-label={t("Fecha")}
                     type="date"
                     required
                     min={todayStr}
@@ -944,10 +951,12 @@ export function TutorSessionsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="session-start-time-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                     {t("Hora de inicio")} <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id="session-start-time-input"
+                    aria-label={t("Hora de inicio")}
                     type="time"
                     required
                     value={sessionForm.startTime}
@@ -956,10 +965,12 @@ export function TutorSessionsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="session-end-time-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                     {t("Hora de fin")} <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id="session-end-time-input"
+                    aria-label={t("Hora de fin")}
                     type="time"
                     required
                     value={sessionForm.endTime}
@@ -970,10 +981,11 @@ export function TutorSessionsPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="session-modality-select" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                     {t("Modalidad")} <span className="text-red-500">*</span>
                   </label>
                   <select
+                    id="session-modality-select"
                     aria-label={t("Modalidad")}
                     value={sessionForm.modality}
                     onChange={(e) =>
@@ -991,10 +1003,12 @@ export function TutorSessionsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                  <label htmlFor="session-max-students-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                     {t("Cupo máximo de estudiantes")} <span className="text-red-500">*</span>
                   </label>
                   <Input
+                    id="session-max-students-input"
+                    aria-label={t("Cupo máximo de estudiantes")}
                     type="number"
                     min={1}
                     max={100}
@@ -1011,10 +1025,12 @@ export function TutorSessionsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
+                <label htmlFor="session-location-input" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
                   {t("Enlace de reunión o Lugar físico")} <span className="text-red-500">*</span>
                 </label>
                 <Input
+                  id="session-location-input"
+                  aria-label={t("Enlace de reunión o Lugar físico")}
                   required
                   placeholder={
                     sessionForm.modality === 'virtual'

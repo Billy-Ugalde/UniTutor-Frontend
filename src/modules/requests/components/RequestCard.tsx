@@ -9,10 +9,10 @@ import type { RequestRow } from '../services/requests.api'
 import { SessionRatingModal } from './SessionRatingModal'
 
 const statusStyles = {
-  pendiente: 'bg-amber-50 text-amber-800 border-amber-200',
-  aceptada: 'bg-green-50 text-green-800 border-green-200',
-  rechazada: 'bg-red-50 text-red-800 border-red-200',
-  cancelada: 'bg-gray-100 text-gray-700 border-gray-200',
+  pendiente: 'bg-amber-50 text-amber-950 border-amber-300 font-bold',
+  aceptada: 'bg-emerald-50 text-emerald-950 border-emerald-300 font-bold',
+  rechazada: 'bg-red-50 text-red-950 border-red-300 font-bold',
+  cancelada: 'bg-gray-100 text-gray-900 border-gray-300 font-bold',
 }
 
 interface Props {

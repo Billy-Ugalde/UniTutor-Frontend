@@ -445,7 +445,7 @@ export function TutorProfilePage() {
                       </p>
                     )}
                   </div>
-                  <p className="mt-3 text-[11px] text-gray-500 text-right">
+                  <p className="mt-3 text-[11px] text-gray-700 font-medium text-right">
                     {new Date(rev.created_at).toLocaleDateString(locale, {
                       day: 'numeric',
                       month: 'short',

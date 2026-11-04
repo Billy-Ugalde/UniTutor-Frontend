@@ -146,7 +146,7 @@ export function SessionReviewsModal({ isOpen, onClose, session }: SessionReviews
           </div>
 
           <div className="text-center sm:text-right">
-            <p className="text-xs font-bold uppercase tracking-wider text-gray-500">
+            <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
               {t("Total de opiniones")}
             </p>
             <p className="text-xl font-bold text-gray-800 mt-0.5">
@@ -163,11 +163,11 @@ export function SessionReviewsModal({ isOpen, onClose, session }: SessionReviews
             </div>
           ) : reviews.length === 0 ? (
             <div className="py-10 text-center rounded-xl border border-gray-100 bg-gray-50/70 p-6">
-              <Star className="mx-auto h-8 w-8 text-gray-300" />
+              <Star className="mx-auto h-8 w-8 text-gray-400" />
               <p className="mt-2 text-sm font-semibold text-gray-800">
                 {t("Sin calificaciones aún")}
               </p>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-700 font-medium">
                 {t("Esta tutoría aún no tiene calificaciones registradas.")}
               </p>
             </div>
@@ -189,7 +189,7 @@ export function SessionReviewsModal({ isOpen, onClose, session }: SessionReviews
                     )}
                     <div>
                       <p className="text-sm font-semibold text-gray-900">{rev.student_name}</p>
-                      <p className="text-[11px] text-gray-500 font-medium">
+                      <p className="text-[11px] text-gray-700 font-medium">
                         {new Date(rev.created_at).toLocaleDateString(locale, {
                           day: 'numeric',
                           month: 'long',

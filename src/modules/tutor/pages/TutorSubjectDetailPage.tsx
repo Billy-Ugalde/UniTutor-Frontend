@@ -466,13 +466,13 @@ export function TutorSubjectDetailPage() {
   const getStatusBadge = (status: SessionStatus) => {
     switch (status) {
       case 'programada':
-        return <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 border border-blue-200">{t("Programada")}</span>
+        return <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-950 border border-blue-300">{t("Programada")}</span>
       case 'en_curso':
-        return <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 border border-amber-200">{t("En curso")}</span>
+        return <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-950 border border-amber-300">{t("En curso")}</span>
       case 'completada':
-        return <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 border border-green-200">{t("Completada")}</span>
+        return <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-950 border border-emerald-300">{t("Completada")}</span>
       case 'cancelada':
-        return <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800 border border-red-200">{t("Cancelada")}</span>
+        return <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-950 border border-red-300">{t("Cancelada")}</span>
     }
   }
 
