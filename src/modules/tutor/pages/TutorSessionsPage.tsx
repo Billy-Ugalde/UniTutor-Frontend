@@ -2,15 +2,17 @@ import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, useCallback, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { Calendar, Clock, MapPin, Users, Video, Pencil, Trash2, CheckCircle2, XCircle, RotateCcw, X, ExternalLink, Search, BookOpen, CalendarPlus } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, MapPin, Users, Video, Pencil, Trash2, CheckCircle2, XCircle, RotateCcw, X, ExternalLink, Search, CalendarPlus, Star } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
 import { Card } from '@/shared/components/ui/Card'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { toast } from '@/shared/store/toast.store'
+import { StarRating } from '@/shared/components/StarRating'
 import { SessionStatusModal } from '@/modules/tutor/components/SessionStatusModal'
 import { SessionDeleteModal } from '@/modules/tutor/components/SessionDeleteModal'
+import { SessionReviewsModal } from '@/modules/tutor/components/SessionReviewsModal'
 import type { TutoringSession, SessionModality, SessionStatus } from '@/types/database.types'
 
 interface EnabledSubject {
@@ -61,16 +63,43 @@ export function TutorSessionsPage() {
 
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false)
   const [isDeletingSession, setIsDeletingSession] = useState(false)
+  const [sessionRatings, setSessionRatings] = useState<Record<string, { average_rating: number; total_reviews: number }>>({})
+  const [reviewsModal, setReviewsModal] = useState<{
+    isOpen: boolean
+    session: SessionWithSubject | null
+  }>({
+    isOpen: false,
+    session: null,
+  })
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const getLocalDateString = (d = new Date()) => {
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const getDefaultSessionTimes = () => {
+    const d = new Date(Date.now() + 60 * 60 * 1000)
+    d.setMinutes(0, 0, 0)
+    const startHour = String(d.getHours()).padStart(2, '0')
+    const startTime = `${startHour}:00`
+    const endD = new Date(d.getTime() + 60 * 60 * 1000)
+    const endHour = String(endD.getHours()).padStart(2, '0')
+    const endTime = `${endHour}:00`
+    return { startTime, endTime }
+  }
+
+  const todayStr = getLocalDateString()
+  const initialTimes = getDefaultSessionTimes()
 
   const [sessionForm, setSessionForm] = useState({
     subjectId: '',
     title: '',
     description: '',
     date: todayStr,
-    startTime: '14:00',
-    endTime: '16:00',
+    startTime: initialTimes.startTime,
+    endTime: initialTimes.endTime,
     modality: 'virtual' as SessionModality,
     locationOrLink: '',
     maxStudents: 5,
@@ -83,7 +112,7 @@ export function TutorSessionsPage() {
     if (!tutorId || !institutionId) return
     setIsLoading(true)
     try {
-      const [tutorSubRes, instSubRes, sessionsRes] = await Promise.all([
+      const [tutorSubRes, instSubRes, sessionsRes, ratingSummaryRes] = await Promise.all([
         supabase
           .from('tutor_subjects')
           .select('subject_id, subjects(id, name, code)')
@@ -102,10 +131,16 @@ export function TutorSessionsPage() {
           .eq('institution_id', institutionId)
           .order('date', { ascending: false })
           .order('start_time', { ascending: false }),
+        supabase
+          .rpc('get_tutor_sessions_rating_summary', { p_tutor_id: tutorId }),
       ])
 
       if (tutorSubRes.error) throw tutorSubRes.error
       if (sessionsRes.error) throw sessionsRes.error
+
+      if (ratingSummaryRes.data) {
+        setSessionRatings(ratingSummaryRes.data as Record<string, { average_rating: number; total_reviews: number }>)
+      }
 
       const customCodeMap = new Map<string, string | null>()
       instSubRes.data?.forEach((row) => {
@@ -162,14 +197,15 @@ export function TutorSessionsPage() {
       return
     }
 
+    const times = getDefaultSessionTimes()
     setEditingSession(null)
     setSessionForm({
       subjectId: subjects[0]?.id || '',
       title: '',
       description: '',
-      date: todayStr,
-      startTime: '14:00',
-      endTime: '16:00',
+      date: getLocalDateString(),
+      startTime: times.startTime,
+      endTime: times.endTime,
       modality: 'virtual',
       locationOrLink: '',
       maxStudents: 5,
@@ -213,13 +249,19 @@ export function TutorSessionsPage() {
       return
     }
 
-    if (sessionForm.date < todayStr) {
-      toast.warning(t("Fecha inválida"), t("La fecha de la tutoría no puede ser anterior a hoy."))
+    if (sessionForm.endTime <= sessionForm.startTime) {
+      toast.warning(t("Horario inválido"), t("La hora de finalización debe ser posterior a la hora de inicio."))
       return
     }
 
-    if (sessionForm.endTime <= sessionForm.startTime) {
-      toast.warning(t("Horario inválido"), t("La hora de finalización debe ser posterior a la hora de inicio."))
+    const sessionStart = new Date(`${sessionForm.date}T${sessionForm.startTime}`)
+    const minAllowedTime = Date.now() + 30 * 60 * 1000
+
+    if (isNaN(sessionStart.getTime()) || sessionStart.getTime() < minAllowedTime) {
+      toast.warning(
+        t("Horario inválido"),
+        t("La tutoría debe programarse con al menos 30 minutos de anticipación.")
+      )
       return
     }
 
@@ -475,6 +517,13 @@ export function TutorSessionsPage() {
 
   return (
     <div className="space-y-6">
+      <Link
+        to="/dashboard"
+        className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary-950 font-medium"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        {t('Volver al inicio')}
+      </Link>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -485,13 +534,6 @@ export function TutorSessionsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link
-            to="/tutor/materias"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <BookOpen className="h-4 w-4 text-gray-500" />
-            {t("Mis Materias")}
-          </Link>
           <Button
             onClick={handleOpenCreateModal}
             className="flex items-center gap-2 bg-primary-800 hover:bg-primary-900 text-white font-bold cursor-pointer"
@@ -783,6 +825,35 @@ export function TutorSessionsPage() {
                     )}
                   </div>
                 </div>
+
+                {session.status === 'completada' && (
+                  <div className="pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
+                    {sessionRatings[session.id] && sessionRatings[session.id].total_reviews > 0 ? (
+                      <div className="flex items-center gap-1.5">
+                        <StarRating rating={sessionRatings[session.id].average_rating} size="xs" />
+                        <span className="text-xs font-bold text-gray-900">
+                          {sessionRatings[session.id].average_rating.toFixed(1)}
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium">
+                          ({sessionRatings[session.id].total_reviews})
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-gray-500 italic font-medium">
+                        {t("Sin calificaciones aún")}
+                      </span>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => setReviewsModal({ isOpen: true, session })}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-primary-900 hover:text-primary-950 underline cursor-pointer"
+                    >
+                      <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-400" />
+                      {t("Ver calificaciones")}
+                    </button>
+                  </div>
+                )}
               </Card.Body>
             </Card>
           ))}
@@ -1005,6 +1076,12 @@ export function TutorSessionsPage() {
         isSubmitting={isDeletingSession}
         onClose={handleCloseDeleteModal}
         onConfirm={handleConfirmDelete}
+      />
+
+      <SessionReviewsModal
+        isOpen={reviewsModal.isOpen}
+        onClose={() => setReviewsModal({ isOpen: false, session: null })}
+        session={reviewsModal.session}
       />
     </div>
   )

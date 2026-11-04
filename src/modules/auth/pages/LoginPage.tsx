@@ -22,7 +22,8 @@ export function LoginPage() {
     ? t(registrationState.messageKey) : registrationState?.message
   const notifiedRegistration = useRef<string | null>(null)
 
-  const [email, setEmail] = useState('')
+  const queryEmail = new URLSearchParams(location.search).get('email') || ''
+  const [email, setEmail] = useState(queryEmail)
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)

@@ -17,6 +17,7 @@ import {
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Card } from '@/shared/components/ui/Card'
 import { Button } from '@/shared/components/ui/Button'
+import { StarRating } from '@/shared/components/StarRating'
 import { toast } from '@/shared/store/toast.store'
 import type { TutorSearchRow, TutorSlotRow, TutorRatingStats, TutorReviewItem } from '@/types/database.types'
 import { AvailabilityCalendar } from '../components/AvailabilityCalendar'
@@ -25,7 +26,6 @@ import { TutoringRequestModal } from '../components/TutoringRequestModal'
 import { getTutorAvailability, searchTutors, getTutorRatingStats, getTutorReviews } from '../services/tutor-search.api'
 import { formatTime, parseISODate } from '../utils/date-utils'
 
-/** La disponibilidad se refresca sola para reflejar cupos tomados por otros estudiantes. */
 const REFRESH_INTERVAL_MS = 30_000
 
 export function TutorProfilePage() {
@@ -92,11 +92,8 @@ export function TutorProfilePage() {
     return () => {
       cancelled = true
     }
-    // `t` solo cambia con el idioma; no debe recargar el perfil.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tutorId, institutionId, isAuthLoading])
 
-  // Refresco periódico y al volver a la pestaña.
   useEffect(() => {
     if (!tutor) return
     const refresh = () => {
@@ -115,7 +112,6 @@ export function TutorProfilePage() {
     [slots, subjectFilter],
   )
 
-  // Si el día elegido ya no tiene horarios, se elige el primero disponible.
   useEffect(() => {
     if (visibleSlots.length === 0) {
       setSelectedDate(null)
@@ -397,17 +393,8 @@ export function TutorProfilePage() {
                     <p className="text-4xl font-extrabold text-gray-900">
                       {ratingStats.average_rating.toFixed(1)}
                     </p>
-                    <div className="mt-1 flex justify-center items-center gap-1">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star
-                          key={s}
-                          className={`h-5 w-5 ${
-                            s <= Math.round(ratingStats.average_rating)
-                              ? 'fill-amber-400 text-amber-500'
-                              : 'text-gray-300'
-                          }`}
-                        />
-                      ))}
+                    <div className="mt-1 flex justify-center items-center">
+                      <StarRating rating={ratingStats.average_rating} size="md" />
                     </div>
                     <p className="mt-1 text-xs text-gray-600 font-medium">
                       {t('Calificación promedio')} ({ratingStats.total_reviews} {ratingStats.total_reviews === 1 ? t('evaluación') : t('evaluaciones')})
@@ -450,16 +437,7 @@ export function TutorProfilePage() {
                           {rev.subject_code} · {rev.subject_name}
                         </p>
                       </div>
-                      <div className="flex items-center" aria-label={`${rev.rating} estrellas`}>
-                        {[1, 2, 3, 4, 5].map((s) => (
-                          <Star
-                            key={s}
-                            className={`h-3.5 w-3.5 ${
-                              s <= rev.rating ? 'fill-amber-400 text-amber-500' : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
+                      <StarRating rating={rev.rating} size="xs" />
                     </div>
                     {rev.comment && (
                       <p className="mt-1 text-xs text-gray-700 whitespace-pre-wrap rounded-lg bg-gray-50 p-2.5">

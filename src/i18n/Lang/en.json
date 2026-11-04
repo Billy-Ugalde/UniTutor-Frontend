@@ -486,6 +486,7 @@
   "Fecha inválida": "Invalid date",
   "La fecha de la tutoría no puede ser anterior a hoy.": "The tutoring session date cannot be earlier than today.",
   "Horario inválido": "Invalid schedule",
+  "La tutoría debe programarse con al menos 30 minutos de anticipación.": "The tutoring session must be scheduled at least 30 minutes in advance.",
   "Cupo inválido": "Invalid capacity",
   "El cupo de estudiantes debe ser al menos 1.": "Student capacity must be at least 1.",
   "¿Deseas reabrir esta sesión como programada?": "Do you want to reopen this session as scheduled?",
@@ -895,5 +896,18 @@
   "Califica al tutor con estrellas y deja tus comentarios sobre la sesión.": "Rate the tutor with stars and leave feedback about the session.",
   "Reputación y comentarios de estudiantes": "Student reputation and reviews",
   "Opiniones de estudiantes": "Student reviews",
-  "Calificación requerida": "Rating required"
+  "Calificación requerida": "Rating required",
+  "Calificaciones de la tutoría": "Tutoring session ratings",
+  "Promedio de la sesión": "Session average",
+  "Total de opiniones": "Total reviews",
+  "Cargando calificaciones...": "Loading ratings...",
+  "Sin calificaciones aún": "No ratings yet",
+  "Esta tutoría aún no tiene calificaciones registradas.": "This tutoring session does not have any recorded ratings yet.",
+  "Ver calificaciones": "View ratings",
+  "calificación": "rating",
+  "calificaciones": "ratings",
+  "Recuperar contraseña": "Reset password",
+  "Este correo ya está registrado en el sistema. Por favor inicia sesión o recupera tu contraseña si la olvidaste.": "This email is already registered in the system. Please sign in or reset your password if you forgot it.",
+  "Este correo ya está registrado en el sistema": "This email is already registered in the system",
+  "La dirección {email} ya cuenta con una cuenta activa o registrada. Si es tuya, intenta iniciar sesión o recupera tu contraseña si la olvidaste.": "The address {email} already has an active or registered account. If it is yours, try signing in or reset your password if you forgot it."
 }

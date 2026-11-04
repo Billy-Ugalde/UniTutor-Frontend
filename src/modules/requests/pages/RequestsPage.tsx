@@ -58,7 +58,6 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
       void supabase.from('notifications').update({ read: true }).eq('request_id', id)
       toast.success(status === 'aceptada' ? t('Tutoría confirmada') : t('Solicitud rechazada'))
       await refresh()
-      // Refresh the notification badge even without Realtime configured.
       window.dispatchEvent(new Event('tutoring-requests-updated'))
       return true
     } catch (err) {
@@ -106,60 +105,55 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
         </div>
         <Button variant="secondary" disabled={isLoading || savingId !== null} onClick={() => void refresh()} className="gap-2"><RefreshCw className="h-4 w-4" />{t('Actualizar')}</Button>
       </div>
-      {!asTutor && <nav aria-label={t('Tutorías del estudiante')} className="flex flex-wrap gap-4 text-sm font-bold text-primary-900">
-        <Link to="/solicitudes" aria-current={!sessionsOnly ? 'page' : undefined} className={!sessionsOnly ? 'underline' : ''}>{t('Mis Solicitudes')}</Link>
-        <Link to="/sesiones" aria-current={sessionsOnly ? 'page' : undefined} className={sessionsOnly ? 'underline' : ''}>{t('Mis Sesiones de Tutoría')}</Link>
-      </nav>}
-
-      <div className="relative max-w-md">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-        <input
-          type="search"
-          value={searchQuery}
-          onChange={(event) => setSearchQuery(event.target.value)}
-          placeholder={
-            asTutor
-              ? t('Buscar por materia, código, título o estudiante...')
-              : t('Buscar por materia, código, título o tutor...')
-          }
-          aria-label={
-            asTutor
-              ? t('Buscar por materia, código, título o estudiante...')
-              : t('Buscar por materia, código, título o tutor...')
-          }
-          className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-9 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-300"
-        />
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => setSearchQuery('')}
-            aria-label={t('Limpiar búsqueda')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 min-h-[24px] min-w-[24px] inline-flex items-center justify-center text-gray-500 hover:text-gray-700 cursor-pointer"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      {!sessionsOnly ? (
-        <div className="flex flex-wrap gap-2" role="group" aria-label={t('Filtrar por estado')}>
-          {(['all', 'pendiente', 'aceptada', 'rechazada', 'cancelada'] as const).map((status) => (
-            <button key={status} type="button" aria-pressed={filter === status} onClick={() => setFilter(status)}
-              className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${filter === status ? 'border-primary-800 bg-primary-800 text-white font-bold' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'}`}>
-              {status === 'all' ? t('Todas') : t(requestStatusLabels[status])} ({status === 'all' ? rows.length : rows.filter((request) => request.status === status).length})
+      <div className="flex flex-col lg:flex-row lg:items-center gap-3">
+        <div className="relative w-full lg:w-80 shrink-0">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            placeholder={
+              asTutor
+                ? t('Buscar por materia, código, título o estudiante...')
+                : t('Buscar por materia, código, título o tutor...')
+            }
+            aria-label={
+              asTutor
+                ? t('Buscar por materia, código, título o estudiante...')
+                : t('Buscar por materia, código, título o tutor...')
+            }
+            className="w-full rounded-lg border border-gray-300 bg-white py-2 pl-9 pr-9 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-300"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              aria-label={t('Limpiar búsqueda')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 min-h-[24px] min-w-[24px] inline-flex items-center justify-center text-gray-500 hover:text-gray-700 cursor-pointer"
+            >
+              <X className="h-4 w-4" />
             </button>
-          ))}
+          )}
         </div>
-      ) : (
-        <div className="space-y-3">
-          <div className="flex flex-wrap gap-2" role="group" aria-label={t('Filtrar por estado de la sesión')}>
+
+        {!sessionsOnly ? (
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('Filtrar por estado')}>
+            {(['all', 'pendiente', 'aceptada', 'rechazada', 'cancelada'] as const).map((status) => (
+              <button key={status} type="button" aria-pressed={filter === status} onClick={() => setFilter(status)}
+                className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${filter === status ? 'border-primary-800 bg-primary-800 text-white font-bold' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'}`}>
+                {status === 'all' ? t('Todas') : t(requestStatusLabels[status])} ({status === 'all' ? rows.length : rows.filter((request) => request.status === status).length})
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('Filtrar por estado de la sesión')}>
             {(['all', 'programada', 'en_curso', 'completada'] as const).map((status) => (
               <button
                 key={status}
                 type="button"
                 aria-pressed={sessionStatusFilter === status}
                 onClick={() => setSessionStatusFilter(status)}
-                className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                className={`rounded-full border px-3 py-1.5 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   sessionStatusFilter === status
                     ? 'border-primary-800 bg-primary-800 text-white font-bold'
                     : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
@@ -173,24 +167,30 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
               </button>
             ))}
           </div>
+        )}
+      </div>
 
-          <div className="flex flex-wrap gap-2" role="group" aria-label={t('Filtrar por modalidad')}>
-            {(['all', 'virtual', 'presencial', 'hibrida'] as const).map((modality) => (
-              <button
-                key={modality}
-                type="button"
-                aria-pressed={modalityFilter === modality}
-                onClick={() => setModalityFilter(modality)}
-                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
-                  modalityFilter === modality
-                    ? 'border-blue-800 bg-blue-800 text-white font-bold'
-                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
-                }`}
-              >
-                {modality === 'all' ? t('Todas las modalidades') : t(modalityLabels[modality])}
-              </button>
-            ))}
-          </div>
+      {sessionsOnly && (
+        <div className="flex flex-wrap items-center gap-2" role="group" aria-label={t('Filtrar por modalidad')}>
+          {(['all', 'virtual', 'presencial', 'hibrida'] as const).map((modality) => (
+            <button
+              key={modality}
+              type="button"
+              aria-pressed={modalityFilter === modality}
+              onClick={() => setModalityFilter(modality)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
+                modalityFilter === modality
+                  ? 'border-blue-800 bg-blue-800 text-white font-bold'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
+              }`}
+            >
+              {modality === 'all' ? t('Todas las modalidades') : t(modalityLabels[modality])} (
+              {modality === 'all'
+                ? confirmedRows.length
+                : confirmedRows.filter((req) => req.modality === modality).length}
+              )
+            </button>
+          ))}
         </div>
       )}
 
@@ -204,6 +204,7 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
             key={request.id}
             request={request}
             asTutor={asTutor}
+            sessionsOnly={sessionsOnly}
             busy={savingId !== null}
             saving={savingId === request.id}
             onRespond={respond}

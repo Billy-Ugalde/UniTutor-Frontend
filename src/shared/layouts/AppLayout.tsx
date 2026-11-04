@@ -27,10 +27,10 @@ export function AppLayout() {
             <span className="text-xl font-bold text-primary-900">UniTutor</span>
           </Link>
 
-          <nav className="hidden items-center gap-6 md:flex">
+          <nav className="hidden items-center gap-2 lg:gap-3 md:flex">
             <Link
               to="/dashboard"
-              className="text-sm font-medium text-gray-700 hover:text-primary-900"
+              className="text-sm font-medium text-gray-700 hover:text-primary-900 mr-1"
             >
               {t("Inicio")}
             </Link>
@@ -41,7 +41,7 @@ export function AppLayout() {
                   to="/tutor/sesiones"
                   className="text-sm font-semibold text-blue-900 hover:text-blue-950 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-300 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Calendar className="h-4 w-4 text-blue-800" /> {t("Mis Sesiones")}
+                  <Calendar className="h-4 w-4 text-blue-800" /> {t("Mis Tutorías")}
                 </Link>
                 <Link
                   to="/tutor/materias"
@@ -49,16 +49,36 @@ export function AppLayout() {
                 >
                   <BookOpen className="h-4 w-4 text-emerald-800" /> {t("Mis Materias")}
                 </Link>
+                <Link
+                  to="/tutor/solicitudes"
+                  className="text-sm font-semibold text-amber-900 hover:text-amber-950 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <ClipboardList className="h-4 w-4 text-amber-800" /> {t("Solicitudes Recibidas")}
+                </Link>
               </>
             )}
 
             {hasRole('estudiante') && (
-              <Link
-                to="/tutores"
-                className="text-sm font-semibold text-amber-900 hover:text-amber-950 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
-              >
-                <Search className="h-4 w-4 text-amber-800" /> {t("Buscar Tutores")}
-              </Link>
+              <>
+                <Link
+                  to="/tutores"
+                  className="text-sm font-semibold text-amber-900 hover:text-amber-950 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Search className="h-4 w-4 text-amber-800" /> {t("Buscar Tutores")}
+                </Link>
+                <Link
+                  to="/solicitudes"
+                  className="text-sm font-semibold text-blue-900 hover:text-blue-950 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <ClipboardList className="h-4 w-4 text-blue-800" /> {t("Mis Solicitudes")}
+                </Link>
+                <Link
+                  to="/sesiones"
+                  className="text-sm font-semibold text-emerald-900 hover:text-emerald-950 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-300 flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Calendar className="h-4 w-4 text-emerald-800" /> {t("Mis Sesiones de Tutoría")}
+                </Link>
+              </>
             )}
 
             {(hasRole('inst_admin') || isSuperAdmin) && (
@@ -70,16 +90,6 @@ export function AppLayout() {
               </Link>
             )}
           </nav>
-
-          {(hasRole('tutor') || hasRole('estudiante')) && (
-            <nav aria-label={t('Solicitudes y confirmaciones')} className="order-last flex w-full flex-wrap gap-4 border-t border-gray-100 pt-3 text-sm font-semibold text-gray-700">
-              {hasRole('tutor') && <Link to="/tutor/solicitudes" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-primary-900 font-semibold"><ClipboardList className="h-4 w-4" />{t('Solicitudes Recibidas')}</Link>}
-              {hasRole('estudiante') && <>
-                <Link to="/solicitudes" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-primary-900 font-semibold"><ClipboardList className="h-4 w-4" />{t('Mis Solicitudes')}</Link>
-                <Link to="/sesiones" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-primary-900 font-semibold"><Calendar className="h-4 w-4" />{t('Mis Sesiones de Tutoría')}</Link>
-              </>}
-            </nav>
-          )}
 
           <div className="flex items-center gap-3">
             <LanguageSelector />

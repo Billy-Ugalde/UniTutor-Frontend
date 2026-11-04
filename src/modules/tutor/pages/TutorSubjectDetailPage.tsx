@@ -63,14 +63,33 @@ export function TutorSubjectDetailPage() {
   const [isUnlinkModalOpen, setIsUnlinkModalOpen] = useState(false)
   const [isUnlinkingSubject, setIsUnlinkingSubject] = useState(false)
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const getLocalDateString = (d = new Date()) => {
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const getDefaultSessionTimes = () => {
+    const d = new Date(Date.now() + 60 * 60 * 1000)
+    d.setMinutes(0, 0, 0)
+    const startHour = String(d.getHours()).padStart(2, '0')
+    const startTime = `${startHour}:00`
+    const endD = new Date(d.getTime() + 60 * 60 * 1000)
+    const endHour = String(endD.getHours()).padStart(2, '0')
+    const endTime = `${endHour}:00`
+    return { startTime, endTime }
+  }
+
+  const todayStr = getLocalDateString()
+  const initialTimes = getDefaultSessionTimes()
 
   const [sessionForm, setSessionForm] = useState({
     title: '',
     description: '',
     date: todayStr,
-    startTime: '14:00',
-    endTime: '16:00',
+    startTime: initialTimes.startTime,
+    endTime: initialTimes.endTime,
     modality: 'virtual' as SessionModality,
     locationOrLink: '',
     maxStudents: 5,
@@ -153,13 +172,14 @@ export function TutorSubjectDetailPage() {
   }, [loadData])
 
   const handleOpenCreateModal = () => {
+    const times = getDefaultSessionTimes()
     setEditingSession(null)
     setSessionForm({
       title: '',
       description: '',
-      date: todayStr,
-      startTime: '14:00',
-      endTime: '16:00',
+      date: getLocalDateString(),
+      startTime: times.startTime,
+      endTime: times.endTime,
       modality: 'virtual',
       locationOrLink: '',
       maxStudents: 5,
@@ -196,13 +216,19 @@ export function TutorSubjectDetailPage() {
       return
     }
 
-    if (sessionForm.date < todayStr) {
-      toast.warning(t("Fecha inválida"), t("La fecha de la tutoría no puede ser anterior a hoy."))
+    if (sessionForm.endTime <= sessionForm.startTime) {
+      toast.warning(t("Horario inválido"), t("La hora de finalización debe ser posterior a la hora de inicio."))
       return
     }
 
-    if (sessionForm.endTime <= sessionForm.startTime) {
-      toast.warning(t("Horario inválido"), t("La hora de finalización debe ser posterior a la hora de inicio."))
+    const sessionStart = new Date(`${sessionForm.date}T${sessionForm.startTime}`)
+    const minAllowedTime = Date.now() + 30 * 60 * 1000
+
+    if (isNaN(sessionStart.getTime()) || sessionStart.getTime() < minAllowedTime) {
+      toast.warning(
+        t("Horario inválido"),
+        t("La tutoría debe programarse con al menos 30 minutos de anticipación.")
+      )
       return
     }
 
