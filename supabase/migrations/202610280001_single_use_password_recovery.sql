@@ -12,7 +12,7 @@ set search_path = ''
 as $$
 begin
   if old.encrypted_password is distinct from new.encrypted_password then
-    new.recovery_token := null;
+    new.recovery_token := '';
     new.recovery_sent_at := null;
   end if;
   return new;

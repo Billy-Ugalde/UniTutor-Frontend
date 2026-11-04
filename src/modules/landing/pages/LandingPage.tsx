@@ -507,10 +507,10 @@ export function LandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to={user ? "/dashboard" : "/register"}
-                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-bold text-primary-950 shadow-md transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-700"
+                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-extrabold text-primary-950 shadow-md transition hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-700"
                 >
-                  {user ? t("Ir al Panel") : t("Crear cuenta")}
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                  <span className="text-primary-950">{user ? t("Ir al Panel") : t("Crear cuenta")}</span>
+                  <ArrowRight className="ml-2 h-5 w-5 text-primary-950" />
                 </Link>
                 {!user && (
                   <Link
@@ -526,48 +526,82 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-gray-50 py-12 text-sm text-gray-700 font-medium">
+      <footer className="border-t border-gray-200 bg-white/95 backdrop-blur-md py-8 text-sm text-gray-700">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            {/* Logo and brief */}
-            <div className="flex flex-col items-center md:items-start text-center md:text-left">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-800 text-white font-bold">
-                  <GraduationCap className="h-4 w-4" />
-                </div>
-                <span className="text-lg font-bold text-gray-900">UniTutor</span>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+            <Link to="/" className="flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-800 text-white shadow-sm shadow-primary-800/30 font-bold">
+                <GraduationCap className="h-5 w-5" />
               </div>
-              <p className="mt-2 text-xs text-gray-700 font-medium max-w-sm">
-                {t("Plataforma de acompañamiento y tutorías académicas universitarias.")}
-              </p>
-            </div>
+              <span className="text-xl font-bold tracking-tight text-primary-950">UniTutor</span>
+            </Link>
 
-            {/* Quick links */}
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium">
-              <Link to="/login" className="text-gray-700 hover:text-primary-950 font-semibold transition-colors">
-                {t("Iniciar sesión")}
-              </Link>
-              <Link to="/register" className="text-gray-700 hover:text-primary-950 font-semibold transition-colors">
-                {t("Registrarse")}
-              </Link>
+            <nav className="flex flex-wrap items-center justify-center gap-6 md:gap-8">
+              <a
+                href="#que-es"
+                className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
+              >
+                {t("¿Qué es?")}
+              </a>
+              <a
+                href="#beneficios"
+                className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
+              >
+                {t("Beneficios")}
+              </a>
+              <a
+                href="#comunidad"
+                className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
+              >
+                {t("Comunidad")}
+              </a>
+              <a
+                href="#como-funciona"
+                className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
+              >
+                {t("¿Cómo funciona?")}
+              </a>
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="flex items-center gap-1 text-gray-700 hover:text-primary-950 font-semibold transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100 hover:text-primary-950 transition-colors shadow-sm cursor-pointer"
               >
                 <ArrowUp className="h-4 w-4" />
                 <span>{t("Volver arriba")}</span>
               </button>
-            </div>
+            </nav>
 
-            {/* Language Selector in Footer */}
-            <div className="flex items-center">
+            <div className="flex items-center gap-3">
               <LanguageSelector />
+
+              {user ? (
+                <Link
+                  to="/dashboard"
+                  className="inline-flex items-center justify-center rounded-lg bg-primary-800 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
+                >
+                  {t("Ir al Panel")}
+                  <ArrowRight className="ml-1.5 h-4 w-4" />
+                </Link>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Link
+                    to="/login"
+                    className="rounded-lg px-3.5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  >
+                    {t("Iniciar sesión")}
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="inline-flex items-center justify-center rounded-lg bg-primary-800 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-primary-800/20 transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
+                  >
+                    {t("Registrarse")}
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="mt-8 border-t border-gray-200 pt-6 text-center text-xs text-gray-700 font-medium">
+          <div className="mt-8 border-t border-gray-100 pt-6 text-center text-xs text-gray-600 font-medium">
             <p>
               UniTutor © {new Date().getFullYear()}. {t("Todos los derechos reservados.")}
             </p>
