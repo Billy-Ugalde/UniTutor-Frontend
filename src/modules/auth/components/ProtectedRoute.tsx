@@ -11,7 +11,7 @@ export function ProtectedRoute() {
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="flex flex-col items-center gap-3">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
-          <span className="text-sm text-gray-500">{t("Cargando...")}</span>
+          <span className="text-sm text-gray-700 font-medium">{t("Cargando...")}</span>
         </div>
       </div>
     )

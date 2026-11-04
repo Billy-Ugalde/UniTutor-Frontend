@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -289,7 +290,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al habilitar materia:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al habilitar materia.")
+      const errorText = getErrorMessage(err, t, "Error al habilitar materia.")
       toast.error(t("Error"), errorText)
     } finally {
       setIsSubmittingOffer(false)
@@ -315,7 +316,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al deshabilitar materia:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al deshabilitar materia.")
+      const errorText = getErrorMessage(err, t, "Error al deshabilitar materia.")
       toast.error(t("Error"), errorText)
     } finally {
       setTogglingId(null)
@@ -345,7 +346,7 @@ export function SubjectsManagementPage() {
           await loadCatalogAndOffered()
         } catch (err) {
           console.error('Error al habilitar materia:', err)
-          toast.error(t("Error"), err instanceof Error ? err.message : t("Error al habilitar materia."))
+          toast.error(t("Error"), getErrorMessage(err, t, "Error al habilitar materia."))
         } finally {
           setTogglingId(null)
         }
@@ -393,7 +394,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al crear carrera:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al crear la carrera.")
+      const errorText = getErrorMessage(err, t, "Error al crear la carrera.")
       toast.error(t("Error al crear carrera"), errorText)
     } finally {
       setIsCreatingCareer(false)
@@ -442,7 +443,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al crear curso:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al crear el curso.")
+      const errorText = getErrorMessage(err, t, "Error al crear el curso.")
       toast.error(t("Error al crear curso"), errorText)
     } finally {
       setIsCreatingCourse(false)
@@ -514,7 +515,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al crear materia:', err)
-      const errorText = err instanceof Error ? err.message : t("Error inesperado al crear la materia.")
+      const errorText = getErrorMessage(err, t, "Error inesperado al crear la materia.")
       toast.error(t("Error al crear materia"), errorText)
     } finally {
       setIsCreatingSubject(false)
@@ -545,7 +546,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar carrera:', err)
-      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar carrera."))
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al actualizar carrera."))
     } finally {
       setIsUpdatingCareer(false)
     }
@@ -583,7 +584,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar curso:', err)
-      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar curso."))
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al actualizar curso."))
     } finally {
       setIsUpdatingCourse(false)
     }
@@ -621,7 +622,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar materia global:', err)
-      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar materia."))
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al actualizar materia."))
     } finally {
       setIsUpdatingSubjectGlobal(false)
     }
@@ -665,7 +666,7 @@ export function SubjectsManagementPage() {
       await loadCatalogAndOffered()
     } catch (err) {
       console.error('Error al actualizar código institucional:', err)
-      toast.error(t("Error"), err instanceof Error ? err.message : t("Error al actualizar código."))
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al actualizar código."))
     } finally {
       setIsUpdatingInstitutionCode(false)
     }
@@ -733,13 +734,14 @@ export function SubjectsManagementPage() {
     <div className="space-y-6">
       {isSuperAdmin && (
         <div className="rounded-xl border border-primary-100 bg-primary-50/40 p-4">
-          <div className="flex items-center gap-2 mb-2 text-primary-800 font-semibold text-sm">
+          <div className="flex items-center gap-2 mb-2 text-primary-900 font-semibold text-sm">
             <Shield className="h-4 w-4" /> {t("Modo SuperAdmin: Selección de Campus / Institución")}
           </div>
-          <p className="text-xs text-primary-700 mb-3">
+          <p className="text-xs text-primary-900 font-semibold mb-3">
             {t("Gestionando catálogo y códigos administrativos de la institución seleccionada:")}
           </p>
           <select
+            aria-label={t("Seleccionar institución")}
             value={targetInstId || ''}
             onChange={(e) => handleSelectInstitution(e.target.value)}
             className="w-full sm:w-80 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-800 shadow-xs focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 cursor-pointer"
@@ -756,14 +758,14 @@ export function SubjectsManagementPage() {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800">
+            <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-900 hover:text-primary-950">
               <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
             </Link>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mt-1">
             {t("Catálogo Académico y Materias")}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700">
             {t("Gestión en 3 niveles: Carreras (Nivel 1), Cursos/Áreas (Nivel 2) y Materias con código institucional (Nivel 3).")}
           </p>
         </div>
@@ -795,7 +797,7 @@ export function SubjectsManagementPage() {
             {t("Crear Materia")}
           </Button>
           <div className="rounded-lg bg-primary-50 px-3.5 py-1.5 border border-primary-200">
-            <span className="text-xs font-semibold uppercase text-primary-700">{t("Ofertadas:")}</span>
+            <span className="text-xs font-bold uppercase text-primary-950">{t("Ofertadas:")}</span>
             <span className="ml-1.5 text-base font-bold text-primary-900">
               {offeredCount}
             </span>
@@ -816,12 +818,12 @@ export function SubjectsManagementPage() {
       </Card>
 
       {isLoading ? (
-        <div className="py-12 text-center text-gray-500">{t("Cargando catálogo académico...")}</div>
+        <div className="py-12 text-center text-gray-700 font-medium">{t("Cargando catálogo académico...")}</div>
       ) : filteredCatalog.length === 0 ? (
         <Card>
           <Card.Body>
             <div className="text-center py-8 space-y-3">
-              <p className="text-gray-500">
+              <p className="text-gray-700 font-medium">
                 {catalog.length === 0
                   ? t("No hay carreras registradas en el catálogo académico.")
                   : t("No se encontraron resultados con ese criterio de búsqueda.")}
@@ -847,7 +849,7 @@ export function SubjectsManagementPage() {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-[11px] font-semibold text-blue-800">
+                      <span className="inline-flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-900">
                         <GraduationCap className="h-3 w-3" /> {t("Nivel 1: Carrera")}
                       </span>
                       <h2 className="text-lg font-bold text-gray-900">{career.name}</h2>
@@ -856,21 +858,21 @@ export function SubjectsManagementPage() {
                           type="button"
                           onClick={() => handleOpenEditCareer(career)}
                           title={t("Editar carrera")}
-                          className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer"
+                          className="rounded p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors cursor-pointer"
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
                       )}
                     </div>
                     {career.description && (
-                      <p className="text-xs text-gray-500">{career.description}</p>
+                      <p className="text-xs text-gray-700 font-medium">{career.description}</p>
                     )}
                   </div>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleOpenCreateCourse(career.id)}
-                    className="text-primary-700 hover:text-primary-800 hover:bg-primary-50 self-start sm:self-auto flex items-center gap-1.5 border border-primary-200 bg-white cursor-pointer"
+                    className="text-primary-900 font-bold hover:text-primary-950 hover:bg-primary-50 self-start sm:self-auto flex items-center gap-1.5 border border-primary-300 bg-white cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     {t("Añadir Curso / Área")}
@@ -881,7 +883,7 @@ export function SubjectsManagementPage() {
               <Card.Body className="p-5 space-y-5">
                 {career.courses.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-gray-300 p-6 text-center bg-gray-50/50">
-                    <p className="text-sm text-gray-500 mb-2">
+                    <p className="text-sm text-gray-700 font-medium mb-2">
                       {t("Esta carrera aún no cuenta con cursos o áreas académicas (Nivel 2).")}
                     </p>
                     <Button
@@ -900,13 +902,13 @@ export function SubjectsManagementPage() {
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-gray-200/70 pb-2.5">
                         <div className="flex items-center gap-2">
                           {course.code && (
-                            <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-mono font-bold text-blue-800">
+                            <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-mono font-bold text-blue-950">
                               {course.code}
                             </span>
                           )}
                           <h3 className="font-semibold text-gray-900 text-sm">{course.name}</h3>
                           {course.description && (
-                            <span className="text-xs text-gray-500 hidden md:inline">
+                            <span className="text-xs text-gray-700 font-medium hidden md:inline">
                               — {course.description}
                             </span>
                           )}
@@ -915,7 +917,7 @@ export function SubjectsManagementPage() {
                               type="button"
                               onClick={() => handleOpenEditCourse(course)}
                               title={t("Editar curso")}
-                              className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700 transition-colors cursor-pointer"
+                              className="rounded p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 transition-colors cursor-pointer"
                             >
                               <Pencil className="h-3.5 w-3.5" />
                             </button>
@@ -925,7 +927,7 @@ export function SubjectsManagementPage() {
                           variant="ghost"
                           size="sm"
                           onClick={() => handleOpenCreateSubject(course.id)}
-                          className="text-primary-700 hover:text-primary-800 hover:bg-primary-50 self-start sm:self-auto flex items-center gap-1 text-xs cursor-pointer"
+                          className="text-primary-900 font-bold hover:text-primary-950 hover:bg-primary-50 self-start sm:self-auto flex items-center gap-1 text-xs cursor-pointer"
                         >
                           <Plus className="h-3 w-3" />
                           {t("Añadir Materia")}
@@ -934,14 +936,14 @@ export function SubjectsManagementPage() {
 
                       {course.subjects.length === 0 ? (
                         <div className="rounded-md border border-dashed border-gray-200 bg-white p-4 text-center">
-                          <p className="text-xs text-gray-500 mb-2">
+                          <p className="text-xs text-gray-700 font-medium mb-2">
                             {t("No hay materias registradas en este curso (Nivel 3).")}
                           </p>
                           <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => handleOpenCreateSubject(course.id)}
-                            className="text-xs inline-flex items-center gap-1 text-primary-600 hover:underline cursor-pointer"
+                            className="text-xs inline-flex items-center gap-1 text-primary-900 font-bold hover:text-primary-950 hover:underline cursor-pointer"
                           >
                             <Plus className="h-3 w-3" />
                             {t("Crear primera materia")}
@@ -971,7 +973,7 @@ export function SubjectsManagementPage() {
                                           ? 'bg-blue-100 text-blue-900 border border-blue-200'
                                           : subject.customCode
                                             ? 'bg-gray-100 text-gray-800 border border-gray-300'
-                                            : 'bg-gray-100 text-gray-500'
+                                            : 'bg-gray-200 text-gray-800 font-bold'
                                       }`}
                                       title={
                                         isOffered
@@ -991,7 +993,8 @@ export function SubjectsManagementPage() {
                                         type="button"
                                         onClick={() => handleOpenEditSubjectGlobal(subject)}
                                         title={t("Editar materia global")}
-                                        className="text-gray-400 hover:text-gray-700 p-0.5 cursor-pointer"
+                                        aria-label={t("Editar materia global")}
+                                        className="text-gray-600 hover:text-gray-900 p-1 min-h-[24px] min-w-[24px] inline-flex items-center justify-center rounded cursor-pointer"
                                       >
                                         <Pencil className="h-3 w-3" />
                                       </button>
@@ -1000,12 +1003,12 @@ export function SubjectsManagementPage() {
                                   <div className="flex items-center gap-2 mt-1">
                                     <span
                                       className={`inline-flex items-center gap-1 text-[11px] font-medium ${
-                                        isOffered ? 'text-primary-700' : 'text-gray-400'
+                                        isOffered ? 'text-primary-900 font-bold' : 'text-gray-700 font-medium'
                                       }`}
                                     >
                                       {isOffered ? (
                                         <>
-                                          <CheckCircle2 className="h-3 w-3 text-primary-600" />
+                                          <CheckCircle2 className="h-3.5 w-3.5 text-primary-900" />
                                           {t("Ofertada")}
                                         </>
                                       ) : (
@@ -1021,7 +1024,8 @@ export function SubjectsManagementPage() {
                                           subject.customCode || subject.code
                                         )
                                       }
-                                      className="text-[11px] text-blue-700 hover:text-blue-900 underline flex items-center gap-0.5 cursor-pointer"
+                                      aria-label={t("Cambiar código para esta institución")}
+                                      className="text-xs text-blue-950 hover:text-blue-900 underline font-bold inline-flex items-center gap-0.5 cursor-pointer min-h-[24px] px-1 py-0.5"
                                       title={t("Cambiar código para esta institución")}
                                     >
                                       <Pencil className="h-2.5 w-2.5" />
@@ -1061,7 +1065,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setEnablingSubject(null)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1069,7 +1075,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleConfirmEnableSubject} className="mt-4 space-y-4">
               <div>
                 <p className="text-sm font-medium text-gray-900 mb-1">{enablingSubject.name}</p>
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-gray-700 font-medium mb-3">
                   {t("Establece el código administrativo oficial con el que se impartirá en esta institución.")}
                 </p>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
@@ -1114,7 +1120,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setEditingInstitutionCode(null)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1122,7 +1130,7 @@ export function SubjectsManagementPage() {
             <form onSubmit={handleUpdateInstitutionCode} className="mt-4 space-y-4">
               <div>
                 <p className="text-sm font-medium text-gray-900 mb-1">{editingInstitutionCode.subjectName}</p>
-                <p className="text-xs text-gray-500 mb-3">
+                <p className="text-xs text-gray-700 font-medium mb-3">
                   {t("Este código es exclusivo para esta institución y no afectará el catálogo de otras universidades.")}
                 </p>
                 <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">
@@ -1172,7 +1180,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setEditingCareer(null)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1231,7 +1241,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setEditingCourse(null)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1242,6 +1254,7 @@ export function SubjectsManagementPage() {
                   {t("Carrera Padre")} <span className="text-red-500">*</span>
                 </label>
                 <select
+                  aria-label={t("Carrera Padre")}
                   required
                   value={editingCourse.careerId}
                   onChange={(e) => setEditingCourse({ ...editingCourse, careerId: e.target.value })}
@@ -1273,7 +1286,7 @@ export function SubjectsManagementPage() {
                   value={editingCourse.code}
                   onChange={(e) => setEditingCourse({ ...editingCourse, code: e.target.value })}
                 />
-                <p className="text-[11px] text-gray-400 mt-1">
+                <p className="text-xs text-gray-700 font-medium mt-1">
                   {t("Los códigos administrativos oficiales se asignan individualmente a nivel de cada materia por institución.")}
                 </p>
               </div>
@@ -1320,7 +1333,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setEditingSubjectGlobal(null)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1331,6 +1346,7 @@ export function SubjectsManagementPage() {
                   {t("Curso Padre")} <span className="text-red-500">*</span>
                 </label>
                 <select
+                  aria-label={t("Curso Padre")}
                   required
                   value={editingSubjectGlobal.courseId}
                   onChange={(e) =>
@@ -1411,12 +1427,12 @@ export function SubjectsManagementPage() {
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-700">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <GraduationCap className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{t("Crear Carrera / Categoría")}</h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700 font-medium">
                     {t("Nivel 1 de la jerarquía académica (ej: Idiomas, Ingeniería, Salud)")}
                   </p>
                 </div>
@@ -1424,7 +1440,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setIsCreateCareerModalOpen(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1483,12 +1501,12 @@ export function SubjectsManagementPage() {
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-700">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <Layers className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{t("Crear Curso / Área Académica")}</h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700 font-medium">
                     {t("Nivel 2 de la jerarquía académica (agrupa materias temáticas)")}
                   </p>
                 </div>
@@ -1496,7 +1514,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setIsCreateCourseModalOpen(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1508,6 +1528,7 @@ export function SubjectsManagementPage() {
                   {t("Carrera Padre (Nivel 1)")} <span className="text-red-500">*</span>
                 </label>
                 <select
+                  aria-label={t("Carrera Padre")}
                   required
                   value={newCourse.careerId}
                   onChange={(e) => setNewCourse({ ...newCourse, careerId: e.target.value })}
@@ -1540,7 +1561,7 @@ export function SubjectsManagementPage() {
                   value={newCourse.code}
                   onChange={(e) => setNewCourse({ ...newCourse, code: e.target.value })}
                 />
-                <p className="text-[11px] text-gray-400 mt-1">
+                <p className="text-xs text-gray-700 font-medium mt-1">
                   {t("Los códigos administrativos oficiales se asignan individualmente a nivel de cada materia por institución.")}
                 </p>
               </div>
@@ -1585,12 +1606,12 @@ export function SubjectsManagementPage() {
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center justify-between pb-3 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-700">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{t("Crear Materia Académica")}</h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700 font-medium">
                     {t("Nivel 3 con código administrativo asignado a")} {selectedInstName}
                   </p>
                 </div>
@@ -1598,7 +1619,9 @@ export function SubjectsManagementPage() {
               <button
                 type="button"
                 onClick={() => setIsCreateSubjectModalOpen(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1610,6 +1633,7 @@ export function SubjectsManagementPage() {
                   {t("Curso / Área Perteneciente (Nivel 2)")} <span className="text-red-500">*</span>
                 </label>
                 <select
+                  aria-label={t("Curso / Área Padre")}
                   required
                   value={newSubject.courseId}
                   onChange={(e) => setNewSubject({ ...newSubject, courseId: e.target.value })}
@@ -1643,7 +1667,7 @@ export function SubjectsManagementPage() {
                   value={newSubject.code}
                   onChange={(e) => setNewSubject({ ...newSubject, code: e.target.value })}
                 />
-                <p className="text-[11px] text-gray-400 mt-1">
+                <p className="text-xs text-gray-700 font-medium mt-1">
                   {t("Se asignará este código directamente para")} {selectedInstName}{t(". Cada universidad puede tener códigos distintos.")}
                 </p>
               </div>

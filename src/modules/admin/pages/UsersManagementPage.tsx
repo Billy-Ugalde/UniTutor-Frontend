@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
@@ -240,7 +241,7 @@ export function UsersManagementPage() {
       await loadUsersAndRoles()
     } catch (err) {
       console.error('Error al guardar roles:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al actualizar roles.")
+      const errorText = getErrorMessage(err, t, "Error al actualizar roles.")
       setActionMessage({
         type: 'error',
         text: errorText,
@@ -289,7 +290,7 @@ export function UsersManagementPage() {
       )
     } catch (err) {
       console.error('Error al cambiar estado del usuario:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al cambiar estado del usuario.")
+      const errorText = getErrorMessage(err, t, "Error al cambiar estado del usuario.")
       setActionMessage({
         type: 'error',
         text: errorText,
@@ -303,9 +304,9 @@ export function UsersManagementPage() {
       case 'inst_admin':
         return 'bg-blue-100 text-blue-800 border border-blue-200'
       case 'tutor':
-        return 'bg-green-100 text-green-800 border border-green-200'
+        return 'bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold'
       case 'estudiante':
-        return 'bg-amber-100 text-amber-800 border border-amber-200'
+        return 'bg-amber-100 text-amber-950 border border-amber-300 font-bold'
       default:
         return 'bg-gray-100 text-gray-700 border border-gray-200'
     }
@@ -316,13 +317,14 @@ export function UsersManagementPage() {
       {isSuperAdmin && institutions.length > 0 && (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-blue-200 bg-blue-50/60 p-4">
           <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-blue-700" />
+            <Shield className="h-5 w-5 text-blue-900" />
             <div>
               <p className="text-sm font-bold text-blue-900">{t("Institución activa")}</p>
-              <p className="text-xs text-blue-700">{t("Gestionando usuarios de:")}</p>
+              <p className="text-xs text-blue-900 font-medium">{t("Gestionando usuarios de:")}</p>
             </div>
           </div>
           <select
+            aria-label={t("Institución actual")}
             value={targetInstId ?? ''}
             onChange={(e) => handleSelectInstitution(e.target.value)}
             className="rounded-lg border border-blue-300 bg-white px-3 py-1.5 text-sm font-medium text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -339,12 +341,12 @@ export function UsersManagementPage() {
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800">
+            <Link to="/admin" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-900 hover:text-primary-950">
               <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
             </Link>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mt-1">{t("Gestión de Usuarios")}</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700">
             {t("Supervisa perfiles y administra los roles de la institución")}
           </p>
         </div>
@@ -354,8 +356,8 @@ export function UsersManagementPage() {
         <div
           className={`rounded-md p-4 text-sm ${
             actionMessage.type === 'success'
-              ? 'border border-green-200 bg-green-50 text-green-700'
-              : 'border border-red-200 bg-red-50 text-red-700'
+              ? 'border border-emerald-300 bg-emerald-50 text-emerald-950 font-bold'
+              : 'border border-red-300 bg-red-50 text-red-950 font-bold'
           }`}
         >
           {actionMessage.text}
@@ -373,10 +375,11 @@ export function UsersManagementPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
                 {t("Filtrar por rol:")}
               </span>
               <select
+                aria-label={t("Filtrar por rol")}
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value)}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:border-primary-500 focus:outline-none"
@@ -402,7 +405,7 @@ export function UsersManagementPage() {
               <col className="w-[10%]" />
               <col className="w-[24%]" />
             </colgroup>
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+            <thead className="border-b border-gray-200 bg-gray-50 text-xs font-bold uppercase text-gray-700">
               <tr>
                 <th className="px-4 py-3">{t("Usuario")}</th>
                 <th className="px-4 py-3">{t("Correo")}</th>
@@ -415,13 +418,13 @@ export function UsersManagementPage() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">
+                  <td colSpan={6} className="py-8 text-center text-gray-700 font-medium">
                     {t("Cargando usuarios...")}
                   </td>
                 </tr>
               ) : filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">
+                  <td colSpan={6} className="py-8 text-center text-gray-700 font-medium">
                     {t("No se encontraron usuarios en esta institución.")}
                   </td>
                 </tr>
@@ -430,7 +433,7 @@ export function UsersManagementPage() {
                   <tr key={u.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3.5 font-medium text-gray-900">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 font-semibold text-primary-700 text-xs">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 font-bold text-primary-900 text-xs">
                           {u.first_name?.charAt(0).toUpperCase() || '?'}
                         </div>
                         <span className="truncate text-sm text-gray-900" title={`${u.first_name} ${u.last_name}`}>
@@ -440,7 +443,7 @@ export function UsersManagementPage() {
                     </td>
                     <td className="px-4 py-3.5 text-xs text-gray-600">
                       <p className="truncate" title={u.email || t("Sin correo")}>
-                        {u.email || <span className="text-gray-400">{t("Sin correo")}</span>}
+                        {u.email || <span className="text-gray-700 font-medium">{t("Sin correo")}</span>}
                       </p>
                     </td>
                     <td className="px-4 py-3.5">
@@ -456,22 +459,22 @@ export function UsersManagementPage() {
                           </span>
                         ))}
                         {u.roles.length === 0 && (
-                          <span className="text-xs text-gray-400 whitespace-nowrap">{t("Sin roles")}</span>
+                          <span className="text-xs text-gray-700 font-medium whitespace-nowrap">{t("Sin roles")}</span>
                         )}
                       </div>
                     </td>
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       {u.active ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100/90 border border-emerald-300 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
                           <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-100/90 border border-red-300 px-2.5 py-0.5 text-xs font-bold text-red-950">
                           <XCircle className="h-3 w-3" /> {t("Inactivo")}
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3.5 text-xs text-gray-400 whitespace-nowrap">
+                    <td className="px-4 py-3.5 text-xs text-gray-700 font-medium whitespace-nowrap">
                       {new Date(u.created_at).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
@@ -507,8 +510,8 @@ export function UsersManagementPage() {
                             onClick={() => handleToggleUserActive(u)}
                             className={
                               u.active
-                                ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
-                                : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
+                                ? 'text-red-800 hover:bg-red-50 hover:text-red-900 border-red-300 font-semibold'
+                                : 'text-emerald-800 hover:bg-emerald-50 hover:text-emerald-900 border-emerald-300 font-semibold'
                             }
                             title={u.active ? t("Desactivar acceso del usuario") : t("Activar acceso del usuario")}
                           >
@@ -537,7 +540,7 @@ export function UsersManagementPage() {
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-start justify-between border-b pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700 text-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-900 text-lg">
                   {viewingUser.first_name?.charAt(0).toUpperCase() || '?'}
                 </div>
                 <div>
@@ -545,13 +548,13 @@ export function UsersManagementPage() {
                     {viewingUser.first_name} {viewingUser.last_name}
                   </h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-gray-500">{viewingUser.email || t("Sin correo electrónico")}</p>
+                    <p className="text-xs text-gray-700 font-medium">{viewingUser.email || t("Sin correo electrónico")}</p>
                     {viewingUser.active ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-300 px-2 py-0.5 text-xs font-bold text-emerald-950">
                         <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 border border-red-300 px-2 py-0.5 text-xs font-bold text-red-950">
                         <XCircle className="h-3 w-3" /> {t("Desactivado")}
                       </span>
                     )}
@@ -561,7 +564,9 @@ export function UsersManagementPage() {
               <button
                 type="button"
                 onClick={() => setViewingUser(null)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -571,7 +576,7 @@ export function UsersManagementPage() {
               <div className="rounded-lg border border-gray-100 bg-gray-50/70 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Institución:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Institución:")}</span>
                   <span className="font-semibold text-gray-900">
                     {institutions.find((i) => i.id === viewingUser.institution_id)?.name ||
                       t("Institución no especificada")}
@@ -580,19 +585,19 @@ export function UsersManagementPage() {
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Mail className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Correo:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Correo:")}</span>
                   <span className="text-gray-800">{viewingUser.email || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Phone className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Teléfono:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Teléfono:")}</span>
                   <span className="text-gray-800">{viewingUser.phone || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Fecha de Registro:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Fecha de Registro:")}</span>
                   <span className="text-gray-800">
                     {new Date(viewingUser.created_at).toLocaleDateString(locale, {
                       year: 'numeric',
@@ -603,13 +608,13 @@ export function UsersManagementPage() {
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-xs text-gray-400 font-medium">{t("ID de Usuario:")}</span>
-                  <p className="font-mono text-xs text-gray-500 select-all mt-0.5">{viewingUser.id}</p>
+                  <span className="text-xs text-gray-700 font-bold">{t("ID de Usuario:")}</span>
+                  <p className="font-mono text-xs text-gray-700 font-medium select-all mt-0.5">{viewingUser.id}</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
                   {t("Roles Asignados en la Institución")}
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -625,14 +630,14 @@ export function UsersManagementPage() {
                     </span>
                   ))}
                   {viewingUser.roles.length === 0 && (
-                    <span className="text-xs text-gray-400 italic">{t("No tiene roles activos asignados")}</span>
+                    <span className="text-xs text-gray-700 font-medium italic">{t("No tiene roles activos asignados")}</span>
                   )}
                 </div>
               </div>
             </div>
 
             {viewingUser.roles.includes('inst_admin') && (
-              <p className="mt-3 text-[11px] text-gray-500 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+              <p className="mt-3 text-xs text-gray-700 font-medium bg-gray-50 rounded-lg p-2.5 border border-gray-200">
                 {t("El rol de administrador institucional es exclusivo y fijo; no puede combinarse ni cambiarse a otros roles.")}
               </p>
             )}
@@ -656,8 +661,8 @@ export function UsersManagementPage() {
                   }}
                   className={
                     viewingUser.active
-                      ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
-                      : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
+                      ? 'text-red-800 hover:bg-red-50 hover:text-red-900 border-red-300 font-semibold'
+                      : 'text-emerald-800 hover:bg-emerald-50 hover:text-emerald-900 border-emerald-300 font-semibold'
                   }
                 >
                   <Power className="h-3.5 w-3.5 mr-1" />
@@ -688,10 +693,10 @@ export function UsersManagementPage() {
             <h3 className="text-lg font-bold text-gray-900">
               {t("Modificar Roles Académicos")}
             </h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700 font-medium">
               {editingUser.first_name} {editingUser.last_name} ({editingUser.email})
             </p>
-            <p className="mt-2 text-xs text-gray-500">
+            <p className="mt-2 text-xs text-gray-700 font-medium">
               {t("Configura los roles académicos del usuario. Puede desempeñarse como Estudiante, Tutor o ambos simultáneamente.")}
             </p>
 
@@ -715,14 +720,14 @@ export function UsersManagementPage() {
                     />
                     <div>
                       <span className="text-sm font-semibold text-gray-900">{label}</span>
-                      <p className="text-xs text-gray-500">{description}</p>
+                      <p className="text-xs text-gray-700 font-medium">{description}</p>
                     </div>
                   </label>
                 )
               })}
             </div>
 
-            <p className="mt-3 text-[11px] text-gray-500 bg-gray-50 rounded-lg p-2.5 border border-gray-200">
+            <p className="mt-3 text-xs text-gray-700 font-medium bg-gray-50 rounded-lg p-2.5 border border-gray-200">
               {t("Un usuario puede ser Estudiante, Tutor o ambos. Debe conservar al menos un rol asignado.")}
             </p>
 

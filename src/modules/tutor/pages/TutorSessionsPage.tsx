@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, useCallback, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -145,7 +146,7 @@ export function TutorSessionsPage() {
       setSessions(loadedSessions)
     } catch (err) {
       console.error('Error al cargar sesiones de tutoría:', err)
-      toast.error('Error', 'No fue posible cargar las sesiones de tutoría.')
+      toast.error(t("Error"), t("No fue posible cargar las sesiones de tutoría."))
     } finally {
       setIsLoading(false)
     }
@@ -343,7 +344,7 @@ export function TutorSessionsPage() {
       await loadData()
     } catch (err) {
       console.error('Error al cambiar estado de la sesión:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al actualizar estado.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al actualizar estado."))
     } finally {
       setIsUpdatingStatus(false)
     }
@@ -380,7 +381,7 @@ export function TutorSessionsPage() {
       await loadData()
     } catch (err) {
       console.error('Error al eliminar sesión:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al eliminar la sesión.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al eliminar la sesión."))
     } finally {
       setIsDeletingSession(false)
     }
@@ -450,21 +451,21 @@ export function TutorSessionsPage() {
     switch (modality) {
       case 'virtual':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-900 bg-blue-100 px-2 py-0.5 rounded border border-blue-200">
             <Video className="h-3 w-3" />
             {t("Virtual")}
           </span>
         )
       case 'presencial':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
             <MapPin className="h-3 w-3" />
             {t("Presencial")}
           </span>
         )
       case 'hibrida':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-950 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
             <Video className="h-3 w-3" />
             {t("Híbrida")}
           </span>
@@ -479,7 +480,7 @@ export function TutorSessionsPage() {
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             {t("Mis Tutorías")}
           </h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-700 font-medium">
             {t("Agenda general y control de todas tus sesiones de tutoría en tus materias habilitadas.")}
           </p>
         </div>
@@ -493,7 +494,7 @@ export function TutorSessionsPage() {
           </Link>
           <Button
             onClick={handleOpenCreateModal}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+            className="flex items-center gap-2 bg-primary-800 hover:bg-primary-900 text-white font-bold cursor-pointer"
           >
             <CalendarPlus className="h-4 w-4" />
             {t("Programar Tutoría")}
@@ -503,20 +504,20 @@ export function TutorSessionsPage() {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4 border-l-4 border-l-gray-600">
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t("Total Sesiones")}</p>
+          <p className="text-xs font-bold text-gray-700 uppercase tracking-wider">{t("Total Sesiones")}</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">{stats.total}</p>
         </Card>
         <Card className="p-4 border-l-4 border-l-blue-600">
-          <p className="text-xs font-medium text-blue-600 uppercase tracking-wider">{t("Tutorías Programadas")}</p>
-          <p className="text-2xl font-bold text-blue-700 mt-1">{stats.programadas}</p>
+          <p className="text-xs font-bold text-blue-900 uppercase tracking-wider">{t("Tutorías Programadas")}</p>
+          <p className="text-2xl font-bold text-blue-900 mt-1">{stats.programadas}</p>
         </Card>
         <Card className="p-4 border-l-4 border-l-green-600">
-          <p className="text-xs font-medium text-green-600 uppercase tracking-wider">{t("Tutorías Completadas")}</p>
-          <p className="text-2xl font-bold text-green-700 mt-1">{stats.completadas}</p>
+          <p className="text-xs font-bold text-emerald-900 uppercase tracking-wider">{t("Tutorías Completadas")}</p>
+          <p className="text-2xl font-bold text-emerald-900 mt-1">{stats.completadas}</p>
         </Card>
         <Card className="p-4 border-l-4 border-l-red-600">
-          <p className="text-xs font-medium text-red-600 uppercase tracking-wider">{t("Tutorías Canceladas")}</p>
-          <p className="text-2xl font-bold text-red-700 mt-1">{stats.canceladas}</p>
+          <p className="text-xs font-bold text-red-900 uppercase tracking-wider">{t("Tutorías Canceladas")}</p>
+          <p className="text-2xl font-bold text-red-900 mt-1">{stats.canceladas}</p>
         </Card>
       </div>
 
@@ -535,6 +536,7 @@ export function TutorSessionsPage() {
 
           <div className="md:col-span-6">
             <select
+              aria-label={t("Filtrar por materia")}
               value={subjectFilter}
               onChange={(e) => setSubjectFilter(e.target.value)}
               className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -550,14 +552,14 @@ export function TutorSessionsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
-          <span className="text-xs font-medium text-gray-500 mr-2">{t("Estado:")}</span>
+          <span className="text-xs font-semibold text-gray-700 mr-2">{t("Estado:")}</span>
           <button
             type="button"
             onClick={() => setStatusFilter('todas')}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
               statusFilter === 'todas'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-primary-800 text-white font-bold'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 font-semibold'
             }`}
           >
             {t("Todas")} ({stats.total})
@@ -567,8 +569,8 @@ export function TutorSessionsPage() {
             onClick={() => setStatusFilter('programada')}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
               statusFilter === 'programada'
-                ? 'bg-blue-600 text-white'
-                : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                ? 'bg-blue-800 text-white font-bold'
+                : 'bg-blue-100 text-blue-900 hover:bg-blue-200 font-semibold'
             }`}
           >
             {t("Programada")} ({stats.programadas})
@@ -578,8 +580,8 @@ export function TutorSessionsPage() {
             onClick={() => setStatusFilter('completada')}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
               statusFilter === 'completada'
-                ? 'bg-green-600 text-white'
-                : 'bg-green-50 text-green-700 hover:bg-green-100'
+                ? 'bg-emerald-800 text-white font-bold'
+                : 'bg-emerald-100 text-emerald-950 hover:bg-emerald-200 font-semibold'
             }`}
           >
             {t("Completada")} ({stats.completadas})
@@ -589,8 +591,8 @@ export function TutorSessionsPage() {
             onClick={() => setStatusFilter('cancelada')}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
               statusFilter === 'cancelada'
-                ? 'bg-red-600 text-white'
-                : 'bg-red-50 text-red-700 hover:bg-red-100'
+                ? 'bg-red-800 text-white font-bold'
+                : 'bg-red-100 text-red-950 hover:bg-red-200 font-semibold'
             }`}
           >
             {t("Cancelada")} ({stats.canceladas})
@@ -599,8 +601,9 @@ export function TutorSessionsPage() {
       </div>
 
       {isLoading ? (
-        <div className="py-12 text-center text-gray-500">
-          {t("Cargando agenda de tutorías...")}
+        <div className="py-12 flex flex-col items-center justify-center gap-3 text-center text-gray-700" role="status">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
+          <span className="text-sm font-medium text-gray-700">{t("Cargando agenda de tutorías...")}</span>
         </div>
       ) : filteredSessions.length === 0 ? (
         <Card className="p-12 text-center">
@@ -608,7 +611,7 @@ export function TutorSessionsPage() {
           <h3 className="mt-4 text-base font-semibold text-gray-900">
             {t("No se encontraron sesiones registradas.")}
           </h3>
-          <p className="mt-2 text-sm text-gray-500 max-w-md mx-auto">
+          <p className="mt-2 text-sm text-gray-700 font-medium max-w-md mx-auto">
             {sessions.length === 0
               ? t("Programa tu primera sesión para que los estudiantes puedan enterarse.")
               : t("No tienes sesiones que coincidan con los filtros seleccionados.")}
@@ -617,7 +620,7 @@ export function TutorSessionsPage() {
             {sessions.length === 0 ? (
               <Button
                 onClick={handleOpenCreateModal}
-                className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                className="bg-primary-800 hover:bg-primary-900 text-white font-bold cursor-pointer"
               >
                 <CalendarPlus className="mr-2 h-4 w-4" />
                 {t("Programar Tutoría")}
@@ -645,7 +648,7 @@ export function TutorSessionsPage() {
                   <Link
                     to={`/tutor/materias/${session.subject_id}`}
                     title={session.subjectName}
-                    className="truncate max-w-[180px] rounded bg-white px-2 py-0.5 text-xs font-semibold text-blue-700 border border-blue-200 hover:bg-blue-50 transition-colors inline-block"
+                    className="truncate max-w-[180px] rounded bg-blue-50 px-2 py-0.5 text-xs font-bold text-blue-900 border border-blue-300 hover:bg-blue-100 transition-colors inline-block"
                   >
                     {session.subjectCode ? `${session.subjectCode} · ` : ''}{session.subjectName}
                   </Link>
@@ -656,7 +659,8 @@ export function TutorSessionsPage() {
                         type="button"
                         onClick={() => handleOpenEditModal(session)}
                         title={t("Editar sesión")}
-                        className="rounded p-1 text-gray-500 hover:bg-gray-200 hover:text-gray-800 cursor-pointer"
+                        aria-label={t("Editar sesión")}
+                        className="rounded p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 cursor-pointer"
                       >
                         <Pencil className="h-3.5 w-3.5" />
                       </button>
@@ -668,7 +672,8 @@ export function TutorSessionsPage() {
                           type="button"
                           onClick={() => handleOpenStatusModal(session, 'completada')}
                           title={t("Marcar como completada")}
-                          className="rounded p-1 text-gray-500 hover:bg-green-100 hover:text-green-700 cursor-pointer"
+                          aria-label={t("Marcar como completada")}
+                          className="rounded p-1 text-gray-600 hover:bg-emerald-100 hover:text-emerald-900 cursor-pointer"
                         >
                           <CheckCircle2 className="h-3.5 w-3.5" />
                         </button>
@@ -676,7 +681,8 @@ export function TutorSessionsPage() {
                           type="button"
                           onClick={() => handleOpenStatusModal(session, 'cancelada')}
                           title={t("Cancelar sesión")}
-                          className="rounded p-1 text-gray-500 hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                          aria-label={t("Cancelar sesión")}
+                          className="rounded p-1 text-gray-600 hover:bg-red-100 hover:text-red-900 cursor-pointer"
                         >
                           <XCircle className="h-3.5 w-3.5" />
                         </button>
@@ -689,7 +695,8 @@ export function TutorSessionsPage() {
                           type="button"
                           onClick={() => handleOpenStatusModal(session, 'programada')}
                           title={t("Reabrir sesión")}
-                          className="rounded p-1 text-gray-500 hover:bg-blue-100 hover:text-blue-700 cursor-pointer"
+                          aria-label={t("Reabrir sesión")}
+                          className="rounded p-1 text-gray-600 hover:bg-blue-100 hover:text-blue-900 cursor-pointer"
                         >
                           <RotateCcw className="h-3.5 w-3.5" />
                         </button>
@@ -697,7 +704,8 @@ export function TutorSessionsPage() {
                           type="button"
                           onClick={() => handleOpenStatusModal(session, 'cancelada')}
                           title={t("Cancelar sesión")}
-                          className="rounded p-1 text-gray-500 hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                          aria-label={t("Cancelar sesión")}
+                          className="rounded p-1 text-gray-600 hover:bg-red-100 hover:text-red-900 cursor-pointer"
                         >
                           <XCircle className="h-3.5 w-3.5" />
                         </button>
@@ -709,7 +717,8 @@ export function TutorSessionsPage() {
                         type="button"
                         onClick={() => handleOpenStatusModal(session, 'programada')}
                         title={t("Reactivar sesión")}
-                        className="rounded p-1 text-gray-500 hover:bg-blue-100 hover:text-blue-700 cursor-pointer"
+                        aria-label={t("Reactivar sesión")}
+                        className="rounded p-1 text-gray-600 hover:bg-blue-100 hover:text-blue-900 cursor-pointer"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
                       </button>
@@ -719,7 +728,8 @@ export function TutorSessionsPage() {
                       type="button"
                       onClick={() => handleOpenDeleteModal(session)}
                       title={t("Eliminar sesión")}
-                      className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 cursor-pointer"
+                      aria-label={t("Eliminar sesión")}
+                      className="rounded p-1 text-gray-600 hover:bg-red-100 hover:text-red-900 cursor-pointer"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
@@ -763,7 +773,7 @@ export function TutorSessionsPage() {
                         href={session.location_or_link}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-blue-700 hover:underline truncate inline-flex items-center gap-1 cursor-pointer font-medium"
+                        className="text-blue-950 font-bold hover:underline truncate inline-flex items-center gap-1 cursor-pointer font-medium"
                       >
                         {session.location_or_link}
                         <ExternalLink className="h-3 w-3 shrink-0" />
@@ -789,7 +799,9 @@ export function TutorSessionsPage() {
               <button
                 type="button"
                 onClick={() => setIsSessionModalOpen(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -806,6 +818,7 @@ export function TutorSessionsPage() {
                   </div>
                 ) : (
                   <select
+                    aria-label={t("Materia")}
                     required
                     value={sessionForm.subjectId}
                     onChange={(e) => setSessionForm({ ...sessionForm, subjectId: e.target.value })}
@@ -890,6 +903,7 @@ export function TutorSessionsPage() {
                     {t("Modalidad")} <span className="text-red-500">*</span>
                   </label>
                   <select
+                    aria-label={t("Modalidad")}
                     value={sessionForm.modality}
                     onChange={(e) =>
                       setSessionForm({
@@ -955,13 +969,10 @@ export function TutorSessionsPage() {
                 <Button
                   type="submit"
                   disabled={isSubmitting}
+                  isLoading={isSubmitting}
                   className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                 >
-                  {isSubmitting
-                    ? t("Guardando...")
-                    : editingSession
-                    ? t("Guardar Sesión")
-                    : t("Programar Sesión")}
+                  {editingSession ? t("Guardar Sesión") : t("Programar Sesión")}
                 </Button>
               </div>
             </form>

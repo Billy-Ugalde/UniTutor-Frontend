@@ -36,7 +36,7 @@ as $$
 begin
   if old.encrypted_password is distinct from new.encrypted_password then
     delete from auth.sessions where user_id = new.id;
-    update auth.refresh_tokens set revoked = true where user_id = new.id;
+    update auth.refresh_tokens set revoked = true where user_id = new.id::text;
   end if;
   return new;
 end;

@@ -35,7 +35,7 @@ export function LandingPage() {
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 rounded-lg">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white shadow-sm shadow-primary-500/30">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-800 text-white shadow-sm shadow-primary-800/30 font-bold">
               <GraduationCap className="h-5 w-5" />
             </div>
             <span className="text-xl font-bold tracking-tight text-primary-950">UniTutor</span>
@@ -45,25 +45,25 @@ export function LandingPage() {
           <nav className="hidden md:flex items-center gap-8">
             <a
               href="#que-es"
-              className="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+              className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
             >
               {t("¿Qué es?")}
             </a>
             <a
               href="#beneficios"
-              className="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+              className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
             >
               {t("Beneficios")}
             </a>
             <a
               href="#comunidad"
-              className="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+              className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
             >
               {t("Comunidad")}
             </a>
             <a
               href="#como-funciona"
-              className="text-sm font-medium text-gray-600 hover:text-primary-600 transition-colors"
+              className="text-sm font-semibold text-gray-700 hover:text-primary-900 transition-colors"
             >
               {t("¿Cómo funciona?")}
             </a>
@@ -76,7 +76,7 @@ export function LandingPage() {
             {user ? (
               <Link
                 to="/dashboard"
-                className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                className="inline-flex items-center justify-center rounded-lg bg-primary-800 px-4 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
               >
                 {t("Ir al Panel")}
                 <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -91,7 +91,7 @@ export function LandingPage() {
                 </Link>
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm shadow-primary-500/20 transition hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  className="inline-flex items-center justify-center rounded-lg bg-primary-800 px-4 py-2 text-sm font-bold text-white shadow-sm shadow-primary-800/20 transition hover:bg-primary-900 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
                 >
                   {t("Registrarse")}
                 </Link>
@@ -152,7 +152,7 @@ export function LandingPage() {
                 <Link
                   to="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2.5 text-base font-medium text-white shadow-sm"
+                  className="flex items-center justify-center rounded-lg bg-primary-800 px-4 py-2.5 text-base font-bold text-white shadow-sm"
                 >
                   {t("Ir al Panel")}
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -169,7 +169,7 @@ export function LandingPage() {
                   <Link
                     to="/register"
                     onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-center rounded-lg bg-primary-600 px-4 py-2.5 text-base font-medium text-white shadow-sm hover:bg-primary-700"
+                    className="flex items-center justify-center rounded-lg bg-primary-800 px-4 py-2.5 text-base font-bold text-white shadow-sm hover:bg-primary-700"
                   >
                     {t("Registrarse")}
                   </Link>
@@ -187,8 +187,8 @@ export function LandingPage() {
             {/* Left Column: Headlines & Call to Actions */}
             <div className="text-center lg:col-span-7 lg:text-left">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary-200 bg-primary-50 px-3.5 py-1 text-xs font-semibold text-primary-700 shadow-sm">
-                <Sparkles className="h-3.5 w-3.5 text-primary-600" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary-300 bg-primary-100/70 px-3.5 py-1 text-xs font-bold text-primary-900 shadow-sm">
+                <Sparkles className="h-3.5 w-3.5 text-primary-800" />
                 <span>{t("Acompañamiento Académico Universitario")}</span>
               </div>
 
@@ -206,21 +206,21 @@ export function LandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                 <Link
                   to={user ? "/dashboard" : "/register"}
-                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-primary-600 px-6 py-3.5 text-base font-semibold text-white shadow-md shadow-primary-500/25 transition-all hover:bg-primary-700 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-primary-800 px-6 py-3.5 text-base font-semibold text-white shadow-md shadow-primary-800/25 transition-all hover:bg-primary-900 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                 >
                   {t("Comenzar ahora")}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <a
                   href="#como-funciona"
-                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-6 py-3.5 text-base font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50 hover:text-primary-950 focus:outline-none focus:ring-2 focus:ring-primary-700 focus:ring-offset-2"
                 >
                   {t("Ver cómo funciona")}
                 </a>
               </div>
 
               {/* Trust Indicators */}
-              <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-gray-500">
+              <div className="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
                   <span>{t("Tutores universitarios")}</span>
@@ -246,14 +246,14 @@ export function LandingPage() {
                   {/* Card Header */}
                   <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                     <div className="flex items-center gap-2">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-100 text-primary-700">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-100 text-primary-900 font-bold">
                         <BookOpen className="h-4 w-4" />
                       </div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-primary-700">
+                      <span className="text-xs font-semibold uppercase tracking-wider text-primary-800">
                         {t("Próxima sesión de tutoría")}
                       </span>
                     </div>
-                    <span className="inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 border border-green-200">
+                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-950 border border-emerald-300">
                       <ShieldCheck className="mr-1 h-3 w-3" />
                       {t("Verificado por la institución")}
                     </span>
@@ -264,7 +264,7 @@ export function LandingPage() {
                     <h2 className="text-xl font-bold text-gray-900">
                       {t("Cálculo Diferencial e Integral")}
                     </h2>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <p className="mt-1 text-sm text-gray-700 font-medium">
                       {t("Preparación para examen parcial")}
                     </p>
                   </div>
@@ -272,29 +272,29 @@ export function LandingPage() {
                   {/* Tutor Details */}
                   <div className="mt-5 flex items-center justify-between rounded-xl bg-gray-50 p-3.5">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-600 font-semibold text-white">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary-800 font-bold text-white">
                         <span>{'U'}</span>
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-gray-900">{t("Tutor asignado")}</p>
-                        <p className="text-xs text-gray-500">{t("Estudiante de Ingeniería • 4to año")}</p>
+                        <p className="text-xs text-gray-700 font-medium">{t("Estudiante de Ingeniería • 4to año")}</p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1 text-amber-500 text-xs font-semibold">
-                      <Star className="h-3.5 w-3.5 fill-current" />
-                      <span>5.0</span>
+                    <div className="flex items-center gap-1 text-xs font-semibold">
+                      <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-600" />
+                      <span className="text-amber-950 font-bold">5.0</span>
                     </div>
                   </div>
 
                   {/* Session Schedule info */}
-                  <div className="mt-4 flex items-center gap-2 text-xs font-medium text-gray-600 bg-primary-50/60 rounded-lg p-2.5">
+                  <div className="mt-4 flex items-center gap-2 text-xs font-semibold text-gray-700 bg-primary-100/60 rounded-lg p-2.5">
                     <Clock className="h-4 w-4 text-primary-600" />
                     <span>{t("Hoy, 4:00 PM • Sala Virtual")}</span>
                   </div>
 
                   {/* Rating / Review quote */}
-                  <div className="mt-5 border-t border-gray-100 pt-4 flex items-center justify-between text-xs text-gray-500">
-                    <span className="flex items-center gap-1 text-primary-700 font-medium">
+                  <div className="mt-5 border-t border-gray-100 pt-4 flex items-center justify-between text-xs text-gray-700 font-medium">
+                    <span className="flex items-center gap-1 text-primary-900 font-bold">
                       <CheckCircle2 className="h-3.5 w-3.5" />
                       {t("Valoración excelente")}
                     </span>
@@ -322,33 +322,33 @@ export function LandingPage() {
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Benefit 1 */}
             <div className="flex flex-col rounded-2xl border border-gray-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-600 mb-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-5">
                 <GraduationCap className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">{t("Aprende sin frustración")}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                 {t("Resuelve dudas puntuales y comprende conceptos difíciles con explicaciones claras adaptadas a tu propio ritmo.")}
               </p>
             </div>
 
             {/* Benefit 2 */}
             <div className="flex flex-col rounded-2xl border border-gray-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-600 mb-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-5">
                 <Users className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">{t("Acompañamiento entre pares")}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                 {t("Conecta con tutores que ya cursaron y dominaron las asignaturas que estás llevando en tu plan de estudios.")}
               </p>
             </div>
 
             {/* Benefit 3 */}
             <div className="flex flex-col rounded-2xl border border-gray-100 bg-white p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-600 mb-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-5">
                 <ShieldCheck className="h-6 w-6" />
               </div>
               <h3 className="text-xl font-bold text-gray-900">{t("Coordinación transparente")}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                 {t("Consulta asignaturas activas, programa tus tutorías y da seguimiento a tus avances de manera ordenada.")}
               </p>
             </div>
@@ -372,18 +372,18 @@ export function LandingPage() {
             {/* For Students */}
             <div className="relative flex flex-col justify-between rounded-2xl border-2 border-primary-100 bg-white p-8 shadow-sm transition hover:border-primary-300">
               <div>
-                <div className="inline-flex rounded-md bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                <div className="inline-flex rounded-md bg-primary-100/70 border border-primary-200 px-2.5 py-1 text-xs font-bold text-primary-950">
                   {t("Estudiantes")}
                 </div>
                 <h3 className="mt-4 text-2xl font-bold text-gray-900">{t("Para Estudiantes")}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                   {t("Supera materias complejas, aclara dudas antes de los exámenes y alcanza tus metas con la guía de compañeros experimentados.")}
                 </p>
               </div>
               <div className="mt-8 border-t border-gray-100 pt-5">
                 <Link
                   to="/register"
-                  className="inline-flex items-center text-sm font-semibold text-primary-600 hover:text-primary-700"
+                  className="inline-flex items-center text-sm font-bold text-primary-900 hover:text-primary-950"
                 >
                   {t("Comenzar ahora")}
                   <ArrowRight className="ml-1 h-4 w-4" />
@@ -394,18 +394,18 @@ export function LandingPage() {
             {/* For Tutors */}
             <div className="relative flex flex-col justify-between rounded-2xl border-2 border-primary-100 bg-white p-8 shadow-sm transition hover:border-primary-300">
               <div>
-                <div className="inline-flex rounded-md bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                <div className="inline-flex rounded-md bg-primary-100/70 border border-primary-200 px-2.5 py-1 text-xs font-bold text-primary-950">
                   {t("Tutores")}
                 </div>
                 <h3 className="mt-4 text-2xl font-bold text-gray-900">{t("Para Tutores")}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                   {t("Comparte tu vocación por la enseñanza, afianza tu dominio en las materias y suma experiencia enriquecedora a tu formación.")}
                 </p>
               </div>
               <div className="mt-8 border-t border-gray-100 pt-5">
                 <Link
                   to="/register"
-                  className="inline-flex items-center text-sm font-semibold text-primary-600 hover:text-primary-700"
+                  className="inline-flex items-center text-sm font-bold text-primary-900 hover:text-primary-950"
                 >
                   {t("Empezar como tutor o estudiante")}
                   <ArrowRight className="ml-1 h-4 w-4" />
@@ -416,19 +416,19 @@ export function LandingPage() {
             {/* For Institutions */}
             <div className="relative flex flex-col justify-between rounded-2xl border-2 border-primary-100 bg-white p-8 shadow-sm transition hover:border-primary-300">
               <div>
-                <div className="inline-flex rounded-md bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                <div className="inline-flex rounded-md bg-primary-100/70 border border-primary-200 px-2.5 py-1 text-xs font-bold text-primary-950">
                   <School className="mr-1 h-3.5 w-3.5" />
                   {t("Administración")}
                 </div>
                 <h3 className="mt-4 text-2xl font-bold text-gray-900">{t("Para Instituciones")}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-gray-600">
+                <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                   {t("Fortalece la permanencia estudiantil, supervisa materias impartidas y ofrece un canal formal de apoyo académico.")}
                 </p>
               </div>
               <div className="mt-8 border-t border-gray-100 pt-5">
                 <Link
                   to="/login"
-                  className="inline-flex items-center text-sm font-semibold text-primary-600 hover:text-primary-700"
+                  className="inline-flex items-center text-sm font-bold text-primary-900 hover:text-primary-950"
                 >
                   {t("Acceso a la plataforma")}
                   <ArrowRight className="ml-1 h-4 w-4" />
@@ -454,33 +454,33 @@ export function LandingPage() {
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Step 1 */}
             <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 text-white font-bold text-xl shadow-md shadow-primary-500/20 mb-5">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-800 text-white font-bold text-xl shadow-md shadow-primary-800/20 mb-5">
                 <span>1</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900">{t("1. Crea tu cuenta")}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                 {t("Regístrate en pocos clics con tu correo institucional e indica tu institución educativa.")}
               </p>
             </div>
 
             {/* Step 2 */}
             <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 text-white font-bold text-xl shadow-md shadow-primary-500/20 mb-5">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-800 text-white font-bold text-xl shadow-md shadow-primary-800/20 mb-5">
                 <span>2</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900">{t("2. Encuentra tu asignatura")}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                 {t("Explora las materias disponibles en tu institución y selecciona en cuál necesitas apoyo.")}
               </p>
             </div>
 
             {/* Step 3 */}
             <div className="flex flex-col items-center text-center p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-600 text-white font-bold text-xl shadow-md shadow-primary-500/20 mb-5">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-800 text-white font-bold text-xl shadow-md shadow-primary-800/20 mb-5">
                 <span>3</span>
               </div>
               <h3 className="text-xl font-bold text-gray-900">{t("3. Participa y avanza")}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-gray-600">
+              <p className="mt-3 text-sm leading-relaxed text-gray-700 font-medium">
                 {t("Conéctate a tus sesiones, trabaja tus dudas con tu tutor y logra el éxito en tus evaluaciones.")}
               </p>
             </div>
@@ -500,14 +500,14 @@ export function LandingPage() {
               <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
                 {t("¿Listo para impulsar tu aprendizaje?")}
               </h2>
-              <p className="mt-4 text-base sm:text-lg text-primary-100">
+              <p className="mt-4 text-base sm:text-lg text-white font-medium">
                 {t("Únete hoy a UniTutor y descubre una nueva forma de aprender y colaborar en la universidad.")}
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   to={user ? "/dashboard" : "/register"}
-                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-semibold text-primary-700 shadow-md transition hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-700"
+                  className="w-full sm:w-auto inline-flex items-center justify-center rounded-xl bg-white px-7 py-3.5 text-base font-bold text-primary-950 shadow-md transition hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-700"
                 >
                   {user ? t("Ir al Panel") : t("Crear cuenta")}
                   <ArrowRight className="ml-2 h-5 w-5" />
@@ -527,34 +527,34 @@ export function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-gray-200 bg-gray-50 py-12 text-sm text-gray-500">
+      <footer className="border-t border-gray-200 bg-gray-50 py-12 text-sm text-gray-700 font-medium">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             {/* Logo and brief */}
             <div className="flex flex-col items-center md:items-start text-center md:text-left">
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-600 text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-800 text-white font-bold">
                   <GraduationCap className="h-4 w-4" />
                 </div>
                 <span className="text-lg font-bold text-gray-900">UniTutor</span>
               </div>
-              <p className="mt-2 text-xs text-gray-500 max-w-sm">
+              <p className="mt-2 text-xs text-gray-700 font-medium max-w-sm">
                 {t("Plataforma de acompañamiento y tutorías académicas universitarias.")}
               </p>
             </div>
 
             {/* Quick links */}
             <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-medium">
-              <Link to="/login" className="hover:text-primary-600 transition-colors">
+              <Link to="/login" className="text-gray-700 hover:text-primary-950 font-semibold transition-colors">
                 {t("Iniciar sesión")}
               </Link>
-              <Link to="/register" className="hover:text-primary-600 transition-colors">
+              <Link to="/register" className="text-gray-700 hover:text-primary-950 font-semibold transition-colors">
                 {t("Registrarse")}
               </Link>
               <button
                 type="button"
                 onClick={scrollToTop}
-                className="flex items-center gap-1 hover:text-primary-600 transition-colors cursor-pointer"
+                className="flex items-center gap-1 text-gray-700 hover:text-primary-950 font-semibold transition-colors cursor-pointer"
               >
                 <ArrowUp className="h-4 w-4" />
                 <span>{t("Volver arriba")}</span>
@@ -567,7 +567,7 @@ export function LandingPage() {
             </div>
           </div>
 
-          <div className="mt-8 border-t border-gray-200 pt-6 text-center text-xs text-gray-400">
+          <div className="mt-8 border-t border-gray-200 pt-6 text-center text-xs text-gray-700 font-medium">
             <p>
               UniTutor © {new Date().getFullYear()}. {t("Todos los derechos reservados.")}
             </p>

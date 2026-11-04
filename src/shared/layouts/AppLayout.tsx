@@ -24,13 +24,13 @@ export function AppLayout() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
           <Link to="/" className="flex items-center gap-2">
             <GraduationCap className="h-6 w-6 text-primary-600" />
-            <span className="text-xl font-bold text-primary-700">UniTutor</span>
+            <span className="text-xl font-bold text-primary-900">UniTutor</span>
           </Link>
 
           <nav className="hidden items-center gap-6 md:flex">
             <Link
               to="/dashboard"
-              className="text-sm font-medium text-gray-600 hover:text-primary-600"
+              className="text-sm font-medium text-gray-700 hover:text-primary-900"
             >
               {t("Inicio")}
             </Link>
@@ -39,15 +39,15 @@ export function AppLayout() {
               <>
                 <Link
                   to="/tutor/sesiones"
-                  className="text-sm font-medium text-blue-700 hover:text-blue-900 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="text-sm font-semibold text-blue-900 hover:text-blue-950 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-300 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Calendar className="h-4 w-4 text-blue-600" /> {t("Mis Sesiones")}
+                  <Calendar className="h-4 w-4 text-blue-800" /> {t("Mis Sesiones")}
                 </Link>
                 <Link
                   to="/tutor/materias"
-                  className="text-sm font-medium text-green-700 hover:text-green-900 bg-green-50 px-2.5 py-1 rounded-md border border-green-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="text-sm font-semibold text-emerald-900 hover:text-emerald-950 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-300 flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <BookOpen className="h-4 w-4 text-green-600" /> {t("Mis Materias")}
+                  <BookOpen className="h-4 w-4 text-emerald-800" /> {t("Mis Materias")}
                 </Link>
               </>
             )}
@@ -55,28 +55,28 @@ export function AppLayout() {
             {hasRole('estudiante') && (
               <Link
                 to="/tutores"
-                className="text-sm font-medium text-amber-700 hover:text-amber-900 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="text-sm font-semibold text-amber-900 hover:text-amber-950 bg-amber-50 px-2.5 py-1 rounded-md border border-amber-300 flex items-center gap-1.5 transition-colors cursor-pointer"
               >
-                <Search className="h-4 w-4 text-amber-600" /> {t("Buscar Tutores")}
+                <Search className="h-4 w-4 text-amber-800" /> {t("Buscar Tutores")}
               </Link>
             )}
 
             {(hasRole('inst_admin') || isSuperAdmin) && (
               <Link
                 to="/admin"
-                className="text-sm font-medium text-blue-700 hover:text-blue-900 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 flex items-center gap-1.5 transition-colors"
+                className="text-sm font-semibold text-blue-900 hover:text-blue-950 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-300 flex items-center gap-1.5 transition-colors"
               >
-                <Shield className="h-4 w-4 text-blue-600" /> {t("Administración")}
+                <Shield className="h-4 w-4 text-blue-800" /> {t("Administración")}
               </Link>
             )}
           </nav>
 
           {(hasRole('tutor') || hasRole('estudiante')) && (
-            <nav aria-label={t('Solicitudes y confirmaciones')} className="order-last flex w-full flex-wrap gap-4 border-t border-gray-100 pt-3 text-sm font-medium text-gray-600">
-              {hasRole('tutor') && <Link to="/tutor/solicitudes" className="inline-flex items-center gap-1.5 hover:text-primary-700"><ClipboardList className="h-4 w-4" />{t('Solicitudes Recibidas')}</Link>}
+            <nav aria-label={t('Solicitudes y confirmaciones')} className="order-last flex w-full flex-wrap gap-4 border-t border-gray-100 pt-3 text-sm font-semibold text-gray-700">
+              {hasRole('tutor') && <Link to="/tutor/solicitudes" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-primary-900 font-semibold"><ClipboardList className="h-4 w-4" />{t('Solicitudes Recibidas')}</Link>}
               {hasRole('estudiante') && <>
-                <Link to="/solicitudes" className="inline-flex items-center gap-1.5 hover:text-primary-700"><ClipboardList className="h-4 w-4" />{t('Mis Solicitudes')}</Link>
-                <Link to="/sesiones" className="inline-flex items-center gap-1.5 hover:text-primary-700"><Calendar className="h-4 w-4" />{t('Mis Sesiones de Tutoría')}</Link>
+                <Link to="/solicitudes" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-primary-900 font-semibold"><ClipboardList className="h-4 w-4" />{t('Mis Solicitudes')}</Link>
+                <Link to="/sesiones" className="inline-flex items-center gap-1.5 text-gray-700 hover:text-primary-900 font-semibold"><Calendar className="h-4 w-4" />{t('Mis Sesiones de Tutoría')}</Link>
               </>}
             </nav>
           )}
@@ -86,7 +86,7 @@ export function AppLayout() {
             <NotificationBell />
             <div className="hidden flex-col items-end sm:flex">
               <span className="text-sm font-medium text-gray-900">{fullName}</span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-700 font-medium">
                 {isSuperAdmin
                   ? t("Super Administrador")
                   : roles.map(roleLabel).join(' · ') || t("Estudiante")}
@@ -95,9 +95,9 @@ export function AppLayout() {
             <button
               type="button"
               onClick={handleSignOut}
-              className="flex items-center gap-1.5 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700 hover:bg-red-100 hover:border-red-300 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 rounded-md border border-red-300 bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-900 hover:bg-red-100 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-600 transition-colors cursor-pointer"
             >
-              <LogOut className="h-4 w-4 text-red-600" />
+              <LogOut className="h-4 w-4 text-red-800" />
               {t("Cerrar sesión")}
             </button>
           </div>
@@ -108,7 +108,7 @@ export function AppLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-gray-200 bg-white py-4 text-center text-xs text-gray-400">
+      <footer className="border-t border-gray-200 bg-white py-4 text-center text-xs text-gray-700 font-medium">
         UniTutor © {new Date().getFullYear()} {t("— Plataforma de tutorías universitarias")}
       </footer>
     </div>

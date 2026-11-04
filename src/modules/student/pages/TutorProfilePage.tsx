@@ -161,7 +161,7 @@ export function TutorProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center gap-3 py-24 text-sm text-gray-500" role="status">
+      <div className="flex items-center justify-center gap-3 py-24 text-sm text-gray-700 font-medium" role="status">
         <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
         {t("Cargando horarios del tutor...")}
       </div>
@@ -173,12 +173,12 @@ export function TutorProfilePage() {
       <Card className="mx-auto max-w-lg p-12 text-center">
         <UserX className="mx-auto h-12 w-12 text-gray-300" />
         <h1 className="mt-4 text-base font-semibold text-gray-900">{t("No encontramos a este tutor")}</h1>
-        <p className="mt-2 text-sm text-gray-500">
+        <p className="mt-2 text-sm text-gray-700 font-medium">
           {t("Es posible que ya no esté disponible o que el enlace sea incorrecto.")}
         </p>
         <Link
           to="/tutores"
-          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-primary-900 hover:text-primary-950 font-bold"
         >
           <ArrowLeft className="h-4 w-4" />
           {t("Volver a la búsqueda")}
@@ -191,7 +191,7 @@ export function TutorProfilePage() {
     <div className="space-y-6">
       <Link
         to="/tutores"
-        className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary-700"
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-primary-950 font-semibold"
       >
         <ArrowLeft className="h-4 w-4" />
         {t("Volver a la búsqueda")}
@@ -207,7 +207,7 @@ export function TutorProfilePage() {
           />
           <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">{tutorName}</h1>
-            <p className="mt-1 flex items-center gap-1.5 text-sm text-gray-500">
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-gray-700 font-medium">
               <Building2 className="h-4 w-4 text-gray-400" />
               {tutor.institution_name}
             </p>
@@ -229,7 +229,7 @@ export function TutorProfilePage() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-gray-900">{t("Horarios disponibles")}</h2>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700 font-medium">
             {t("Elige un día del calendario y selecciona el horario que prefieras.")}
           </p>
         </div>
@@ -257,14 +257,14 @@ export function TutorProfilePage() {
                   onClick={() => setSubjectFilter(option.id)}
                   className={`inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'border-primary-600 bg-primary-600 text-white'
+                      ? 'border-primary-800 bg-primary-800 text-white font-bold'
                       : 'border-gray-300 bg-white text-gray-700 hover:border-primary-400 hover:bg-primary-50'
                   }`}
                 >
                   {option.label}
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                      isActive ? 'bg-white/25 text-white' : 'bg-gray-100 text-gray-600'
+                      isActive ? 'bg-white/25 text-white font-bold' : 'bg-gray-200 text-gray-800 font-bold'
                     }`}
                   >
                     {option.count}
@@ -282,7 +282,7 @@ export function TutorProfilePage() {
           <h3 className="mt-4 text-base font-semibold text-gray-900">
             {t("Este tutor no tiene horarios disponibles")}
           </h3>
-          <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
+          <p className="mx-auto mt-2 max-w-md text-sm text-gray-700 font-medium">
             {t("Vuelve a revisar más tarde o busca otro tutor para la misma materia.")}
           </p>
         </Card>
@@ -322,11 +322,11 @@ export function TutorProfilePage() {
                         {renderModality(slot.modality)}
                       </div>
                       <p className="truncate text-sm font-medium text-gray-800">{slot.title}</p>
-                      <p className="truncate text-xs text-gray-500">
+                      <p className="truncate text-xs text-gray-700 font-medium">
                         {slot.subject_code} · {slot.subject_name}
                       </p>
                       {slot.description && (
-                        <p className="line-clamp-2 text-xs text-gray-500">{slot.description}</p>
+                        <p className="line-clamp-2 text-xs text-gray-700 font-medium">{slot.description}</p>
                       )}
                       <p className="inline-flex items-center gap-1.5 text-xs text-gray-600">
                         <Users className="h-3.5 w-3.5 text-gray-400" />
@@ -348,7 +348,7 @@ export function TutorProfilePage() {
                           {t("Solicitud aceptada")}
                         </Link>
                       ) : isFull ? (
-                        <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-500">
+                        <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-700">
                           {t("Sin cupos")}
                         </span>
                       ) : (

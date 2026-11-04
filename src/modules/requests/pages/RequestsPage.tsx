@@ -98,15 +98,15 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
 
   return (
     <div className="space-y-6">
-      <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary-700"><ArrowLeft className="h-4 w-4" />{t('Volver al inicio')}</Link>
+      <Link to="/dashboard" className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-primary-950"><ArrowLeft className="h-4 w-4" />{t('Volver al inicio')}</Link>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">{asTutor ? t('Solicitudes Recibidas') : sessionsOnly ? t('Mis Sesiones de Tutoría') : t('Mis Solicitudes')}</h1>
-          <p className="mt-1 text-sm text-gray-500">{asTutor ? t('Revisa y responde a solicitudes de estudiantes') : sessionsOnly ? t('Horarios de tus tutorías confirmadas') : t('Estado de tus solicitudes de tutoría enviadas')}</p>
+          <p className="mt-1 text-sm text-gray-700 font-medium">{asTutor ? t('Revisa y responde a solicitudes de estudiantes') : sessionsOnly ? t('Horarios de tus tutorías confirmadas') : t('Estado de tus solicitudes de tutoría enviadas')}</p>
         </div>
         <Button variant="secondary" disabled={isLoading || savingId !== null} onClick={() => void refresh()} className="gap-2"><RefreshCw className="h-4 w-4" />{t('Actualizar')}</Button>
       </div>
-      {!asTutor && <nav aria-label={t('Tutorías del estudiante')} className="flex flex-wrap gap-4 text-sm font-medium text-primary-700">
+      {!asTutor && <nav aria-label={t('Tutorías del estudiante')} className="flex flex-wrap gap-4 text-sm font-bold text-primary-900">
         <Link to="/solicitudes" aria-current={!sessionsOnly ? 'page' : undefined} className={!sessionsOnly ? 'underline' : ''}>{t('Mis Solicitudes')}</Link>
         <Link to="/sesiones" aria-current={sessionsOnly ? 'page' : undefined} className={sessionsOnly ? 'underline' : ''}>{t('Mis Sesiones de Tutoría')}</Link>
       </nav>}
@@ -134,7 +134,7 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
             type="button"
             onClick={() => setSearchQuery('')}
             aria-label={t('Limpiar búsqueda')}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-0.5 text-gray-400 hover:text-gray-600 cursor-pointer"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 min-h-[24px] min-w-[24px] inline-flex items-center justify-center text-gray-500 hover:text-gray-700 cursor-pointer"
           >
             <X className="h-4 w-4" />
           </button>
@@ -145,7 +145,7 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
         <div className="flex flex-wrap gap-2" role="group" aria-label={t('Filtrar por estado')}>
           {(['all', 'pendiente', 'aceptada', 'rechazada', 'cancelada'] as const).map((status) => (
             <button key={status} type="button" aria-pressed={filter === status} onClick={() => setFilter(status)}
-              className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${filter === status ? 'border-primary-600 bg-primary-600 text-white' : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-100'}`}>
+              className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${filter === status ? 'border-primary-800 bg-primary-800 text-white font-bold' : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'}`}>
               {status === 'all' ? t('Todas') : t(requestStatusLabels[status])} ({status === 'all' ? rows.length : rows.filter((request) => request.status === status).length})
             </button>
           ))}
@@ -161,8 +161,8 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
                 onClick={() => setSessionStatusFilter(status)}
                 className={`rounded-full border px-3 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   sessionStatusFilter === status
-                    ? 'border-primary-600 bg-primary-600 text-white'
-                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
+                    ? 'border-primary-800 bg-primary-800 text-white font-bold'
+                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
                 }`}
               >
                 {status === 'all' ? t('Todas') : t(sessionStatusLabels[status])} (
@@ -183,8 +183,8 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
                 onClick={() => setModalityFilter(modality)}
                 className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
                   modalityFilter === modality
-                    ? 'border-blue-600 bg-blue-600 text-white'
-                    : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-100'
+                    ? 'border-blue-800 bg-blue-800 text-white font-bold'
+                    : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
                 }`}
               >
                 {modality === 'all' ? t('Todas las modalidades') : t(modalityLabels[modality])}
@@ -213,7 +213,7 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
       </div> : !error && <div role="status" className="rounded-xl border border-gray-200 bg-white px-4 py-12 text-center">
         <ClipboardList className="mx-auto h-10 w-10 text-gray-400" />
         <p className="mt-3 font-medium text-gray-700">{sessionsOnly ? t('Aún no tienes tutorías confirmadas.') : t('No hay solicitudes en este estado.')}</p>
-        {!asTutor && <Link to="/tutores" className="mt-4 inline-block text-sm font-semibold text-primary-700 hover:underline">{t('Buscar Tutores')}</Link>}
+        {!asTutor && <Link to="/tutores" className="mt-4 inline-block text-sm font-bold text-primary-900 hover:underline">{t('Buscar Tutores')}</Link>}
       </div>}
     </div>
   )
