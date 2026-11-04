@@ -63,14 +63,33 @@ export function TutorSubjectDetailPage() {
   const [isUnlinkModalOpen, setIsUnlinkModalOpen] = useState(false)
   const [isUnlinkingSubject, setIsUnlinkingSubject] = useState(false)
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const getLocalDateString = (d = new Date()) => {
+    const year = d.getFullYear()
+    const month = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
+  const getDefaultSessionTimes = () => {
+    const d = new Date(Date.now() + 60 * 60 * 1000)
+    d.setMinutes(0, 0, 0)
+    const startHour = String(d.getHours()).padStart(2, '0')
+    const startTime = `${startHour}:00`
+    const endD = new Date(d.getTime() + 60 * 60 * 1000)
+    const endHour = String(endD.getHours()).padStart(2, '0')
+    const endTime = `${endHour}:00`
+    return { startTime, endTime }
+  }
+
+  const todayStr = getLocalDateString()
+  const initialTimes = getDefaultSessionTimes()
 
   const [sessionForm, setSessionForm] = useState({
     title: '',
     description: '',
     date: todayStr,
-    startTime: '14:00',
-    endTime: '16:00',
+    startTime: initialTimes.startTime,
+    endTime: initialTimes.endTime,
     modality: 'virtual' as SessionModality,
     locationOrLink: '',
     maxStudents: 5,
@@ -153,13 +172,14 @@ export function TutorSubjectDetailPage() {
   }, [loadData])
 
   const handleOpenCreateModal = () => {
+    const times = getDefaultSessionTimes()
     setEditingSession(null)
     setSessionForm({
       title: '',
       description: '',
-      date: todayStr,
-      startTime: '14:00',
-      endTime: '16:00',
+      date: getLocalDateString(),
+      startTime: times.startTime,
+      endTime: times.endTime,
       modality: 'virtual',
       locationOrLink: '',
       maxStudents: 5,
@@ -196,13 +216,19 @@ export function TutorSubjectDetailPage() {
       return
     }
 
-    if (sessionForm.date < todayStr) {
-      toast.warning(t("Fecha inválida"), t("La fecha de la tutoría no puede ser anterior a hoy."))
+    if (sessionForm.endTime <= sessionForm.startTime) {
+      toast.warning(t("Horario inválido"), t("La hora de finalización debe ser posterior a la hora de inicio."))
       return
     }
 
-    if (sessionForm.endTime <= sessionForm.startTime) {
-      toast.warning(t("Horario inválido"), t("La hora de finalización debe ser posterior a la hora de inicio."))
+    const sessionStart = new Date(`${sessionForm.date}T${sessionForm.startTime}`)
+    const minAllowedTime = Date.now() + 30 * 60 * 1000
+
+    if (isNaN(sessionStart.getTime()) || sessionStart.getTime() < minAllowedTime) {
+      toast.warning(
+        t("Horario inválido"),
+        t("La tutoría debe programarse con al menos 30 minutos de anticipación.")
+      )
       return
     }
 
@@ -440,13 +466,13 @@ export function TutorSubjectDetailPage() {
   const getStatusBadge = (status: SessionStatus) => {
     switch (status) {
       case 'programada':
-        return <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-800 border border-blue-200">{t("Programada")}</span>
+        return <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-bold text-blue-950 border border-blue-300">{t("Programada")}</span>
       case 'en_curso':
-        return <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800 border border-amber-200">{t("En curso")}</span>
+        return <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-950 border border-amber-300">{t("En curso")}</span>
       case 'completada':
-        return <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800 border border-green-200">{t("Completada")}</span>
+        return <span className="rounded bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-950 border border-emerald-300">{t("Completada")}</span>
       case 'cancelada':
-        return <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-800 border border-red-200">{t("Cancelada")}</span>
+        return <span className="rounded bg-red-100 px-2 py-0.5 text-xs font-bold text-red-950 border border-red-300">{t("Cancelada")}</span>
     }
   }
 

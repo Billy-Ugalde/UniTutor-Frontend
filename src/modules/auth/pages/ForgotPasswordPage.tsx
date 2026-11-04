@@ -11,7 +11,7 @@ import { toast } from '@/shared/store/toast.store'
 
 export function ForgotPasswordPage() {
   const { t } = useTranslations()
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => new URLSearchParams(window.location.search).get('email') || '')
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 

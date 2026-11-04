@@ -57,20 +57,12 @@ export function SessionRatingModal({
   const activeRating = hoverRating || rating
 
   const getRatingLabel = (score: number) => {
-    switch (score) {
-      case 5:
-        return t('Excelente')
-      case 4:
-        return t('Muy buena')
-      case 3:
-        return t('Buena')
-      case 2:
-        return t('Regular')
-      case 1:
-        return t('Deficiente')
-      default:
-        return ''
-    }
+    if (score >= 4.5) return t('Excelente')
+    if (score >= 3.5) return t('Muy buena')
+    if (score >= 2.5) return t('Buena')
+    if (score >= 1.5) return t('Regular')
+    if (score >= 0.5) return t('Deficiente')
+    return ''
   }
 
   const handleSubmit = async (e: FormEvent) => {
@@ -137,36 +129,54 @@ export function SessionRatingModal({
             <div
               role="radiogroup"
               aria-labelledby="stars-label"
-              className="inline-flex items-center gap-1.5"
+              className="inline-flex items-center gap-1.5 p-1 rounded-lg"
+              onMouseLeave={() => setHoverRating(0)}
             >
               {[1, 2, 3, 4, 5].map((starValue) => {
-                const isFilled = starValue <= activeRating
+                const isFull = activeRating >= starValue
+                const isHalf = !isFull && activeRating >= starValue - 0.5
+
                 return (
-                  <button
+                  <div
                     key={starValue}
-                    type="button"
-                    role="radio"
-                    aria-checked={rating === starValue}
-                    aria-label={`${starValue} ${starValue === 1 ? t('estrella') : t('estrellas')}`}
-                    disabled={isSubmitting}
-                    onClick={() => setRating(starValue)}
-                    onMouseEnter={() => setHoverRating(starValue)}
-                    onMouseLeave={() => setHoverRating(0)}
-                    className="group rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-transform hover:scale-110"
+                    className="relative inline-flex items-center justify-center p-1 rounded-md transition-transform hover:scale-110"
                   >
-                    <Star
-                      className={`h-8 w-8 transition-colors ${
-                        isFilled
-                          ? 'fill-amber-400 text-amber-500'
-                          : 'text-gray-300 group-hover:text-amber-300'
-                      }`}
+                    <Star className="h-9 w-9 text-gray-300 pointer-events-none" />
+                    {isFull && (
+                      <Star className="h-9 w-9 fill-amber-400 text-amber-500 absolute inset-1 pointer-events-none" />
+                    )}
+                    {isHalf && (
+                      <div className="absolute inset-y-1 left-1 w-[18px] overflow-hidden pointer-events-none">
+                        <Star className="h-9 w-9 fill-amber-400 text-amber-500" />
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={rating === starValue - 0.5}
+                      aria-label={`${starValue - 0.5} ${t('estrellas')}`}
+                      disabled={isSubmitting}
+                      onClick={() => setRating(starValue - 0.5)}
+                      onMouseEnter={() => setHoverRating(starValue - 0.5)}
+                      className="absolute inset-y-0 left-0 w-1/2 cursor-pointer z-10 focus:outline-none"
                     />
-                  </button>
+                    <button
+                      type="button"
+                      role="radio"
+                      aria-checked={rating === starValue}
+                      aria-label={`${starValue} ${starValue === 1 ? t('estrella') : t('estrellas')}`}
+                      disabled={isSubmitting}
+                      onClick={() => setRating(starValue)}
+                      onMouseEnter={() => setHoverRating(starValue)}
+                      className="absolute inset-y-0 right-0 w-1/2 cursor-pointer z-10 focus:outline-none"
+                    />
+                  </div>
                 )
               })}
             </div>
             <p className="h-5 text-sm font-semibold text-primary-900" aria-live="polite">
-              {getRatingLabel(activeRating)}
+              {activeRating > 0 ? `${activeRating.toFixed(1)} / 5.0 — ${getRatingLabel(activeRating)}` : ''}
             </p>
           </div>
 

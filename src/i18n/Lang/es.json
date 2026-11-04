@@ -486,6 +486,7 @@
   "Fecha inválida": "Fecha inválida",
   "La fecha de la tutoría no puede ser anterior a hoy.": "La fecha de la tutoría no puede ser anterior a hoy.",
   "Horario inválido": "Horario inválido",
+  "La tutoría debe programarse con al menos 30 minutos de anticipación.": "La tutoría debe programarse con al menos 30 minutos de anticipación.",
   "Cupo inválido": "Cupo inválido",
   "El cupo de estudiantes debe ser al menos 1.": "El cupo de estudiantes debe ser al menos 1.",
   "¿Deseas reabrir esta sesión como programada?": "¿Deseas reabrir esta sesión como programada?",
@@ -895,5 +896,18 @@
   "Califica al tutor con estrellas y deja tus comentarios sobre la sesión.": "Califica al tutor con estrellas y deja tus comentarios sobre la sesión.",
   "Reputación y comentarios de estudiantes": "Reputación y comentarios de estudiantes",
   "Opiniones de estudiantes": "Opiniones de estudiantes",
-  "Calificación requerida": "Calificación requerida"
+  "Calificación requerida": "Calificación requerida",
+  "Calificaciones de la tutoría": "Calificaciones de la tutoría",
+  "Promedio de la sesión": "Promedio de la sesión",
+  "Total de opiniones": "Total de opiniones",
+  "Cargando calificaciones...": "Cargando calificaciones...",
+  "Sin calificaciones aún": "Sin calificaciones aún",
+  "Esta tutoría aún no tiene calificaciones registradas.": "Esta tutoría aún no tiene calificaciones registradas.",
+  "Ver calificaciones": "Ver calificaciones",
+  "calificación": "calificación",
+  "calificaciones": "calificaciones",
+  "Recuperar contraseña": "Recuperar contraseña",
+  "Este correo ya está registrado en el sistema. Por favor inicia sesión o recupera tu contraseña si la olvidaste.": "Este correo ya está registrado en el sistema. Por favor inicia sesión o recupera tu contraseña si la olvidaste.",
+  "Este correo ya está registrado en el sistema": "Este correo ya está registrado en el sistema",
+  "La dirección {email} ya cuenta con una cuenta activa o registrada. Si es tuya, intenta iniciar sesión o recupera tu contraseña si la olvidaste.": "La dirección {email} ya cuenta con una cuenta activa o registrada. Si es tuya, intenta iniciar sesión o recupera tu contraseña si la olvidaste."
 }

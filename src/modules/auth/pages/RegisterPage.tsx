@@ -2,7 +2,7 @@ import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { GraduationCap, UserCheck, Mail, CheckCircle2, RefreshCw } from 'lucide-react'
+import { GraduationCap, UserCheck, Mail, CheckCircle2, RefreshCw, AlertCircle, LogIn, KeyRound } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
@@ -29,6 +29,7 @@ export function RegisterPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isRegistered, setIsRegistered] = useState(false)
   const [isResending, setIsResending] = useState(false)
+  const [existingEmailError, setExistingEmailError] = useState<string | null>(null)
 
   useEffect(() => {
     const loadInstitutions = async () => {
@@ -46,6 +47,9 @@ export function RegisterPage() {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
+    if (name === 'email' && existingEmailError) {
+      setExistingEmailError(null)
+    }
     setForm((prev) => ({ ...prev, [name]: value }))
   }
 
@@ -72,8 +76,27 @@ export function RegisterPage() {
     }
 
     setIsSubmitting(true)
+    setExistingEmailError(null)
     try {
       const cleanEmail = form.email.trim().toLowerCase()
+
+      const { data: availData, error: availError } = await supabase.rpc(
+        'check_email_availability',
+        { p_email: cleanEmail }
+      )
+
+      if (!availError && availData && (availData as { available: boolean }).available === false) {
+        const reason = (availData as { reason?: string }).reason
+        if (reason === 'already_registered') {
+          setExistingEmailError(cleanEmail)
+          toast.error(
+            t("Correo ya registrado"),
+            t("Este correo ya está registrado en el sistema. Por favor inicia sesión o recupera tu contraseña si la olvidaste.")
+          )
+          return
+        }
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password: form.password,
@@ -91,6 +114,15 @@ export function RegisterPage() {
       if (error) throw error
 
       if (data.user) {
+        if (data.user.identities && data.user.identities.length === 0) {
+          setExistingEmailError(cleanEmail)
+          toast.error(
+            t("Correo ya registrado"),
+            t("Este correo ya está registrado en el sistema. Por favor inicia sesión o recupera tu contraseña si la olvidaste.")
+          )
+          return
+        }
+
         setIsRegistered(true)
         toast.success(
           t("¡Registro exitoso!"),
@@ -98,11 +130,21 @@ export function RegisterPage() {
         )
       }
     } catch (err) {
-      const message = getErrorMessage(err, t, "Error al registrar usuario.")
-      const raw = err instanceof Error ? err.message : ''
-      if (raw.toLowerCase().includes('already registered')) {
-        toast.error(t("Correo ya registrado"), message)
+      const raw = err instanceof Error ? err.message : String(err ?? '')
+      const isAlreadyRegistered =
+        raw.toLowerCase().includes('already registered') ||
+        raw.toLowerCase().includes('already exists') ||
+        raw.toLowerCase().includes('duplicate key') ||
+        raw.toLowerCase().includes('ya existe')
+
+      if (isAlreadyRegistered) {
+        setExistingEmailError(form.email.trim().toLowerCase())
+        toast.error(
+          t("Correo ya registrado"),
+          t("Este correo ya está registrado en el sistema. Por favor inicia sesión o recupera tu contraseña si la olvidaste.")
+        )
       } else {
+        const message = getErrorMessage(err, t, "Error al registrar usuario.")
         toast.error(t("Error de registro"), message)
       }
     } finally {
@@ -196,7 +238,43 @@ export function RegisterPage() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div className="space-y-4">
+                {existingEmailError && (
+                  <div
+                    role="alert"
+                    className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-950 flex flex-col gap-3"
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <AlertCircle className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
+                      <div className="text-xs font-medium leading-relaxed">
+                        <p className="font-bold text-sm text-amber-950">
+                          {t("Este correo ya está registrado en el sistema")}
+                        </p>
+                        <p className="mt-1 text-amber-900">
+                          {t("La dirección {email} ya cuenta con una cuenta activa o registrada. Si es tuya, intenta iniciar sesión o recupera tu contraseña si la olvidaste.", { email: existingEmailError })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2 pt-1 border-t border-amber-200">
+                      <Link
+                        to={`/login?email=${encodeURIComponent(existingEmailError)}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-900 text-white text-xs font-bold hover:bg-primary-950 transition-colors cursor-pointer"
+                      >
+                        <LogIn className="h-3.5 w-3.5" />
+                        {t("Iniciar sesión")}
+                      </Link>
+                      <Link
+                        to={`/forgot-password?email=${encodeURIComponent(existingEmailError)}`}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-amber-300 bg-white text-amber-900 text-xs font-bold hover:bg-amber-100 transition-colors cursor-pointer"
+                      >
+                        <KeyRound className="h-3.5 w-3.5" />
+                        {t("Recuperar contraseña")}
+                      </Link>
+                    </div>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
                   <label className="text-sm font-medium text-gray-700">
                     {t('Deseo registrarme como:')} <span className="text-red-500">*</span>
@@ -325,6 +403,7 @@ export function RegisterPage() {
                   {t("Registrarme y verificar correo")}
                 </Button>
               </form>
+              </div>
             )}
           </Card.Body>
 
