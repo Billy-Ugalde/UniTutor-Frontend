@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,6 +9,8 @@ import { Input } from '@/shared/components/ui/Input'
 import { Card } from '@/shared/components/ui/Card'
 import { toast } from '@/shared/store/toast.store'
 import type { Institution } from '@/types/database.types'
+import { PasswordStrengthIndicator } from '@/shared/components/PasswordStrengthIndicator'
+import { validatePassword } from '@/shared/utils/password'
 
 export function RegisterPage() {
   const { t } = useTranslations()
@@ -54,8 +57,12 @@ export function RegisterPage() {
       return
     }
 
-    if (form.password.length < 8) {
-      toast.warning(t("Contraseña demasiado corta"), t("La contraseña debe tener al menos 8 caracteres."))
+    const passwordValidation = validatePassword(form.password)
+    if (!passwordValidation.isValid) {
+      toast.warning(
+        t("Contraseña poco segura"),
+        t("La contraseña debe cumplir con todos los requisitos de seguridad.")
+      )
       return
     }
 
@@ -91,9 +98,10 @@ export function RegisterPage() {
         )
       }
     } catch (err) {
-      const message = err instanceof Error ? err.message : t("Error al registrar usuario.")
-      if (message.includes('already registered') || message.includes('User already registered')) {
-        toast.error(t("Correo ya registrado"), t("Ya existe una cuenta con este correo electrónico."))
+      const message = getErrorMessage(err, t, "Error al registrar usuario.")
+      const raw = err instanceof Error ? err.message : ''
+      if (raw.toLowerCase().includes('already registered')) {
+        toast.error(t("Correo ya registrado"), message)
       } else {
         toast.error(t("Error de registro"), message)
       }
@@ -120,7 +128,7 @@ export function RegisterPage() {
         t("Se ha enviado un nuevo enlace de confirmación a tu correo.")
       )
     } catch (err) {
-      const message = err instanceof Error ? err.message : t("Error al reenviar correo.")
+      const message = getErrorMessage(err, t, "Error al reenviar correo.")
       toast.error(t("Error"), message)
     } finally {
       setIsResending(false)
@@ -131,11 +139,11 @@ export function RegisterPage() {
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-lg">
         <div className="mb-8 text-center flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 mb-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-3">
             <GraduationCap className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-bold text-primary-700">UniTutor</h1>
-          <p className="mt-2 text-gray-600">{t("Crea tu cuenta institucional")}</p>
+          <h1 className="text-3xl font-bold text-primary-900">UniTutor</h1>
+          <p className="mt-2 text-gray-700 font-medium">{t("Crea tu cuenta institucional")}</p>
         </div>
 
         <Card>
@@ -143,7 +151,7 @@ export function RegisterPage() {
             <h2 className="text-lg font-semibold text-gray-900">
               {isRegistered ? t("¡Verifica tu correo electrónico!") : t("Registro de Usuario")}
             </h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700 font-medium">
               {isRegistered
                 ? t("Te enviamos un enlace de activación de cuenta")
                 : t("Completa los datos para habilitar tu perfil académico")}
@@ -153,7 +161,7 @@ export function RegisterPage() {
           <Card.Body>
             {isRegistered ? (
               <div className="space-y-4 text-center py-4">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-700">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
                 <div className="space-y-2">
@@ -163,7 +171,7 @@ export function RegisterPage() {
                   <p className="font-semibold text-gray-900 bg-gray-50 py-2 px-3 rounded-lg border border-gray-200 break-all text-sm">
                     {form.email}
                   </p>
-                  <p className="text-xs text-gray-500 leading-relaxed pt-2">
+                  <p className="text-xs text-gray-700 font-medium leading-relaxed pt-2">
                     {t("Abre tu correo institucional y haz clic en el enlace para activar tu cuenta antes de iniciar sesión. Si no lo recibes en unos minutos, revisa tu carpeta de spam o correo no deseado.")}
                   </p>
                 </div>
@@ -181,7 +189,7 @@ export function RegisterPage() {
                     fullWidth
                     onClick={handleResendConfirmation}
                     isLoading={isResending}
-                    className="text-gray-600 hover:text-gray-900 text-xs"
+                    className="text-gray-700 hover:text-gray-950 text-xs font-semibold"
                   >
                     <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
                     {t("¿No recibiste el correo? Reenviar enlace")}
@@ -200,8 +208,8 @@ export function RegisterPage() {
                       onClick={() => setForm((prev) => ({ ...prev, role: 'estudiante' }))}
                       className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 px-3 text-sm font-medium transition-all cursor-pointer ${
                         form.role === 'estudiante'
-                          ? 'border-primary-600 bg-primary-50 text-primary-700 ring-2 ring-primary-500/20 font-semibold'
-                          : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                          ? 'border-primary-800 bg-primary-100 text-primary-950 ring-2 ring-primary-700/20 font-bold'
+                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
                       }`}
                     >
                       <GraduationCap className="h-4 w-4" />
@@ -212,8 +220,8 @@ export function RegisterPage() {
                       onClick={() => setForm((prev) => ({ ...prev, role: 'tutor' }))}
                       className={`flex items-center justify-center gap-2 rounded-lg border py-2.5 px-3 text-sm font-medium transition-all cursor-pointer ${
                         form.role === 'tutor'
-                          ? 'border-primary-600 bg-primary-50 text-primary-700 ring-2 ring-primary-500/20 font-semibold'
-                          : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                          ? 'border-primary-800 bg-primary-100 text-primary-950 ring-2 ring-primary-700/20 font-bold'
+                          : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-100 font-semibold'
                       }`}
                     >
                       <UserCheck className="h-4 w-4" />
@@ -283,16 +291,19 @@ export function RegisterPage() {
                   )}
                 </div>
 
-                <Input
-                  label={t("Contraseña")}
-                  name="password"
-                  type="password"
-                  placeholder={t("Mínimo 8 caracteres")}
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                />
+                <div className="space-y-1">
+                  <Input
+                    label={t("Contraseña")}
+                    name="password"
+                    type="password"
+                    placeholder={t("Mínimo 8 caracteres")}
+                    value={form.password}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                  />
+                  <PasswordStrengthIndicator password={form.password} />
+                </div>
 
                 <Input
                   label={t("Confirmar contraseña")}
@@ -321,9 +332,9 @@ export function RegisterPage() {
 
           {!isRegistered && (
             <Card.Footer>
-              <p className="text-center text-sm text-gray-500">
+              <p className="text-center text-sm text-gray-700 font-medium">
                 {t("¿Ya tienes cuenta?")}{' '}
-                <Link to="/login" className="font-medium text-primary-600 hover:text-primary-700">
+                <Link to="/login" className="font-semibold text-primary-800 hover:text-primary-950">
                   {t("Inicia sesión")}
                 </Link>
               </p>

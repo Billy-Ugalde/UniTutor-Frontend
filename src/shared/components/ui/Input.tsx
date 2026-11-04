@@ -50,7 +50,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               disabled={props.disabled}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none p-1 rounded-sm cursor-pointer disabled:cursor-not-allowed"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-900 focus:outline-none p-1 rounded-sm cursor-pointer disabled:cursor-not-allowed"
               tabIndex={-1}
               title={showPassword ? t("Ocultar contraseña") : t("Ver contraseña")}
               aria-label={showPassword ? t("Ocultar contraseña") : t("Ver contraseña")}
@@ -63,8 +63,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             </button>
           )}
         </div>
-        {error && <p className="text-xs text-red-600">{error}</p>}
-        {hint && !error && <p className="text-xs text-gray-500">{hint}</p>}
+        {error && <p className="text-xs text-red-800 font-semibold">{error}</p>}
+        {hint && !error && <p className="text-xs text-gray-700 font-medium">{hint}</p>}
       </div>
     )
   },

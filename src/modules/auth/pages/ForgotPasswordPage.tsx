@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -33,7 +34,7 @@ export function ForgotPasswordPage() {
         t("Hemos enviado las instrucciones para restablecer tu contraseña.")
       )
     } catch (err) {
-      const message = err instanceof Error ? err.message : t("Error al enviar enlace de recuperación.")
+      const message = getErrorMessage(err, t, "Error al enviar enlace de recuperación.")
       toast.error(t("Error"), message)
     } finally {
       setIsLoading(false)
@@ -44,11 +45,11 @@ export function ForgotPasswordPage() {
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 mb-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-3">
             <GraduationCap className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-bold text-primary-700">UniTutor</h1>
-          <p className="mt-2 text-gray-600">{t("Recuperación de contraseña")}</p>
+          <h1 className="text-3xl font-bold text-primary-900">UniTutor</h1>
+          <p className="mt-2 text-gray-700 font-medium">{t("Recuperación de contraseña")}</p>
         </div>
 
         <Card>
@@ -56,7 +57,7 @@ export function ForgotPasswordPage() {
             <h2 className="text-lg font-semibold text-gray-900">
               {isSubmitted ? t("Revisa tu correo") : t("¿Olvidaste tu contraseña?")}
             </h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700 font-medium">
               {isSubmitted
                 ? t("Te enviamos un enlace de restablecimiento seguro")
                 : t("Ingresa tu correo institucional para recibir un enlace de recuperación")}
@@ -66,7 +67,7 @@ export function ForgotPasswordPage() {
           <Card.Body>
             {isSubmitted ? (
               <div className="space-y-4 text-center py-4">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-700">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
                 <div className="space-y-2">
@@ -76,7 +77,7 @@ export function ForgotPasswordPage() {
                   <p className="font-semibold text-gray-900 bg-gray-50 py-2 px-3 rounded-lg border border-gray-200 break-all text-sm">
                     {email}
                   </p>
-                  <p className="text-xs text-gray-500 leading-relaxed pt-2">
+                  <p className="text-xs text-gray-700 font-medium leading-relaxed pt-2">
                     {t("Haz clic en el enlace del mensaje para establecer una nueva contraseña. Por seguridad, el enlace es de un solo uso y caduca en 15 minutos. Si no lo encuentras, revisa tu carpeta de spam.")}
                   </p>
                 </div>
@@ -113,7 +114,7 @@ export function ForgotPasswordPage() {
               <div className="text-center">
                 <Link
                   to="/login"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-800 hover:text-primary-950 font-semibold"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   {t("Volver a iniciar sesión")}

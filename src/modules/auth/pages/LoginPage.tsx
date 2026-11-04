@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import type { TranslationKey } from '@/i18n/core'
@@ -71,23 +72,21 @@ export function LoginPage() {
       toast.success(t("¡Bienvenido a UniTutor!"), t("Has iniciado sesión correctamente."))
       navigate('/dashboard')
     } catch (err) {
-      const message = err instanceof Error ? err.message : t("Error al iniciar sesión.")
-      if (message.includes('desactivada')) {
-        const errorText = t('Esta cuenta ha sido desactivada. Comunícate con el administrador de tu institución.')
+      const errorText = getErrorMessage(err, t, "Error al iniciar sesión.")
+      const raw = err instanceof Error ? err.message : ''
+      if (raw.toLowerCase().includes('desactivada')) {
         setError(errorText)
         toast.error(t("Acceso denegado"), errorText, 6000)
-      } else if (message.includes('Invalid login credentials')) {
-        const errorText = t("Correo o contraseña incorrectos.")
+      } else if (raw.toLowerCase().includes('email not confirmed')) {
+        setError(errorText)
+        setShowResendConfirmation(true)
+        toast.warning(t("Confirmación requerida"), errorText)
+      } else if (raw.toLowerCase().includes('invalid login credentials')) {
         setError(errorText)
         toast.error(t("Credenciales incorrectas"), errorText)
-      } else if (message.includes('Email not confirmed')) {
-        const warnText = t("Debes confirmar tu correo electrónico antes de ingresar.")
-        setError(warnText)
-        setShowResendConfirmation(true)
-        toast.warning(t("Confirmación requerida"), warnText)
       } else {
-        setError(message)
-        toast.error(t("Error al ingresar"), message)
+        setError(errorText)
+        toast.error(t("Error al ingresar"), errorText)
       }
     } finally {
       setIsLoading(false)
@@ -112,7 +111,7 @@ export function LoginPage() {
         t("Hemos enviado un nuevo enlace de activación a tu correo.")
       )
     } catch (err) {
-      const msg = err instanceof Error ? err.message : t("Error al reenviar correo.")
+      const msg = getErrorMessage(err, t, "Error al reenviar correo.")
       toast.error(t("Error"), msg)
     } finally {
       setIsResending(false)
@@ -123,15 +122,15 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 mb-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-3">
             <GraduationCap className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-bold text-primary-700">UniTutor</h1>
-          <p className="mt-2 text-gray-600">{t("Plataforma de tutorías universitarias")}</p>
+          <h1 className="text-3xl font-bold text-primary-900">UniTutor</h1>
+          <p className="mt-2 text-gray-700 font-medium">{t("Plataforma de tutorías universitarias")}</p>
         </div>
 
         {successMessage && (
-          <div className="mb-4 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+          <div className="mb-4 rounded-md border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-950 font-bold">
             {successMessage}
           </div>
         )}
@@ -139,7 +138,7 @@ export function LoginPage() {
         <Card>
           <Card.Header>
             <h2 className="text-lg font-semibold text-gray-900">{t("Iniciar sesión")}</h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700 font-medium">
               {t("Ingresa con tu correo institucional")}
             </p>
           </Card.Header>
@@ -169,7 +168,7 @@ export function LoginPage() {
                 <div className="flex justify-end pt-1">
                   <Link
                     to="/forgot-password"
-                    className="text-xs font-medium text-primary-600 hover:text-primary-700 cursor-pointer"
+                    className="text-xs font-semibold text-primary-800 hover:text-primary-950 cursor-pointer"
                   >
                     {t("¿Olvidaste tu contraseña?")}
                   </Link>
@@ -177,20 +176,25 @@ export function LoginPage() {
               </div>
 
               {error && (
-                <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 space-y-2">
+                <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-950 font-medium space-y-2.5">
                   <p>{error}</p>
                   {showResendConfirmation && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleResendConfirmation}
-                      isLoading={isResending}
-                      className="text-xs text-primary-700 hover:bg-red-100/50 p-1 font-semibold"
-                    >
-                      <RefreshCw className="h-3 w-3 mr-1" />
-                      {t("Reenviar correo de activación")}
-                    </Button>
+                    <div className="pt-1 border-t border-red-200 flex flex-col gap-2">
+                      <p className="text-xs text-red-950 font-medium">
+                        {t("Por favor revisa tu bandeja de entrada o spam. Si no lo has recibido, solicita un nuevo enlace:")}
+                      </p>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={handleResendConfirmation}
+                        isLoading={isResending}
+                        className="self-start text-xs font-semibold"
+                      >
+                        <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                        {t("Reenviar correo de activación")}
+                      </Button>
+                    </div>
                   )}
                 </div>
               )}
@@ -202,11 +206,11 @@ export function LoginPage() {
           </Card.Body>
 
           <Card.Footer>
-            <p className="text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-gray-700 font-medium">
               {t("¿No tienes cuenta?")}{' '}
               <Link
                 to="/register"
-                className="font-medium text-primary-600 hover:text-primary-700"
+                className="font-semibold text-primary-800 hover:text-primary-950"
               >
                 {t("Regístrate aquí")}
               </Link>

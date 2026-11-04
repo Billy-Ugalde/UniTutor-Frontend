@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, useCallback } from 'react'
 import { Link } from 'react-router-dom'
@@ -161,7 +162,7 @@ export function TutorSubjectsPage() {
       setAvailableCatalog(catalogList)
     } catch (err) {
       console.error('Error al cargar materias del tutor:', err)
-      toast.error('Error', 'No fue posible cargar tus materias.')
+      toast.error(t("Error"), t("No fue posible cargar tus materias."))
     } finally {
       setIsLoading(false)
     }
@@ -192,7 +193,7 @@ export function TutorSubjectsPage() {
       await loadTutorSubjects()
     } catch (err) {
       console.error('Error al habilitar materia:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al habilitar materia.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al habilitar materia."))
     } finally {
       setEnablingSubjectId(null)
     }
@@ -252,7 +253,7 @@ export function TutorSubjectsPage() {
       await loadTutorSubjects()
     } catch (err) {
       console.error('Error al deshabilitar materia:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al deshabilitar materia.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al deshabilitar materia."))
     } finally {
       setIsUnlinking(false)
     }
@@ -289,7 +290,7 @@ export function TutorSubjectsPage() {
           <div className="flex items-center gap-2">
             <Link
               to="/dashboard"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-900 hover:text-primary-950"
             >
               <ArrowLeft className="h-4 w-4" /> {t("Inicio")}
             </Link>
@@ -297,7 +298,7 @@ export function TutorSubjectsPage() {
           <h1 className="text-2xl font-bold text-gray-900 mt-1">
             {t("Mis Materias Habilitadas")}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700 font-medium">
             {t("Materias que estás capacitado para impartir en tu institución")}
           </p>
         </div>
@@ -313,8 +314,8 @@ export function TutorSubjectsPage() {
           </Button>
 
           <div className="rounded-lg bg-green-50 px-3.5 py-1.5 border border-green-200">
-            <span className="text-xs font-semibold uppercase text-green-700">{t("Habilitadas:")}</span>
-            <span className="ml-1.5 text-base font-bold text-green-900">
+            <span className="text-xs font-bold uppercase text-emerald-950">{t("Habilitadas:")}</span>
+            <span className="ml-1.5 text-base font-bold text-emerald-950 font-extrabold">
               {enabledSubjects.length}
             </span>
           </div>
@@ -334,12 +335,15 @@ export function TutorSubjectsPage() {
       </Card>
 
       {isLoading ? (
-        <div className="py-12 text-center text-gray-500">{t("Cargando tus materias...")}</div>
+        <div className="py-12 flex flex-col items-center justify-center gap-3 text-center text-gray-700" role="status">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
+          <span className="text-sm font-medium text-gray-700">{t("Cargando tus materias...")}</span>
+        </div>
       ) : filteredEnabledSubjects.length === 0 ? (
         <Card>
           <Card.Body>
             <div className="text-center py-12 space-y-4 max-w-md mx-auto">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-700 mx-auto">
+              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold mx-auto">
                 <BookOpen className="h-7 w-7" />
               </div>
               <h3 className="text-lg font-bold text-gray-900">
@@ -347,7 +351,7 @@ export function TutorSubjectsPage() {
                   ? t("No tienes materias habilitadas todavía.")
                   : t("No se encontraron materias con ese término de búsqueda.")}
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-700 font-medium">
                 {enabledSubjects.length === 0
                   ? t("Explora el catálogo institucional y selecciona las asignaturas que deseas impartir como tutor.")
                   : t("Intenta con otro código o nombre de materia.")}
@@ -380,7 +384,7 @@ export function TutorSubjectsPage() {
                     <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
                       {displayCode}
                     </span>
-                    <span className="text-xs text-gray-500 truncate max-w-[150px]">
+                    <span className="text-xs text-gray-700 font-medium truncate max-w-[150px]">
                       {subject.courseName}
                     </span>
                   </div>
@@ -407,7 +411,7 @@ export function TutorSubjectsPage() {
                   <div className="flex items-center justify-between gap-2 pt-2 border-t border-gray-100">
                     <Link
                       to={`/tutor/materias/${subject.id}`}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-700 hover:text-primary-900 hover:underline cursor-pointer"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-900 hover:text-primary-950 hover:underline cursor-pointer font-bold"
                     >
                       {t("Ver detalles y tutorías")}
                       <ArrowRight className="h-3.5 w-3.5" />
@@ -426,8 +430,8 @@ export function TutorSubjectsPage() {
                       }
                       className={`text-xs px-2.5 py-1 cursor-pointer font-medium ${
                         subject.totalSessionsCount > 0
-                          ? 'text-amber-700 hover:text-amber-800 hover:bg-amber-50'
-                          : 'text-red-600 hover:text-red-700 hover:bg-red-50'
+                          ? 'text-amber-900 hover:text-amber-950 hover:bg-amber-50 font-bold'
+                          : 'text-red-900 hover:text-red-950 hover:bg-red-50 font-bold'
                       }`}
                     >
                       <Trash2 className="h-3.5 w-3.5 mr-1" />
@@ -446,14 +450,14 @@ export function TutorSubjectsPage() {
           <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl flex flex-col max-h-[85vh]">
             <div className="flex items-center justify-between p-5 border-b border-gray-100">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-100 text-green-700">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">
                     {t("Habilitar o Deshabilitar Materias del Catálogo")}
                   </h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700 font-medium">
                     {t("Selecciona las materias activas de tu institución para habilitar o deshabilitar su impartición.")}
                   </p>
                 </div>
@@ -461,7 +465,9 @@ export function TutorSubjectsPage() {
               <button
                 type="button"
                 onClick={() => setIsCatalogModalOpen(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -477,7 +483,7 @@ export function TutorSubjectsPage() {
 
             <div className="p-5 overflow-y-auto space-y-3 flex-1 divide-y divide-gray-100">
               {filteredCatalog.length === 0 ? (
-                <div className="py-8 text-center text-sm text-gray-500">
+                <div className="py-8 text-center text-sm text-gray-700 font-medium">
                   {t("No se encontraron materias disponibles en tu institución.")}
                 </div>
               ) : (
@@ -499,7 +505,7 @@ export function TutorSubjectsPage() {
                             {item.name}
                           </h4>
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5 truncate">
+                        <p className="text-xs text-gray-700 font-medium mt-0.5 truncate">
                           {item.courseName}
                           {item.description ? ` — ${item.description}` : ''}
                         </p>
@@ -507,7 +513,7 @@ export function TutorSubjectsPage() {
 
                       {item.isAlreadyEnabled ? (
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="inline-flex items-center gap-1 rounded bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800">
+                          <span className="inline-flex items-center gap-1 rounded bg-emerald-100 border border-emerald-300 px-2.5 py-1 text-xs font-bold text-emerald-950">
                             <CheckCircle2 className="h-3.5 w-3.5" />
                             {t("Habilitada")}
                           </span>

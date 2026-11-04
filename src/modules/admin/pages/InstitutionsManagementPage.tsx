@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -182,7 +183,7 @@ export function InstitutionsManagementPage() {
       await loadInstitutions()
     } catch (err) {
       console.error('Error al crear institución:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al crear la institución.")
+      const errorText = getErrorMessage(err, t, "Error al crear la institución.")
       setCreateFeedback({
         type: 'error',
         text: errorText,
@@ -234,7 +235,7 @@ export function InstitutionsManagementPage() {
       await loadInstitutions()
     } catch (err) {
       console.error('Error al actualizar institución:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al actualizar la institución.")
+      const errorText = getErrorMessage(err, t, "Error al actualizar la institución.")
       setActionFeedback({
         type: 'error',
         text: errorText,
@@ -285,7 +286,7 @@ export function InstitutionsManagementPage() {
           <div className="flex items-center gap-2">
             <Link
               to="/admin"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-900 hover:text-primary-950"
             >
               <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
             </Link>
@@ -293,7 +294,7 @@ export function InstitutionsManagementPage() {
           <h1 className="text-2xl font-bold text-gray-900 mt-1">
             {t("Gestión de Instituciones")}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700">
             {t("Supervisa, administra y registra las universidades adscritas a la plataforma")}
           </p>
         </div>
@@ -317,8 +318,8 @@ export function InstitutionsManagementPage() {
         <div
           className={`rounded-lg p-4 text-sm ${
             actionFeedback.type === 'success'
-              ? 'border border-green-200 bg-green-50 text-green-700'
-              : 'border border-red-200 bg-red-50 text-red-700'
+              ? 'border border-emerald-300 bg-emerald-50 text-emerald-950 font-bold'
+              : 'border border-red-300 bg-red-50 text-red-950 font-bold'
           }`}
         >
           {actionFeedback.text}
@@ -330,10 +331,10 @@ export function InstitutionsManagementPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Total Instituciones")}
                 </p>
-                <p className="mt-1 text-3xl font-extrabold text-blue-600">
+                <p className="mt-1 text-3xl font-extrabold text-blue-900">
                   {isLoading ? '...' : metrics.total}
                 </p>
               </div>
@@ -341,7 +342,7 @@ export function InstitutionsManagementPage() {
                 <Building2 className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">{t("Registradas en la plataforma")}</p>
+            <p className="mt-2 text-xs text-gray-700 font-medium">{t("Registradas en la plataforma")}</p>
           </Card.Body>
         </Card>
 
@@ -349,10 +350,10 @@ export function InstitutionsManagementPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Instituciones Activas")}
                 </p>
-                <p className="mt-1 text-3xl font-extrabold text-green-600">
+                <p className="mt-1 text-3xl font-extrabold text-emerald-800">
                   {isLoading ? '...' : metrics.active}
                 </p>
               </div>
@@ -360,7 +361,7 @@ export function InstitutionsManagementPage() {
                 <CheckCircle2 className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">{t("Operando con normalidad")}</p>
+            <p className="mt-2 text-xs text-gray-700 font-medium">{t("Operando con normalidad")}</p>
           </Card.Body>
         </Card>
 
@@ -368,10 +369,10 @@ export function InstitutionsManagementPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Instituciones Inactivas")}
                 </p>
-                <p className="mt-1 text-3xl font-extrabold text-amber-600">
+                <p className="mt-1 text-3xl font-extrabold text-amber-800">
                   {isLoading ? '...' : metrics.inactive}
                 </p>
               </div>
@@ -379,7 +380,7 @@ export function InstitutionsManagementPage() {
                 <XCircle className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-2 text-xs text-gray-500">{t("Pausadas o en mantenimiento")}</p>
+            <p className="mt-2 text-xs text-gray-700 font-medium">{t("Pausadas o en mantenimiento")}</p>
           </Card.Body>
         </Card>
       </div>
@@ -395,10 +396,11 @@ export function InstitutionsManagementPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
                 {t("Estado:")}
               </span>
               <select
+                aria-label={t("Filtrar por estado")}
                 value={statusFilter}
                 onChange={(e) =>
                   setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')
@@ -425,7 +427,7 @@ export function InstitutionsManagementPage() {
               <col className="w-[10%]" />
               <col className="w-[31%]" />
             </colgroup>
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+            <thead className="border-b border-gray-200 bg-gray-50 text-xs font-bold uppercase text-gray-700">
               <tr>
                 <th className="px-4 py-3">{t("Institución")}</th>
                 <th className="px-4 py-3">{t("Contacto Oficial")}</th>
@@ -438,13 +440,13 @@ export function InstitutionsManagementPage() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">
+                  <td colSpan={6} className="py-8 text-center text-gray-700 font-medium">
                     {t("Cargando instituciones...")}
                   </td>
                 </tr>
               ) : filteredInstitutions.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-gray-500">
+                  <td colSpan={6} className="py-8 text-center text-gray-700 font-medium">
                     {t("No se encontraron instituciones con el criterio seleccionado.")}
                   </td>
                 </tr>
@@ -453,14 +455,14 @@ export function InstitutionsManagementPage() {
                   <tr key={inst.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3.5 font-medium text-gray-900">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700 font-bold text-xs">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-900 font-bold text-xs">
                           {inst.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-gray-900 text-sm" title={inst.name}>
                             {inst.name}
                           </p>
-                          <span className="font-mono text-xs text-gray-400 truncate block" title={`/${inst.slug}`}>
+                          <span className="font-mono text-xs text-gray-700 font-medium truncate block" title={`/${inst.slug}`}>
                             /{inst.slug}
                           </span>
                         </div>
@@ -470,10 +472,10 @@ export function InstitutionsManagementPage() {
                     <td className="px-4 py-3.5 text-xs text-gray-600">
                       <div className="min-w-0">
                         <p className="truncate font-medium text-gray-900" title={inst.official_email || t("Sin correo")}>
-                          {inst.official_email || <span className="text-gray-400">{t("Sin correo")}</span>}
+                          {inst.official_email || <span className="text-gray-700 font-medium">{t("Sin correo")}</span>}
                         </p>
                         {inst.phone && (
-                          <p className="truncate text-gray-400 mt-0.5" title={inst.phone}>
+                          <p className="truncate text-gray-700 font-medium mt-0.5" title={inst.phone}>
                             {inst.phone}
                           </p>
                         )}
@@ -482,23 +484,23 @@ export function InstitutionsManagementPage() {
 
                     <td className="px-4 py-3.5 text-xs text-gray-600">
                       <p className="truncate" title={inst.address || t("No indicada")}>
-                        {inst.address || <span className="text-gray-400">{t("No indicada")}</span>}
+                        {inst.address || <span className="text-gray-700 font-medium">{t("No indicada")}</span>}
                       </p>
                     </td>
 
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       {inst.active ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100/90 border border-emerald-300 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
                           <CheckCircle2 className="h-3 w-3" /> {t("Activa")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-600">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-bold text-gray-800">
                           <XCircle className="h-3 w-3" /> {t("Inactiva")}
                         </span>
                       )}
                     </td>
 
-                    <td className="px-4 py-3.5 text-xs text-gray-400 whitespace-nowrap">
+                    <td className="px-4 py-3.5 text-xs text-gray-700 font-medium whitespace-nowrap">
                       {new Date(inst.created_at).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
@@ -526,7 +528,7 @@ export function InstitutionsManagementPage() {
                                 navigate('/admin')
                               }}
                               title={t("Seleccionar y administrar esta institución")}
-                              className="inline-flex items-center justify-center gap-1 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-100 hover:border-blue-300 hover:text-blue-900 transition-colors shrink-0 whitespace-nowrap"
+                              className="inline-flex items-center justify-center gap-1 rounded-md border border-blue-300 bg-blue-50 px-2 py-1 text-xs font-bold text-blue-900 hover:bg-blue-100 hover:border-blue-400 hover:text-blue-950 transition-colors shrink-0 whitespace-nowrap"
                             >
                               <Shield className="h-3.5 w-3.5 text-blue-600" />
                               {t("Admin")}
@@ -546,8 +548,8 @@ export function InstitutionsManagementPage() {
                               onClick={() => handleToggleActive(inst)}
                               className={
                                 inst.active
-                                  ? 'text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200'
-                                  : 'text-green-600 hover:bg-green-50 hover:text-green-700 border-green-200'
+                                  ? 'text-red-800 hover:bg-red-50 hover:text-red-900 border-red-300 font-semibold'
+                                  : 'text-emerald-800 hover:bg-emerald-50 hover:text-emerald-900 border-emerald-300 font-semibold'
                               }
                               title={inst.active ? t("Desactivar institución") : t("Activar institución")}
                             >
@@ -577,7 +579,7 @@ export function InstitutionsManagementPage() {
           <div className="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-start justify-between border-b pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 font-bold text-blue-700 text-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 font-bold text-blue-900 text-lg">
                   <Building2 className="h-6 w-6 text-blue-600" />
                 </div>
                 <div>
@@ -585,13 +587,13 @@ export function InstitutionsManagementPage() {
                     {viewingInst.name}
                   </h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="font-mono text-xs text-gray-400">/{viewingInst.slug}</span>
+                    <span className="font-mono text-xs text-gray-700 font-medium">/{viewingInst.slug}</span>
                     {viewingInst.active ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-300 px-2 py-0.5 text-xs font-bold text-emerald-950">
                         <CheckCircle2 className="h-3 w-3" /> {t("Activa")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-gray-200 px-2 py-0.5 text-xs font-bold text-gray-800">
                         <XCircle className="h-3 w-3" /> {t("Inactiva")}
                       </span>
                     )}
@@ -601,7 +603,9 @@ export function InstitutionsManagementPage() {
               <button
                 type="button"
                 onClick={() => setViewingInst(null)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -611,33 +615,33 @@ export function InstitutionsManagementPage() {
               <div className="rounded-lg border border-gray-100 bg-gray-50/70 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Mail className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Correo Oficial:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Correo Oficial:")}</span>
                   <span className="text-gray-900 font-medium">{viewingInst.official_email || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Phone className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Teléfono:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Teléfono:")}</span>
                   <span className="text-gray-800">{viewingInst.phone || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <MapPin className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Sede Principal / Campus:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Sede Principal / Campus:")}</span>
                   <span className="text-gray-800">{viewingInst.address || t("No indicada")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Globe className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Identificador Slug:")}</span>
-                  <span className="font-mono text-xs text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                  <span className="text-xs text-gray-700 font-bold">{t("Identificador Slug:")}</span>
+                  <span className="font-mono text-xs text-blue-900 bg-blue-100 border border-blue-200 px-2 py-0.5 rounded font-semibold">
                     /{viewingInst.slug}
                   </span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Fecha de Registro:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Fecha de Registro:")}</span>
                   <span className="text-gray-800">
                     {new Date(viewingInst.created_at).toLocaleDateString(locale, {
                       year: 'numeric',
@@ -648,8 +652,8 @@ export function InstitutionsManagementPage() {
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-xs text-gray-400 font-medium">{t("ID Institucional:")}</span>
-                  <p className="font-mono text-xs text-gray-500 select-all mt-0.5">{viewingInst.id}</p>
+                  <span className="text-xs text-gray-700 font-bold">{t("ID Institucional:")}</span>
+                  <p className="font-mono text-xs text-gray-700 font-medium select-all mt-0.5">{viewingInst.id}</p>
                 </div>
               </div>
             </div>
@@ -695,14 +699,16 @@ export function InstitutionsManagementPage() {
                 <h3 className="text-lg font-bold text-gray-900">
                   {t("Crear Nueva Institución")}
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-700 font-medium">
                   {t("Registra la universidad y su administrador institucional inicial")}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsCreateModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer p-1 rounded-lg hover:bg-gray-100"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="text-gray-500 hover:text-gray-700 cursor-pointer p-1 rounded-lg hover:bg-gray-100"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -712,8 +718,8 @@ export function InstitutionsManagementPage() {
               <div
                 className={`mt-4 rounded-lg p-3 text-sm ${
                   createFeedback.type === 'success'
-                    ? 'border border-green-200 bg-green-50 text-green-700'
-                    : 'border border-red-200 bg-red-50 text-red-700'
+                    ? 'border border-emerald-300 bg-emerald-50 text-emerald-950 font-bold'
+                    : 'border border-red-300 bg-red-50 text-red-950 font-bold'
                 }`}
               >
                 {createFeedback.text}
@@ -723,7 +729,7 @@ export function InstitutionsManagementPage() {
             <form onSubmit={handleCreateInstitution} className="mt-4 space-y-4">
               <div className="rounded-xl border border-gray-100 bg-gray-50/60 p-4 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
-                  <Building2 className="h-4 w-4 text-blue-700" /> {t("1. Datos de la Universidad / Institución")}
+                  <Building2 className="h-4 w-4 text-blue-900" /> {t("1. Datos de la Universidad / Institución")}
                 </h4>
                 <div className="space-y-3">
                   <Input
@@ -791,7 +797,7 @@ export function InstitutionsManagementPage() {
 
               <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-blue-800 flex items-center gap-1.5">
-                  <UserCheck className="h-4 w-4 text-blue-700" /> {t("2. Administrador de la Institución")}
+                  <UserCheck className="h-4 w-4 text-blue-900" /> {t("2. Administrador de la Institución")}
                 </h4>
                 <div className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -889,14 +895,16 @@ export function InstitutionsManagementPage() {
                 <h3 className="text-lg font-bold text-gray-900">
                   {t("Editar Institución")}
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-700 font-medium">
                   {t("Modifica los datos principales y de contacto de la universidad")}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setEditingInst(null)}
-                className="text-gray-400 hover:text-gray-600 cursor-pointer p-1 rounded-lg hover:bg-gray-100"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="text-gray-500 hover:text-gray-700 cursor-pointer p-1 rounded-lg hover:bg-gray-100"
               >
                 <X className="h-5 w-5" />
               </button>

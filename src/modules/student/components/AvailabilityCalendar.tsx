@@ -79,7 +79,7 @@ export function AvailabilityCalendar({ slots, selectedDate, onSelectDate }: Avai
 
       <div className="grid grid-cols-7 gap-1 text-center">
         {weekdayLabels.map((label, index) => (
-          <div key={index} className="py-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <div key={index} className="py-1 text-xs font-bold uppercase tracking-wide text-gray-700">
             {label}
           </div>
         ))}
@@ -113,9 +113,9 @@ export function AvailabilityCalendar({ slots, selectedDate, onSelectDate }: Avai
             stateClass =
               'border border-green-200 bg-green-50 text-green-800 hover:bg-green-100 cursor-pointer font-semibold'
           } else if (hasAnySlot) {
-            stateClass = 'border border-gray-200 bg-gray-50 text-gray-500 hover:bg-gray-100 cursor-pointer'
+            stateClass = 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 cursor-pointer font-medium'
           } else if (!isPast) {
-            stateClass = 'text-gray-500'
+            stateClass = 'text-gray-700 font-medium'
           }
 
           return (
@@ -141,7 +141,7 @@ export function AvailabilityCalendar({ slots, selectedDate, onSelectDate }: Avai
         })}
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-gray-100 pt-3 text-xs text-gray-500">
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-gray-100 pt-3 text-xs text-gray-700 font-medium">
         <span className="inline-flex items-center gap-1.5">
           <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
           {t("Con horarios libres")}

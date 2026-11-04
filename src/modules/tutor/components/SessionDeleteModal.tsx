@@ -36,14 +36,16 @@ export function SessionDeleteModal({
               <h3 className="text-base font-bold text-gray-900">
                 {t("Confirmar eliminación de tutoría")}
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">{subjectLabel}</p>
+              <p className="text-xs text-gray-700 font-medium mt-0.5">{subjectLabel}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer disabled:opacity-50"
+            aria-label={t("Cerrar")}
+            title={t("Cerrar")}
+            className="rounded-lg p-1.5 text-gray-700 hover:bg-gray-100 hover:text-gray-800 cursor-pointer disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
@@ -52,13 +54,13 @@ export function SessionDeleteModal({
         <div className="p-5 space-y-4">
           <div className="rounded-lg border border-gray-100 bg-gray-50/80 p-3.5 space-y-2">
             <h4 className="text-sm font-semibold text-gray-900">{session.title}</h4>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-700 font-medium">
               <span className="flex items-center gap-1">
-                <Calendar className="h-3.5 w-3.5 text-gray-500" />
+                <Calendar className="h-3.5 w-3.5 text-gray-700" />
                 {session.date}
               </span>
               <span className="flex items-center gap-1">
-                <Clock className="h-3.5 w-3.5 text-gray-500" />
+                <Clock className="h-3.5 w-3.5 text-gray-700" />
                 {session.start_time.substring(0, 5)} - {session.end_time.substring(0, 5)}
               </span>
             </div>

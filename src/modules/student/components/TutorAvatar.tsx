@@ -26,7 +26,7 @@ export function TutorAvatar({ firstName, lastName, avatarUrl, size = 'md' }: Tut
   return (
     <div
       aria-hidden="true"
-      className={`${sizeClasses[size]} flex shrink-0 items-center justify-center rounded-full bg-primary-100 font-semibold text-primary-700`}
+      className={`${sizeClasses[size]} flex shrink-0 items-center justify-center rounded-full bg-primary-100 font-bold text-primary-950 border border-primary-200`}
     >
       {initials}
     </div>

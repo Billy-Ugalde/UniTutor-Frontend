@@ -166,7 +166,7 @@ export function TutorSearchPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-gray-900">{t("Buscar Tutores")}</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-700 font-medium">
           {t("Encuentra tutores por materia, área e institución y solicita una tutoría en sus horarios libres.")}
         </p>
       </div>
@@ -256,7 +256,7 @@ export function TutorSearchPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center gap-3 py-16 text-sm text-gray-500" role="status">
+        <div className="flex items-center justify-center gap-3 py-16 text-sm text-gray-700 font-medium" role="status">
           <div className="h-6 w-6 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
           {t("Buscando tutores...")}
         </div>
@@ -264,7 +264,7 @@ export function TutorSearchPage() {
         <Card className="p-12 text-center">
           <SearchX className="mx-auto h-12 w-12 text-gray-300" />
           <h2 className="mt-4 text-base font-semibold text-gray-900">{t("No se encontraron tutores")}</h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
+          <p className="mx-auto mt-2 max-w-md text-sm text-gray-700 font-medium">
             {t("No se encontraron tutores en esta institución.")}
           </p>
           {hasActiveFilters && (
@@ -277,7 +277,7 @@ export function TutorSearchPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          <p className="text-sm text-gray-500" aria-live="polite">
+          <p className="text-sm text-gray-700 font-medium" aria-live="polite">
             {t("Tutores encontrados: {count}", { count: results.length })}
           </p>
 
@@ -303,7 +303,7 @@ export function TutorSearchPage() {
                         <h2 className="truncate text-base font-bold text-gray-900">
                           {`${tutor.first_name} ${tutor.last_name}`.trim()}
                         </h2>
-                        <p className="flex items-center gap-1.5 truncate text-xs text-gray-500">
+                        <p className="flex items-center gap-1.5 truncate text-xs text-gray-700 font-medium">
                           <Building2 className="h-3.5 w-3.5 shrink-0 text-gray-400" />
                           <span className="truncate">{tutor.institution_name}</span>
                         </p>
@@ -321,7 +321,7 @@ export function TutorSearchPage() {
                         </span>
                       ))}
                       {hiddenCount > 0 && (
-                        <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+                        <span className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-0.5 text-xs font-medium text-gray-700">
                           {t("+{count} más", { count: hiddenCount })}
                         </span>
                       )}
@@ -330,14 +330,14 @@ export function TutorSearchPage() {
 
                   <div className="flex items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/70 px-5 py-3">
                     {hasSlots ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-green-700">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-950">
                         <CalendarClock className="h-4 w-4" />
                         {tutor.upcoming_slots === 1
                           ? t("1 horario disponible")
                           : t("{count} horarios disponibles", { count: tutor.upcoming_slots })}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-500">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-700">
                         <CalendarX2 className="h-4 w-4" />
                         {t("Sin horarios disponibles")}
                       </span>
@@ -345,7 +345,7 @@ export function TutorSearchPage() {
 
                     <Link
                       to={`/tutores/${tutor.tutor_id}?institucion=${tutor.institution_id}`}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-primary-700 transition-colors hover:text-primary-800"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-primary-900 transition-colors hover:text-primary-950"
                     >
                       {t("Ver horarios")}
                       <ArrowRight className="h-3.5 w-3.5" />

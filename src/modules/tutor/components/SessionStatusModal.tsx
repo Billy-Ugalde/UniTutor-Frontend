@@ -78,8 +78,8 @@ export function SessionStatusModal({
                 isComplete
                   ? 'bg-green-100 text-green-700'
                   : isCancel
-                  ? 'bg-red-100 text-red-700'
-                  : 'bg-blue-100 text-blue-700'
+                  ? 'bg-red-100 text-red-950 font-bold border border-red-200'
+                  : 'bg-blue-100 text-blue-900 font-bold border border-blue-200'
               }`}
             >
               {isComplete ? (
@@ -92,14 +92,16 @@ export function SessionStatusModal({
             </div>
             <div>
               <h3 className="text-base font-bold text-gray-900">{title}</h3>
-              <p className="text-xs text-gray-500 mt-0.5">{subjectLabel}</p>
+              <p className="text-xs text-gray-700 font-medium mt-0.5">{subjectLabel}</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer disabled:opacity-50"
+            aria-label={t("Cerrar")}
+            title={t("Cerrar")}
+            className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 cursor-pointer disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
@@ -108,7 +110,7 @@ export function SessionStatusModal({
         <div className="p-5 space-y-4">
           <div className="rounded-lg border border-gray-100 bg-gray-50/80 p-3.5 space-y-2.5">
             <h4 className="text-sm font-semibold text-gray-900">{session.title}</h4>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-600">
+            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-700 font-medium">
               <span className="flex items-center gap-1">
                 <Calendar className="h-3.5 w-3.5 text-gray-500" />
                 {session.date}
@@ -121,12 +123,12 @@ export function SessionStatusModal({
 
             <div className="pt-2 border-t border-gray-200/60 flex items-center justify-between text-xs">
               <div className="flex items-center gap-1.5">
-                <span className="text-gray-500">{t("Estado actual:")}</span>
+                <span className="text-gray-700 font-semibold">{t("Estado actual:")}</span>
                 {getStatusBadge(session.status)}
               </div>
-              <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
+              <ArrowRight className="h-3.5 w-3.5 text-gray-600" />
               <div className="flex items-center gap-1.5">
-                <span className="text-gray-500">{t("Nuevo estado:")}</span>
+                <span className="text-gray-700 font-semibold">{t("Nuevo estado:")}</span>
                 {getStatusBadge(targetStatus)}
               </div>
             </div>

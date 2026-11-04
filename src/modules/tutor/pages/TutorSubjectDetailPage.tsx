@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo, useCallback, type FormEvent } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
@@ -141,7 +142,7 @@ export function TutorSubjectDetailPage() {
       setSessions(sessionsRes.data ?? [])
     } catch (err) {
       console.error('Error al cargar detalle de materia y tutorías:', err)
-      toast.error('Error', 'No fue posible cargar las sesiones de la materia.')
+      toast.error(t("Error"), t("No fue posible cargar las sesiones de la materia."))
     } finally {
       setIsLoading(false)
     }
@@ -326,7 +327,7 @@ export function TutorSubjectDetailPage() {
       await loadData()
     } catch (err) {
       console.error('Error al cambiar estado de la sesión:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al actualizar estado.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al actualizar estado."))
     } finally {
       setIsUpdatingStatus(false)
     }
@@ -363,7 +364,7 @@ export function TutorSubjectDetailPage() {
       await loadData()
     } catch (err) {
       console.error('Error al eliminar sesión:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al eliminar la sesión.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al eliminar la sesión."))
     } finally {
       setIsDeletingSession(false)
     }
@@ -406,7 +407,7 @@ export function TutorSubjectDetailPage() {
       navigate('/tutor/materias')
     } catch (err) {
       console.error('Error al deshabilitar materia:', err)
-      toast.error('Error', err instanceof Error ? err.message : 'Error al deshabilitar materia.')
+      toast.error(t("Error"), getErrorMessage(err, t, "Error al deshabilitar materia."))
     } finally {
       setIsUnlinkingSubject(false)
     }
@@ -453,21 +454,21 @@ export function TutorSubjectDetailPage() {
     switch (modality) {
       case 'virtual':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-blue-900 bg-blue-100 px-2 py-0.5 rounded border border-blue-200">
             <Video className="h-3 w-3" />
             {t("Virtual")}
           </span>
         )
       case 'presencial':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-950 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
             <MapPin className="h-3 w-3" />
             {t("Presencial")}
           </span>
         )
       case 'hibrida':
         return (
-          <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+          <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-950 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
             <Video className="h-3 w-3" />
             {t("Híbrida")}
           </span>
@@ -476,7 +477,12 @@ export function TutorSubjectDetailPage() {
   }
 
   if (isLoading && !subject) {
-    return <div className="py-12 text-center text-gray-500">{t("Cargando información de la materia...")}</div>
+    return (
+      <div className="py-16 flex flex-col items-center justify-center gap-3 text-center text-gray-700" role="status">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-600 border-t-transparent" />
+        <span className="text-sm font-medium text-gray-600">{t("Cargando información de la materia...")}</span>
+      </div>
+    )
   }
 
   if (!subject) return null
@@ -490,7 +496,7 @@ export function TutorSubjectDetailPage() {
           <div className="flex items-center gap-2">
             <Link
               to="/tutor/materias"
-              className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-900 hover:text-primary-950 cursor-pointer"
             >
               <ArrowLeft className="h-4 w-4" /> {t("Volver a Mis Materias")}
             </Link>
@@ -503,7 +509,7 @@ export function TutorSubjectDetailPage() {
             <h1 className="text-2xl font-bold text-gray-900">{subject.name}</h1>
           </div>
 
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-700 font-medium mt-1">
             {subject.courseName} {subject.careerName ? `• ${subject.careerName}` : ''}
           </p>
         </div>
@@ -537,19 +543,19 @@ export function TutorSubjectDetailPage() {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-lg bg-white p-4 border border-gray-200 shadow-xs">
-          <p className="text-xs text-gray-500 font-medium">{t("Total Sesiones")}</p>
+          <p className="text-xs text-gray-700 font-bold">{t("Total Sesiones")}</p>
           <p className="text-xl font-bold text-gray-900 mt-1">{stats.total}</p>
         </div>
         <div className="rounded-lg bg-blue-50/70 p-4 border border-blue-200 shadow-xs">
-          <p className="text-xs text-blue-700 font-medium">{t("Tutorías Programadas")}</p>
+          <p className="text-xs text-blue-900 font-bold">{t("Tutorías Programadas")}</p>
           <p className="text-xl font-bold text-blue-900 mt-1">{stats.programadas}</p>
         </div>
         <div className="rounded-lg bg-green-50/70 p-4 border border-green-200 shadow-xs">
-          <p className="text-xs text-green-700 font-medium">{t("Tutorías Completadas")}</p>
+          <p className="text-xs text-emerald-900 font-bold">{t("Tutorías Completadas")}</p>
           <p className="text-xl font-bold text-green-900 mt-1">{stats.completadas}</p>
         </div>
         <div className="rounded-lg bg-red-50/70 p-4 border border-red-200 shadow-xs">
-          <p className="text-xs text-red-700 font-medium">{t("Tutorías Canceladas")}</p>
+          <p className="text-xs text-red-900 font-bold">{t("Tutorías Canceladas")}</p>
           <p className="text-xl font-bold text-red-900 mt-1">{stats.canceladas}</p>
         </div>
       </div>
@@ -562,8 +568,8 @@ export function TutorSubjectDetailPage() {
             onClick={() => setStatusFilter(filter)}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer capitalize ${
               statusFilter === filter
-                ? 'bg-primary-600 text-white'
-                : 'text-gray-600 hover:bg-gray-100'
+                ? 'bg-primary-800 text-white font-bold'
+                : 'text-gray-700 hover:bg-gray-100 font-semibold'
             }`}
           >
             {filter === 'todas' ? t("Todas") : filter}
@@ -575,13 +581,13 @@ export function TutorSubjectDetailPage() {
         <Card>
           <Card.Body>
             <div className="text-center py-12 space-y-3 max-w-md mx-auto">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-700 mx-auto">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-900 border border-blue-200 mx-auto">
                 <Calendar className="h-6 w-6" />
               </div>
               <h3 className="text-base font-bold text-gray-900">
                 {t("No hay sesiones de tutoría programadas para esta materia.")}
               </h3>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-700 font-medium">
                 {t("Programa tu primera sesión para que los estudiantes puedan enterarse.")}
               </p>
               <Button
@@ -610,7 +616,8 @@ export function TutorSubjectDetailPage() {
                       type="button"
                       onClick={() => handleOpenEditModal(session)}
                       title={t("Editar sesión")}
-                      className="rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700 cursor-pointer"
+                      aria-label={t("Editar sesión")}
+                      className="rounded p-1 text-gray-600 hover:bg-gray-200 hover:text-gray-900 cursor-pointer"
                     >
                       <Pencil className="h-3.5 w-3.5" />
                     </button>
@@ -622,7 +629,8 @@ export function TutorSubjectDetailPage() {
                         type="button"
                         onClick={() => handleOpenStatusModal(session, 'completada')}
                         title={t("Marcar como completada")}
-                        className="rounded p-1 text-gray-400 hover:bg-green-100 hover:text-green-700 cursor-pointer"
+                        aria-label={t("Marcar como completada")}
+                        className="rounded p-1 text-gray-600 hover:bg-emerald-100 hover:text-emerald-900 cursor-pointer"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" />
                       </button>
@@ -630,7 +638,8 @@ export function TutorSubjectDetailPage() {
                         type="button"
                         onClick={() => handleOpenStatusModal(session, 'cancelada')}
                         title={t("Cancelar sesión")}
-                        className="rounded p-1 text-gray-400 hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                        aria-label={t("Cancelar sesión")}
+                        className="rounded p-1 text-gray-600 hover:bg-red-100 hover:text-red-900 cursor-pointer"
                       >
                         <XCircle className="h-3.5 w-3.5" />
                       </button>
@@ -643,7 +652,8 @@ export function TutorSubjectDetailPage() {
                         type="button"
                         onClick={() => handleOpenStatusModal(session, 'programada')}
                         title={t("Reabrir sesión")}
-                        className="rounded p-1 text-gray-400 hover:bg-blue-100 hover:text-blue-700 cursor-pointer"
+                        aria-label={t("Reabrir sesión")}
+                        className="rounded p-1 text-gray-600 hover:bg-blue-100 hover:text-blue-900 cursor-pointer"
                       >
                         <RotateCcw className="h-3.5 w-3.5" />
                       </button>
@@ -651,7 +661,8 @@ export function TutorSubjectDetailPage() {
                         type="button"
                         onClick={() => handleOpenStatusModal(session, 'cancelada')}
                         title={t("Cancelar sesión")}
-                        className="rounded p-1 text-gray-400 hover:bg-red-100 hover:text-red-700 cursor-pointer"
+                        aria-label={t("Cancelar sesión")}
+                        className="rounded p-1 text-gray-600 hover:bg-red-100 hover:text-red-900 cursor-pointer"
                       >
                         <XCircle className="h-3.5 w-3.5" />
                       </button>
@@ -663,7 +674,8 @@ export function TutorSubjectDetailPage() {
                       type="button"
                       onClick={() => handleOpenStatusModal(session, 'programada')}
                       title={t("Reactivar sesión")}
-                      className="rounded p-1 text-gray-400 hover:bg-blue-100 hover:text-blue-700 cursor-pointer"
+                      aria-label={t("Reactivar sesión")}
+                      className="rounded p-1 text-gray-600 hover:bg-blue-100 hover:text-blue-900 cursor-pointer"
                     >
                       <RotateCcw className="h-3.5 w-3.5" />
                     </button>
@@ -673,7 +685,8 @@ export function TutorSubjectDetailPage() {
                     type="button"
                     onClick={() => handleOpenDeleteModal(session)}
                     title={t("Eliminar sesión")}
-                    className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 cursor-pointer"
+                    aria-label={t("Eliminar sesión")}
+                    className="rounded p-1 text-gray-600 hover:bg-red-100 hover:text-red-900 cursor-pointer"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -709,7 +722,7 @@ export function TutorSubjectDetailPage() {
                         href={session.location_or_link}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-primary-700 hover:underline truncate inline-flex items-center gap-1 cursor-pointer font-medium"
+                        className="text-primary-900 hover:underline font-semibold truncate inline-flex items-center gap-1 cursor-pointer font-medium"
                       >
                         {session.location_or_link}
                         <ExternalLink className="h-3 w-3 shrink-0" />
@@ -735,7 +748,9 @@ export function TutorSubjectDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsSessionModalOpen(false)}
-                className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -812,6 +827,7 @@ export function TutorSubjectDetailPage() {
                     {t("Modalidad")} <span className="text-red-500">*</span>
                   </label>
                   <select
+                    aria-label={t("Modalidad")}
                     value={sessionForm.modality}
                     onChange={(e) =>
                       setSessionForm({
@@ -878,13 +894,10 @@ export function TutorSubjectDetailPage() {
                   type="submit"
                   variant="success"
                   disabled={isSubmitting}
+                  isLoading={isSubmitting}
                   className="cursor-pointer"
                 >
-                  {isSubmitting
-                    ? t("Guardando...")
-                    : editingSession
-                    ? t("Guardar Sesión")
-                    : t("Programar Sesión")}
+                  {editingSession ? t("Guardar Sesión") : t("Programar Sesión")}
                 </Button>
               </div>
             </form>

@@ -25,7 +25,7 @@ export function Pagination({
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-gray-200 bg-white px-6 py-3 text-xs text-gray-500">
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-gray-200 bg-white px-6 py-3 text-xs text-gray-700 font-medium">
       <div>
         {t('Mostrando {start} a {end} de {total} registros', {
           start: startItem, end: endItem, total: totalItems,
@@ -42,6 +42,7 @@ export function Pagination({
             onClick={() => onPageChange(currentPage - 1)}
             className="h-7 px-2 text-xs"
             title={t("Página anterior")}
+            aria-label={t("Página anterior")}
           >
             <ChevronLeft className="h-3.5 w-3.5 mr-0.5" />
             {t("Anterior")}
@@ -57,7 +58,7 @@ export function Pagination({
               ) {
                 if (Math.abs(page - currentPage) === 2) {
                   return (
-                    <span key={page} className="px-1 text-gray-400">
+                    <span key={page} className="px-1 text-gray-600 font-bold">
                       ...
                     </span>
                   )
@@ -73,7 +74,7 @@ export function Pagination({
                   onClick={() => onPageChange(page)}
                   className={`h-7 min-w-7 rounded px-1.5 text-xs font-medium transition-colors ${
                     isActive
-                      ? 'bg-primary-600 text-white font-semibold'
+                      ? 'bg-primary-800 text-white font-bold'
                       : 'border border-gray-200 text-gray-700 hover:bg-gray-100'
                   }`}
                 >
@@ -91,13 +92,14 @@ export function Pagination({
             onClick={() => onPageChange(currentPage + 1)}
             className="h-7 px-2 text-xs"
             title={t("Página siguiente")}
+            aria-label={t("Página siguiente")}
           >
             {t("Siguiente")}
             <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
           </Button>
         </div>
       ) : (
-        <div className="text-xs text-gray-400">
+        <div className="text-xs text-gray-700 font-medium">
           {t('Página {page} de {total} ({size} registros por página)', {
             page: currentPage, total: totalPages, size: pageSize,
           })}

@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useState, useMemo } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -26,10 +27,12 @@ import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { toast } from '@/shared/store/toast.store'
 import type { Institution } from '@/types/database.types'
+import { PasswordStrengthIndicator } from '@/shared/components/PasswordStrengthIndicator'
+import { validatePassword } from '@/shared/utils/password'
 
 export function DashboardPage() {
   const { t, locale } = useTranslations()
-  const { fullName, profile, roles, hasRole, isSuperAdmin, signOut } = useAuth()
+  const { fullName, profile, roles, hasRole, isSuperAdmin, signOut, isLoading: isAuthLoading } = useAuth()
   const navigate = useNavigate()
   const [institution, setInstitution] = useState<Institution | null>(null)
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false)
@@ -57,7 +60,7 @@ export function DashboardPage() {
   const roleColor = (role: string) =>
     ({
       inst_admin: 'bg-blue-100 text-blue-800 border border-blue-200',
-      tutor: 'bg-green-100 text-green-800 border border-green-200',
+      tutor: 'bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold',
       estudiante: 'bg-amber-100 text-amber-800 border border-amber-200',
     }[role] ?? 'bg-gray-100 text-gray-700 border border-gray-200')
 
@@ -159,8 +162,12 @@ export function DashboardPage() {
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (newPassword.length < 8) {
-      toast.warning(t("Contraseña muy corta"), t("La nueva contraseña debe tener al menos 8 caracteres."))
+    const passwordValidation = validatePassword(newPassword)
+    if (!passwordValidation.isValid) {
+      toast.warning(
+        t("Contraseña poco segura"),
+        t("La contraseña debe cumplir con todos los requisitos de seguridad.")
+      )
       return
     }
 
@@ -191,11 +198,34 @@ export function DashboardPage() {
       await signOut()
       navigate('/login', { replace: true })
     } catch (err) {
-      const msg = err instanceof Error ? err.message : t("Error inesperado al cambiar la contraseña.")
+      const msg = getErrorMessage(err, t, "Error inesperado al cambiar la contraseña.")
       toast.error(t("Error al cambiar contraseña"), msg)
     } finally {
       setIsUpdatingPassword(false)
     }
+  }
+
+  if (isAuthLoading) {
+    return (
+      <div className="space-y-6" role="status" aria-label={t("Cargando...")}>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="space-y-2">
+            <div className="h-8 w-64 bg-gray-200 rounded animate-pulse" />
+            <div className="h-4 w-48 bg-gray-200 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-28 rounded-xl bg-gray-100 border border-gray-200 animate-pulse" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-36 rounded-xl bg-gray-100 border border-gray-200 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -205,7 +235,7 @@ export function DashboardPage() {
           <h1 className="text-2xl font-bold text-gray-900">
             {t('¡Bienvenido, {name}!', { name: fullName ?? '' })}
           </h1>
-          <p className="mt-1 text-gray-500">{t("Este es tu panel de control en UniTutor.")}</p>
+          <p className="mt-1 text-gray-700 font-medium">{t("Este es tu panel de control en UniTutor.")}</p>
         </div>
         <Button
           variant="secondary"
@@ -221,16 +251,16 @@ export function DashboardPage() {
         <Card>
           <Card.Body>
             <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-lg font-semibold text-primary-700">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-100 text-lg font-bold text-primary-900">
                 {profile?.first_name?.charAt(0).toUpperCase() ?? '?'}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-gray-500">{t("Tu perfil")}</p>
+                <p className="text-sm font-bold text-gray-700">{t("Tu perfil")}</p>
                 <p className="mt-0.5 truncate font-semibold text-gray-900">{fullName}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {isSuperAdmin && (
                     <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold bg-blue-100 text-blue-800">
-                      <Shield className="h-3 w-3 text-blue-700" /> {t("Super Administrador")}
+                      <Shield className="h-3 w-3 text-blue-900" /> {t("Super Administrador")}
                     </span>
                   )}
                   {roles.map((role) => (
@@ -244,7 +274,7 @@ export function DashboardPage() {
                     </span>
                   ))}
                   {!isSuperAdmin && roles.length === 0 && (
-                    <span className="text-xs text-gray-400">{t("Sin roles asignados")}</span>
+                    <span className="text-xs text-gray-700 font-medium">{t("Sin roles asignados")}</span>
                   )}
                 </div>
               </div>
@@ -253,7 +283,7 @@ export function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setIsProfileModalOpen(true)}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-700 hover:text-primary-800 transition-colors cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-primary-900 hover:text-primary-950 transition-colors cursor-pointer"
               >
                 <Eye className="h-3.5 w-3.5" />
                 {t("Ver detalles")}
@@ -264,11 +294,11 @@ export function DashboardPage() {
 
         <Card>
           <Card.Body>
-            <p className="text-sm font-medium text-gray-500">{t("Tu institución")}</p>
+            <p className="text-sm font-bold text-gray-700">{t("Tu institución")}</p>
             {isSuperAdmin ? (
               <>
                 <p className="mt-0.5 font-semibold text-blue-900">{t("Plataforma Global")}</p>
-                <p className="mt-1 text-xs text-blue-700">
+                <p className="mt-1 text-xs text-blue-900 font-semibold">
                   {t("Acceso de Super Administrador a todas las instituciones")}
                 </p>
               </>
@@ -276,11 +306,11 @@ export function DashboardPage() {
               <>
                 <p className="mt-0.5 font-semibold text-gray-900">{institution.name}</p>
                 {institution.official_email && (
-                  <p className="mt-1 text-sm text-gray-500">{institution.official_email}</p>
+                  <p className="mt-1 text-sm text-gray-700 font-medium">{institution.official_email}</p>
                 )}
               </>
             ) : (
-              <p className="mt-0.5 text-sm text-gray-400">
+              <p className="mt-0.5 text-sm text-gray-700 font-medium">
                 {profile?.institution_id ? t("Cargando...") : t("No asignado a ninguna institución")}
               </p>
             )}
@@ -289,14 +319,14 @@ export function DashboardPage() {
 
         <Card>
           <Card.Body>
-            <p className="text-sm font-medium text-gray-500">{t("Estado de la plataforma")}</p>
+            <p className="text-sm font-bold text-gray-700">{t("Estado de la plataforma")}</p>
             <div className="mt-2 flex items-center gap-2">
               <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
               <span className="text-sm font-medium text-gray-800">
                 {t("Todos los servicios operando con normalidad")}
               </span>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-gray-700 font-medium">
               {t("La plataforma se encuentra activa y disponible.")}
             </p>
           </Card.Body>
@@ -320,7 +350,7 @@ export function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        item.available ? 'bg-blue-100 text-blue-700' : 'bg-gray-200 text-gray-500'
+                        item.available ? 'bg-blue-100 text-blue-900 font-bold border border-blue-200' : 'bg-gray-200 text-gray-800 font-semibold'
                       }`}
                     >
                       <Icon className="h-5 w-5" />
@@ -328,7 +358,7 @@ export function DashboardPage() {
                     <span
                       className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                         item.available
-                          ? 'bg-blue-100 text-blue-700'
+                          ? 'bg-blue-100 text-blue-900 font-bold border border-blue-200'
                           : 'bg-gray-200 text-gray-600'
                       }`}
                     >
@@ -342,18 +372,18 @@ export function DashboardPage() {
                   >
                     {item.label}
                   </h3>
-                  <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-1 text-xs text-gray-700 font-medium leading-relaxed">
                     {item.description}
                   </p>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-gray-100/80">
                   {item.available ? (
-                    <span className="inline-flex items-center text-xs font-semibold text-blue-600 group-hover:text-blue-700">
+                    <span className="inline-flex items-center text-xs font-bold text-blue-900 group-hover:text-blue-950">
                       {t("Acceder al módulo")} <ArrowRight className="h-3.5 w-3.5 ml-1" />
                     </span>
                   ) : (
-                    <span className="text-xs text-gray-400">{t("En desarrollo")}</span>
+                    <span className="text-xs text-gray-700 font-medium">{t("En desarrollo")}</span>
                   )}
                 </div>
               </div>
@@ -375,14 +405,14 @@ export function DashboardPage() {
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
             <div className="flex items-start justify-between border-b pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-900 font-bold">
                   <KeyRound className="h-5 w-5" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">
                     {t("Cambiar Contraseña")}
                   </h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-700 font-medium">
                     {t("Actualiza las credenciales de acceso a tu cuenta")}
                   </p>
                 </div>
@@ -397,23 +427,28 @@ export function DashboardPage() {
                   }
                 }}
                 disabled={isUpdatingPassword}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer disabled:cursor-not-allowed"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 cursor-pointer disabled:cursor-not-allowed"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <form onSubmit={handleUpdatePassword} className="mt-4 space-y-4">
-              <Input
-                label={t("Nueva contraseña")}
-                type="password"
-                placeholder={t("Mínimo 8 caracteres")}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                autoComplete="new-password"
-                disabled={isUpdatingPassword}
-              />
+              <div className="space-y-1">
+                <Input
+                  label={t("Nueva contraseña")}
+                  type="password"
+                  placeholder={t("Mínimo 8 caracteres")}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  autoComplete="new-password"
+                  disabled={isUpdatingPassword}
+                />
+                <PasswordStrengthIndicator password={newPassword} />
+              </div>
 
               <Input
                 label={t("Confirmar nueva contraseña")}
@@ -457,19 +492,19 @@ export function DashboardPage() {
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl">
             <div className="flex items-start justify-between border-b pb-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700 text-lg">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-900 text-lg">
                   {profile?.first_name?.charAt(0).toUpperCase() || '?'}
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-gray-900">{fullName}</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-xs text-gray-500">{profile?.email || t("Sin correo electrónico")}</p>
+                    <p className="text-xs text-gray-700 font-medium">{profile?.email || t("Sin correo electrónico")}</p>
                     {profile?.active !== false ? (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 border border-emerald-300 px-2 py-0.5 text-xs font-bold text-emerald-950">
                         <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-700">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-red-100 border border-red-300 px-2 py-0.5 text-xs font-bold text-red-950">
                         <XCircle className="h-3 w-3" /> {t("Inactivo")}
                       </span>
                     )}
@@ -479,7 +514,9 @@ export function DashboardPage() {
               <button
                 type="button"
                 onClick={() => setIsProfileModalOpen(false)}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+                aria-label={t("Cerrar")}
+                title={t("Cerrar")}
+                className="text-gray-500 hover:text-gray-700 p-1 rounded-lg hover:bg-gray-100 cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -489,7 +526,7 @@ export function DashboardPage() {
               <div className="rounded-lg border border-gray-100 bg-gray-50/70 p-4 space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Building2 className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Institución:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Institución:")}</span>
                   <span className="font-semibold text-gray-900">
                     {isSuperAdmin
                       ? t("Plataforma Global (Super Administrador)")
@@ -499,19 +536,19 @@ export function DashboardPage() {
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Mail className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Correo:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Correo:")}</span>
                   <span className="text-gray-800">{profile?.email || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Phone className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Teléfono:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Teléfono:")}</span>
                   <span className="text-gray-800">{profile?.phone || t("No registrado")}</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-sm text-gray-700">
                   <Calendar className="h-4 w-4 text-blue-600 shrink-0" />
-                  <span className="text-xs text-gray-400 font-medium">{t("Fecha de Registro:")}</span>
+                  <span className="text-xs text-gray-700 font-bold">{t("Fecha de Registro:")}</span>
                   <span className="text-gray-800">
                     {profile?.created_at
                       ? new Date(profile.created_at).toLocaleDateString(locale, {
@@ -524,19 +561,19 @@ export function DashboardPage() {
                 </div>
 
                 <div className="pt-1">
-                  <span className="text-xs text-gray-400 font-medium">{t("ID de Usuario:")}</span>
-                  <p className="font-mono text-xs text-gray-500 select-all mt-0.5">{profile?.id}</p>
+                  <span className="text-xs text-gray-700 font-bold">{t("ID de Usuario:")}</span>
+                  <p className="font-mono text-xs text-gray-700 font-medium select-all mt-0.5">{profile?.id}</p>
                 </div>
               </div>
 
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
                   {t("Roles Asignados")}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {isSuperAdmin && (
                     <span className="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">
-                      <Shield className="h-3.5 w-3.5 text-blue-700" /> {t("Super Administrador")}
+                      <Shield className="h-3.5 w-3.5 text-blue-900" /> {t("Super Administrador")}
                     </span>
                   )}
                   {roles.map((role) => (
@@ -551,7 +588,7 @@ export function DashboardPage() {
                     </span>
                   ))}
                   {!isSuperAdmin && roles.length === 0 && (
-                    <span className="text-xs text-gray-400 italic">{t("Sin roles asignados")}</span>
+                    <span className="text-xs text-gray-700 font-medium italic">{t("Sin roles asignados")}</span>
                   )}
                 </div>
               </div>

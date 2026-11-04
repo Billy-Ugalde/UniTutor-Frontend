@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -145,7 +146,7 @@ export function TutorsManagementPage() {
       setTutors((prev) => prev.filter((u) => u.id !== tutor.id))
     } catch (err) {
       console.error('Error al eliminar tutor:', err)
-      const errorText = err instanceof Error ? err.message : t("Error al eliminar tutor.")
+      const errorText = getErrorMessage(err, t, "Error al eliminar tutor.")
       toast.error(t("Error de operación"), errorText)
     } finally {
       setDeletingId(null)
@@ -157,13 +158,14 @@ export function TutorsManagementPage() {
       {isSuperAdmin && institutions.length > 0 && (
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-blue-200 bg-blue-50/60 p-4">
           <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-blue-700" />
+            <Shield className="h-5 w-5 text-blue-900" />
             <div>
               <p className="text-sm font-bold text-blue-900">{t("Institución activa")}</p>
-              <p className="text-xs text-blue-700">{t("Gestionando tutores de:")}</p>
+              <p className="text-xs text-blue-900 font-medium">{t("Gestionando tutores de:")}</p>
             </div>
           </div>
           <select
+            aria-label={t("Institución actual")}
             value={targetInstId ?? ''}
             onChange={(e) => setSelectedInstitutionId(e.target.value)}
             className="rounded-lg border border-blue-300 bg-white px-3 py-1.5 text-sm font-medium text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -180,12 +182,12 @@ export function TutorsManagementPage() {
       <div>
         <Link
           to="/admin"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-800"
+          className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-900 hover:text-primary-950"
         >
           <ArrowLeft className="h-4 w-4" /> {t("Panel de Administración")}
         </Link>
         <h1 className="text-2xl font-bold text-gray-900 mt-1">{t("Gestión de Tutores")}</h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-700">
           {t("Consulta los tutores de la institución. La información de cada tutor es de solo lectura.")}
         </p>
       </div>
@@ -201,10 +203,11 @@ export function TutorsManagementPage() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-700">
                 {t("Filtrar por estado:")}
               </span>
               <select
+                aria-label={t("Filtrar por estado")}
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
                 className="rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-700 focus:border-primary-500 focus:outline-none"
@@ -221,7 +224,7 @@ export function TutorsManagementPage() {
       <Card className="overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[760px] divide-y divide-gray-200 text-left text-sm text-gray-600">
-            <thead className="border-b border-gray-200 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+            <thead className="border-b border-gray-200 bg-gray-50 text-xs font-bold uppercase text-gray-700">
               <tr>
                 <th className="px-4 py-3">{t("Usuario")}</th>
                 <th className="px-4 py-3">{t("Correo")}</th>
@@ -233,13 +236,13 @@ export function TutorsManagementPage() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-500">
+                  <td colSpan={5} className="py-8 text-center text-gray-700 font-medium">
                     {t("Cargando tutores...")}
                   </td>
                 </tr>
               ) : filteredTutors.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-8 text-center text-gray-500">
+                  <td colSpan={5} className="py-8 text-center text-gray-700 font-medium">
                     {t("No se encontraron tutores en esta institución.")}
                   </td>
                 </tr>
@@ -248,7 +251,7 @@ export function TutorsManagementPage() {
                   <tr key={u.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 font-semibold text-primary-700 text-xs">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-100 font-bold text-primary-950 border border-primary-200 text-xs">
                           {u.first_name?.charAt(0).toUpperCase() || '?'}
                         </div>
                         <span className="truncate text-sm font-medium text-gray-900">
@@ -257,20 +260,20 @@ export function TutorsManagementPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3.5 text-xs text-gray-600">
-                      {u.email || <span className="text-gray-400">{t("Sin correo")}</span>}
+                      {u.email || <span className="text-gray-700 font-medium">{t("Sin correo")}</span>}
                     </td>
                     <td className="px-4 py-3.5 text-center whitespace-nowrap">
                       {u.active ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-semibold text-green-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100/90 border border-emerald-300 px-2.5 py-0.5 text-xs font-bold text-emerald-950">
                           <CheckCircle2 className="h-3 w-3" /> {t("Activo")}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-700">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-red-100/90 border border-red-300 px-2.5 py-0.5 text-xs font-bold text-red-950">
                           <XCircle className="h-3 w-3" /> {t("Inactivo")}
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3.5 text-xs text-gray-400 whitespace-nowrap">
+                    <td className="px-4 py-3.5 text-xs text-gray-700 font-medium whitespace-nowrap">
                       {new Date(u.created_at).toLocaleDateString(locale, {
                         year: 'numeric',
                         month: 'short',
@@ -283,7 +286,7 @@ export function TutorsManagementPage() {
                         size="xs"
                         onClick={() => handleDeleteTutor(u)}
                         isLoading={deletingId === u.id}
-                        className="text-red-600 hover:bg-red-50 hover:text-red-700 border-red-200"
+                        className="text-red-800 hover:bg-red-50 hover:text-red-900 border-red-300 font-semibold"
                         title={t("Eliminar tutor")}
                       >
                         <Trash2 className="h-3.5 w-3.5" />

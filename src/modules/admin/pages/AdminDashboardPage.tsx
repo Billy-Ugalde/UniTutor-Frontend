@@ -180,8 +180,9 @@ export function AdminDashboardPage() {
             <div>
               <p className="text-sm font-bold text-blue-900">{t("Control de Plataforma (Super Administrador)")}</p>
               <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs text-blue-700">{t("Institución actual:")}</span>
+                <span className="text-xs text-blue-900 font-medium">{t("Institución actual:")}</span>
                 <select
+                  aria-label={t("Institución actual")}
                   value={selectedInstitutionId ?? ''}
                   onChange={(e) => setSelectedInstitutionId(e.target.value)}
                   className="rounded-lg border border-blue-300 bg-white px-3 py-1 text-xs font-semibold text-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -202,7 +203,7 @@ export function AdminDashboardPage() {
         <h1 className="text-2xl font-bold text-gray-900">
           {t("Administración Institucional")}
         </h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-700 font-medium">
           {t("Gestión de usuarios, roles y materias para")}{' '}
           <span className="font-semibold text-gray-800">
             {currentInst?.name ?? t("la institución seleccionada")}
@@ -215,7 +216,7 @@ export function AdminDashboardPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Usuarios Totales")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-gray-900">
@@ -226,7 +227,7 @@ export function AdminDashboardPage() {
                 <Users className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">{t("Registrados en la institución")}</p>
+            <p className="mt-3 text-xs text-gray-700 font-medium">{t("Registrados en la institución")}</p>
           </Card.Body>
         </Card>
 
@@ -234,10 +235,10 @@ export function AdminDashboardPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Tutores Activos")}
                 </p>
-                <p className="mt-1 text-3xl font-extrabold text-green-600">
+                <p className="mt-1 text-3xl font-extrabold text-emerald-800">
                   {isLoading ? '...' : stats.totalTutors}
                 </p>
               </div>
@@ -245,7 +246,7 @@ export function AdminDashboardPage() {
                 <UserCheck className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">{t("Listos para impartir tutorías")}</p>
+            <p className="mt-3 text-xs text-gray-700 font-medium">{t("Listos para impartir tutorías")}</p>
           </Card.Body>
         </Card>
 
@@ -253,7 +254,7 @@ export function AdminDashboardPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Estudiantes")}
                 </p>
                 <p className="mt-1 text-3xl font-extrabold text-sky-600">
@@ -264,7 +265,7 @@ export function AdminDashboardPage() {
                 <GraduationCap className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">{t("Con rol de estudiante activo")}</p>
+            <p className="mt-3 text-xs text-gray-700 font-medium">{t("Con rol de estudiante activo")}</p>
           </Card.Body>
         </Card>
 
@@ -272,10 +273,10 @@ export function AdminDashboardPage() {
           <Card.Body>
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <p className="text-xs font-bold uppercase tracking-wider text-gray-700">
                   {t("Materias Ofertadas")}
                 </p>
-                <p className="mt-1 text-3xl font-extrabold text-amber-600">
+                <p className="mt-1 text-3xl font-extrabold text-amber-800">
                   {isLoading ? '...' : stats.totalSubjects}
                 </p>
               </div>
@@ -283,7 +284,7 @@ export function AdminDashboardPage() {
                 <BookOpen className="h-6 w-6" />
               </div>
             </div>
-            <p className="mt-3 text-xs text-gray-500">{t("Disponibles para tutoría")}</p>
+            <p className="mt-3 text-xs text-gray-700 font-medium">{t("Disponibles para tutoría")}</p>
           </Card.Body>
         </Card>
       </div>
@@ -300,20 +301,20 @@ export function AdminDashboardPage() {
                       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
                         <Icon className="h-5 w-5" />
                       </div>
-                      <span className="text-xs px-2 py-0.5 rounded-full font-medium bg-blue-100 text-blue-700">
+                      <span className="text-xs px-2 py-0.5 rounded-full font-bold bg-blue-100 text-blue-900 border border-blue-200">
                         {item.badge}
                       </span>
                     </div>
                     <h3 className="mt-3 font-semibold text-gray-900 group-hover:text-blue-900 transition-colors">
                       {item.label}
                     </h3>
-                    <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+                    <p className="mt-1 text-xs text-gray-700 font-medium leading-relaxed">
                       {item.description}
                     </p>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-gray-100/80">
-                    <span className="inline-flex items-center text-xs font-semibold text-blue-600 group-hover:text-blue-700">
+                    <span className="inline-flex items-center text-xs font-bold text-blue-900 group-hover:text-blue-950">
                       {t("Acceder al módulo")} <ArrowRight className="h-3.5 w-3.5 ml-1" />
                     </span>
                   </div>

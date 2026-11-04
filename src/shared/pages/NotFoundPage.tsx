@@ -10,7 +10,7 @@ export function NotFoundPage() {
       <GraduationCap className="h-16 w-16 text-primary-600" />
       <h1 className="text-4xl font-bold text-gray-900">404</h1>
       <p className="text-lg text-gray-600">{t("Esta página no existe.")}</p>
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-gray-700 font-medium">
         {t("La ruta que buscas no está disponible en UniTutor.")}
       </p>
       <Link to="/dashboard">

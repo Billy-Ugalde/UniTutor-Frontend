@@ -1,3 +1,4 @@
+import { getErrorMessage } from '@/shared/utils/error'
 import { useTranslations } from '@/i18n/useTranslations'
 import { useState, useEffect, useRef, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -7,9 +8,33 @@ import { Button } from '@/shared/components/ui/Button'
 import { Input } from '@/shared/components/ui/Input'
 import { Card } from '@/shared/components/ui/Card'
 import { toast } from '@/shared/store/toast.store'
+import { PasswordStrengthIndicator } from '@/shared/components/PasswordStrengthIndicator'
+import { validatePassword } from '@/shared/utils/password'
 
-// Clave en sessionStorage para marcar tokens consumidos y evitar su reutilización en el navegador
 const CONSUMED_STORAGE_KEY = 'unitutor_recovery_consumed_state'
+const ACTIVE_STORAGE_KEY = 'unitutor_recovery_flow_active'
+
+function checkIsRecoverySession(session: { access_token?: string; user?: unknown } | null): boolean {
+  if (!session) return false
+  const userAmr = (session.user as { amr?: Array<{ method: string }> })?.amr
+  if (Array.isArray(userAmr) && userAmr.some((item) => item.method === 'recovery' || item.method === 'otp')) {
+    return true
+  }
+  if (!session.access_token) return false
+  try {
+    const payload = session.access_token.split('.')[1]
+    if (!payload) return false
+    const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const decoded = JSON.parse(window.atob(base64))
+    const amr = decoded?.amr
+    if (Array.isArray(amr)) {
+      return amr.some((item: { method?: string }) => item.method === 'recovery' || item.method === 'otp')
+    }
+  } catch {
+    return false
+  }
+  return false
+}
 
 export function ResetPasswordPage() {
   const { t } = useTranslations()
@@ -24,8 +49,12 @@ export function ResetPasswordPage() {
 
   const verifiedRef = useRef(false)
 
+  const handleClearRecoveryFlow = () => {
+    sessionStorage.removeItem(ACTIVE_STORAGE_KEY)
+    sessionStorage.removeItem(CONSUMED_STORAGE_KEY)
+  }
+
   useEffect(() => {
-    // Si ya completamos el restablecimiento con éxito en esta ventana, impedir reuso
     if (sessionStorage.getItem(CONSUMED_STORAGE_KEY) === 'completed') {
       setHasValidSession(false)
       setSessionExpiryReason(
@@ -37,19 +66,14 @@ export function ResetPasswordPage() {
     const rawHash = window.location.hash
     const rawSearch = window.location.search
 
-    // 1. Detectar errores reportados por Supabase en los parámetros (ej. otp_expired o enlace inválido)
-    const urlParams = new URLSearchParams(
-      rawSearch.startsWith('?') ? rawSearch.slice(1) : ''
-    )
-    const hashParams = new URLSearchParams(
-      rawHash.startsWith('#') ? rawHash.slice(1) : ''
-    )
+    const urlParams = new URLSearchParams(rawSearch.startsWith('?') ? rawSearch.slice(1) : '')
+    const hashParams = new URLSearchParams(rawHash.startsWith('#') ? rawHash.slice(1) : '')
 
     const errorCode = hashParams.get('error_code') || urlParams.get('error_code')
     const errorDescription = hashParams.get('error_description') || urlParams.get('error_description')
 
     if (errorCode || errorDescription) {
-      // Limpiar URL de inmediato para evitar persistencia de parámetros en historial/headers
+      sessionStorage.removeItem(ACTIVE_STORAGE_KEY)
       window.history.replaceState(null, '', window.location.pathname)
       setHasValidSession(false)
       setSessionExpiryReason(
@@ -60,17 +84,16 @@ export function ResetPasswordPage() {
       return
     }
 
-    // 2. Comprobar si el origen de la navegación es un enlace explícito de recuperación
     const isRecoveryHash = hashParams.get('type') === 'recovery' || rawHash.includes('type=recovery')
     const isRecoverySearch = urlParams.get('type') === 'recovery' || rawSearch.includes('type=recovery')
     const hasCodeParam = Boolean(urlParams.get('code'))
     const isExplicitRecoveryArrival = isRecoveryHash || isRecoverySearch || hasCodeParam
 
-    // 3. Validar expiración si viene expires_at en el hash (tiempo de expiración UNIX en segundos)
     const expiresAt = hashParams.get('expires_at')
     if (expiresAt) {
       const expTimestamp = Number(expiresAt) * 1000
       if (!Number.isNaN(expTimestamp) && Date.now() > expTimestamp) {
+        sessionStorage.removeItem(ACTIVE_STORAGE_KEY)
         window.history.replaceState(null, '', window.location.pathname)
         setHasValidSession(false)
         setSessionExpiryReason(
@@ -80,12 +103,11 @@ export function ResetPasswordPage() {
       }
     }
 
-    // 4. Limpiar los fragmentos sensibles de la barra de direcciones de inmediato para evitar fugas en historial y referers
-    if (rawHash || rawSearch) {
-      window.history.replaceState(null, '', window.location.pathname)
+    if (isExplicitRecoveryArrival) {
+      sessionStorage.setItem(ACTIVE_STORAGE_KEY, 'active')
     }
 
-    let recoveryValidated = false
+    const isAlreadyActiveFlow = sessionStorage.getItem(ACTIVE_STORAGE_KEY) === 'active'
 
     const checkSession = async () => {
       if (verifiedRef.current) return
@@ -93,11 +115,6 @@ export function ResetPasswordPage() {
       const { data: { session } } = await supabase.auth.getSession()
 
       if (session) {
-        // En Supabase, verificar si la sesión contiene el método 'recovery' o proviene de un flujo explícito
-        const amr = (session.user as { amr?: Array<{ method: string; timestamp?: number }> })?.amr
-        const isRecoveryAmr = Array.isArray(amr) && amr.some((item) => item.method === 'recovery' || item.method === 'otp')
-
-        // Validar antigüedad de emisión (máximo 15 minutos = 900 segundos)
         const issuedAt = (session as { expires_at?: number; expires_in?: number }).expires_at
           ? ((session as { expires_at?: number }).expires_at! - ((session as { expires_in?: number }).expires_in || 3600)) * 1000
           : null
@@ -105,6 +122,7 @@ export function ResetPasswordPage() {
         const isTooOld = issuedAt && Date.now() - issuedAt > 15 * 60 * 1000
 
         if (isTooOld) {
+          sessionStorage.removeItem(ACTIVE_STORAGE_KEY)
           await supabase.auth.signOut().catch(() => {})
           setHasValidSession(false)
           setSessionExpiryReason(
@@ -113,17 +131,22 @@ export function ResetPasswordPage() {
           return
         }
 
-        if (isExplicitRecoveryArrival || isRecoveryAmr || recoveryValidated) {
+        const isRecovery = isExplicitRecoveryArrival || isAlreadyActiveFlow || checkIsRecoverySession(session)
+
+        if (isRecovery) {
+          sessionStorage.setItem(ACTIVE_STORAGE_KEY, 'active')
           setHasValidSession(true)
           verifiedRef.current = true
+          if (rawHash || rawSearch) {
+            window.history.replaceState(null, '', window.location.pathname)
+          }
         } else {
-          // Si el usuario simplemente navegó a /reset-password con una sesión ordinaria previa
           setHasValidSession(false)
           setSessionExpiryReason(
             t("No se detectó un enlace de recuperación válido. Para cambiar tu contraseña ingresa desde tu perfil o solicita un enlace.")
           )
         }
-      } else if (!isExplicitRecoveryArrival) {
+      } else if (!isExplicitRecoveryArrival && !isAlreadyActiveFlow) {
         setHasValidSession(false)
       }
     }
@@ -132,16 +155,21 @@ export function ResetPasswordPage() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
-        recoveryValidated = true
+        sessionStorage.setItem(ACTIVE_STORAGE_KEY, 'active')
         setHasValidSession(true)
         verifiedRef.current = true
         window.history.replaceState(null, '', window.location.pathname)
-      } else if (event === 'SIGNED_OUT') {
-        setHasValidSession(false)
-      } else if (session && isExplicitRecoveryArrival) {
-        recoveryValidated = true
+      } else if (session && (isExplicitRecoveryArrival || isAlreadyActiveFlow || checkIsRecoverySession(session))) {
+        sessionStorage.setItem(ACTIVE_STORAGE_KEY, 'active')
         setHasValidSession(true)
         verifiedRef.current = true
+        if (window.location.hash || window.location.search) {
+          window.history.replaceState(null, '', window.location.pathname)
+        }
+      } else if (event === 'SIGNED_OUT') {
+        if (!verifiedRef.current && sessionStorage.getItem(ACTIVE_STORAGE_KEY) !== 'active') {
+          setHasValidSession(false)
+        }
       }
     })
 
@@ -153,8 +181,12 @@ export function ResetPasswordPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault()
 
-    if (password.length < 8) {
-      toast.warning(t("Contraseña demasiado corta"), t("La contraseña debe tener al menos 8 caracteres."))
+    const passwordValidation = validatePassword(password)
+    if (!passwordValidation.isValid) {
+      toast.warning(
+        t("Contraseña poco segura"),
+        t("La contraseña debe cumplir con todos los requisitos de seguridad.")
+      )
       return
     }
 
@@ -165,31 +197,26 @@ export function ResetPasswordPage() {
 
     setIsLoading(true)
     try {
-      // 1. Actualizar la contraseña del usuario
       const { error } = await supabase.auth.updateUser({
         password,
       })
 
       if (error) throw error
 
-      // 2. Registrar en auditoría el consumo del enlace de recuperación
       try {
         await supabase.rpc('record_password_recovery_consumed')
       } catch {
-        // Fallback silencioso si la migración de auditoría aún no se ha ejecutado
       }
 
-      // 3. Marcar de inmediato en sessionStorage que este enlace ya se consumió (un solo uso)
+      sessionStorage.removeItem(ACTIVE_STORAGE_KEY)
       sessionStorage.setItem(CONSUMED_STORAGE_KEY, 'completed')
 
-      // 4. Invalidar de inmediato todas las sesiones activas en el servidor y cerrar sesión localmente
       try {
         await supabase.auth.signOut({ scope: 'global' })
       } catch {
         await supabase.auth.signOut().catch(() => {})
       }
 
-      // 5. Limpiar URL e invalidar estado de sesión del formulario
       window.history.replaceState(null, '', window.location.pathname)
       setHasValidSession(false)
       setIsSuccess(true)
@@ -199,7 +226,7 @@ export function ResetPasswordPage() {
         t("Tu contraseña se ha restablecido correctamente. Inicia sesión con tus nuevas credenciales.")
       )
     } catch (err) {
-      const message = err instanceof Error ? err.message : t("Error al actualizar la contraseña.")
+      const message = getErrorMessage(err, t, "Error al actualizar la contraseña.")
       toast.error(t("Error"), message)
     } finally {
       setIsLoading(false)
@@ -207,7 +234,7 @@ export function ResetPasswordPage() {
   }
 
   const handleGoToLogin = () => {
-    sessionStorage.removeItem(CONSUMED_STORAGE_KEY)
+    handleClearRecoveryFlow()
     navigate('/login')
   }
 
@@ -215,11 +242,11 @@ export function ResetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-700 mb-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-3">
             <GraduationCap className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-bold text-primary-700">UniTutor</h1>
-          <p className="mt-2 text-gray-600">{t("Establecer nueva contraseña")}</p>
+          <h1 className="text-3xl font-bold text-primary-900">UniTutor</h1>
+          <p className="mt-2 text-gray-700 font-medium">{t("Establecer nueva contraseña")}</p>
         </div>
 
         <Card>
@@ -227,7 +254,7 @@ export function ResetPasswordPage() {
             <h2 className="text-lg font-semibold text-gray-900">
               {isSuccess ? t("¡Contraseña restablecida!") : t("Crea tu nueva contraseña")}
             </h2>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700 font-medium">
               {isSuccess
                 ? t("Ya puedes ingresar con tus nuevas credenciales")
                 : t("Ingresa y confirma tu nueva contraseña institucional")}
@@ -237,14 +264,14 @@ export function ResetPasswordPage() {
           <Card.Body>
             {isSuccess ? (
               <div className="space-y-4 text-center py-4">
-                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-100 text-green-700">
+                <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold">
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
                 <div className="space-y-2">
                   <p className="text-sm text-gray-700 leading-relaxed">
                     {t("Tu contraseña ha sido actualizada exitosamente. Por motivos de seguridad, todas las sesiones anteriores han sido finalizadas.")}
                   </p>
-                  <div className="inline-flex items-center gap-1.5 text-xs text-primary-700 bg-primary-50 px-3 py-1.5 rounded-full font-medium">
+                  <div className="inline-flex items-center gap-1.5 text-xs text-primary-950 bg-primary-100/80 px-3 py-1.5 rounded-full font-bold border border-primary-200">
                     <ShieldCheck className="h-4 w-4" />
                     {t("Enlace invalidado y protegido")}
                   </div>
@@ -261,42 +288,50 @@ export function ResetPasswordPage() {
               </div>
             ) : hasValidSession === false ? (
               <div className="space-y-4 py-2">
-                <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
+                <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-950">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-amber-800 shrink-0 mt-0.5" />
                     <div className="space-y-1">
                       <p className="text-sm font-semibold">
                         {t("Enlace expirado o no válido")}
                       </p>
-                      <p className="text-xs text-amber-800 leading-relaxed">
+                      <p className="text-xs text-amber-950 font-medium leading-relaxed">
                         {sessionExpiryReason ||
                           t("El enlace de recuperación es de un solo uso y caduca automáticamente a los 15 minutos por seguridad. Solicita un nuevo enlace para continuar.")}
                       </p>
                     </div>
                   </div>
                 </div>
-                <Link to="/forgot-password" className="block">
+                <Link to="/forgot-password" className="block" onClick={handleClearRecoveryFlow}>
                   <Button variant="primary" fullWidth>
                     {t("Solicitar nuevo enlace")}
                   </Button>
                 </Link>
               </div>
+            ) : hasValidSession === null ? (
+              <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary-200 border-t-primary-600" />
+                <p className="text-sm text-gray-700 font-medium">{t("Cargando...")}</p>
+              </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-                <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-800 flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-blue-600 shrink-0" />
+                <div className="rounded-lg bg-blue-50 border border-blue-200 p-3 text-xs text-blue-950 font-medium flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-blue-800 shrink-0" />
                   <span>{t("Este enlace es de uso único y expirará inmediatamente tras guardar tu contraseña.")}</span>
                 </div>
 
-                <Input
-                  label={t("Nueva contraseña")}
-                  type="password"
-                  placeholder={t("Mínimo 8 caracteres")}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoComplete="new-password"
-                />
+                <div className="space-y-1">
+                  <Input
+                    label={t("Nueva contraseña")}
+                    type="password"
+                    placeholder={t("Mínimo 8 caracteres")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                  />
+                  <PasswordStrengthIndicator password={password} />
+                </div>
 
                 <Input
                   label={t("Confirmar nueva contraseña")}
@@ -321,7 +356,8 @@ export function ResetPasswordPage() {
               <div className="text-center">
                 <Link
                   to="/login"
-                  className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 hover:text-primary-700"
+                  onClick={handleClearRecoveryFlow}
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-800 hover:text-primary-950"
                 >
                   <ArrowLeft className="h-4 w-4" />
                   {t("Volver a iniciar sesión")}

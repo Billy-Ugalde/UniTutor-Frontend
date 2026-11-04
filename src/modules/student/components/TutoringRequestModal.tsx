@@ -80,7 +80,7 @@ export function TutoringRequestModal({ slot, tutorName, onClose, onDone }: Tutor
             <h2 id="request-modal-title" className="text-lg font-bold text-gray-900">
               {t("Solicitar tutoría")}
             </h2>
-            <p className="mt-0.5 text-xs text-gray-500">
+            <p className="mt-0.5 text-xs text-gray-700 font-medium">
               {t("Revisa los datos del horario y envía tu solicitud al tutor.")}
             </p>
           </div>
@@ -90,7 +90,7 @@ export function TutoringRequestModal({ slot, tutorName, onClose, onDone }: Tutor
             disabled={isSubmitting}
             aria-label={t("Cerrar")}
             title={t("Cerrar")}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed cursor-pointer"
+            className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 disabled:cursor-not-allowed cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -101,31 +101,31 @@ export function TutoringRequestModal({ slot, tutorName, onClose, onDone }: Tutor
             <div className="flex items-start gap-2.5">
               <User className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
               <div>
-                <dt className="text-xs font-medium text-gray-400">{t("Tutor")}</dt>
+                <dt className="text-xs font-bold text-gray-700">{t("Tutor")}</dt>
                 <dd className="font-semibold text-gray-900">{tutorName}</dd>
               </div>
             </div>
             <div className="flex items-start gap-2.5">
               <BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
               <div>
-                <dt className="text-xs font-medium text-gray-400">{t("Materia")}</dt>
+                <dt className="text-xs font-bold text-gray-700">{t("Materia")}</dt>
                 <dd className="font-semibold text-gray-900">
                   {slot.subject_code} · {slot.subject_name}
                 </dd>
-                <dd className="text-xs text-gray-500">{slot.title}</dd>
+                <dd className="text-xs text-gray-700 font-medium">{slot.title}</dd>
               </div>
             </div>
             <div className="flex items-start gap-2.5">
               <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
               <div>
-                <dt className="text-xs font-medium text-gray-400">{t("Fecha")}</dt>
+                <dt className="text-xs font-bold text-gray-700">{t("Fecha")}</dt>
                 <dd className="font-semibold capitalize text-gray-900">{dateLabel}</dd>
               </div>
             </div>
             <div className="flex items-start gap-2.5">
               <Clock className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
               <div>
-                <dt className="text-xs font-medium text-gray-400">{t("Horario")}</dt>
+                <dt className="text-xs font-bold text-gray-700">{t("Horario")}</dt>
                 <dd className="font-semibold text-gray-900">
                   {formatTime(slot.start_time)} - {formatTime(slot.end_time)}
                 </dd>
@@ -138,7 +138,7 @@ export function TutoringRequestModal({ slot, tutorName, onClose, onDone }: Tutor
                 <Video className="mt-0.5 h-4 w-4 shrink-0 text-primary-600" />
               )}
               <div>
-                <dt className="text-xs font-medium text-gray-400">{t("Modalidad")}</dt>
+                <dt className="text-xs font-bold text-gray-700">{t("Modalidad")}</dt>
                 <dd className="font-semibold text-gray-900">{modalityLabel}</dd>
               </div>
             </div>
@@ -158,7 +158,7 @@ export function TutoringRequestModal({ slot, tutorName, onClose, onDone }: Tutor
               placeholder={t("Cuéntale qué temas necesitas reforzar...")}
               className="w-full resize-none rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-300 disabled:cursor-not-allowed disabled:bg-gray-50"
             />
-            <p className="mt-1 text-right text-xs text-gray-400">
+            <p className="mt-1 text-right text-xs text-gray-700 font-medium">
               {message.length}/{MAX_MESSAGE_LENGTH}
             </p>
           </div>

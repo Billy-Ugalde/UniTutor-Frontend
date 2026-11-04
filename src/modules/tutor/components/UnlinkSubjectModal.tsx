@@ -52,7 +52,7 @@ export function UnlinkSubjectModal({
                   ? t("No es posible deshabilitar materia")
                   : t("Confirmar deshabilitación de materia")}
               </h3>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-700 font-medium mt-0.5">
                 {isBlocked
                   ? t("Materia con tutorías vinculadas")
                   : t("Acción de deshabilitación")}
@@ -63,7 +63,9 @@ export function UnlinkSubjectModal({
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 cursor-pointer disabled:opacity-50"
+            aria-label={t("Cerrar")}
+            title={t("Cerrar")}
+            className="rounded-lg p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-800 cursor-pointer disabled:opacity-50"
           >
             <X className="h-5 w-5" />
           </button>
@@ -75,7 +77,7 @@ export function UnlinkSubjectModal({
               <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-900 border border-blue-200">
                 {displayCode}
               </span>
-              <span className="text-xs text-gray-500 truncate max-w-[200px]">
+              <span className="text-xs text-gray-700 font-medium truncate max-w-[200px]">
                 {subject.courseName}
               </span>
             </div>
