@@ -42,15 +42,14 @@ export function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <div className="mb-8 text-center flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-3">
-            <GraduationCap className="h-6 w-6" />
-          </div>
-          <h1 className="text-3xl font-bold text-primary-900">UniTutor</h1>
-          <p className="mt-2 text-gray-700 font-medium">{t("Recuperación de contraseña")}</p>
+    <div className="w-full max-w-md my-auto">
+      <div className="mb-4 text-center flex flex-col items-center">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-2">
+          <GraduationCap className="h-5 w-5" />
         </div>
+        <h1 className="text-2xl font-bold text-primary-900">UniTutor</h1>
+        <p className="mt-1 text-xs text-gray-700 font-medium">{t("Recuperación de contraseña")}</p>
+      </div>
 
         <Card>
           <Card.Header>
@@ -124,6 +123,5 @@ export function ForgotPasswordPage() {
           )}
         </Card>
       </div>
-    </div>
   )
 }

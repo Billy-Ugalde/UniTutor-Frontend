@@ -349,6 +349,39 @@ export interface Database {
           read?: boolean
         }
       }
+
+      tutoring_reviews: {
+        Row: {
+          id: string
+          session_id: string
+          student_id: string
+          tutor_id: string
+          rating: number
+          comment: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          session_id: string
+          student_id: string
+          tutor_id: string
+          rating: number
+          comment?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          session_id?: string
+          student_id?: string
+          tutor_id?: string
+          rating?: number
+          comment?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -391,6 +424,28 @@ export interface Database {
           p_message?: string | null
         }
         Returns: { request_id: string; status: TutoringRequestStatus; success: boolean }
+      }
+      submit_tutoring_review: {
+        Args: {
+          p_session_id: string
+          p_rating: number
+          p_comment?: string | null
+        }
+        Returns: { success: boolean; id: string; session_id: string; rating: number; comment: string | null }
+      }
+      get_tutor_rating_stats: {
+        Args: {
+          p_tutor_id: string
+        }
+        Returns: TutorRatingStats
+      }
+      get_tutor_reviews: {
+        Args: {
+          p_tutor_id: string
+          p_limit?: number
+          p_offset?: number
+        }
+        Returns: TutorReviewItem[]
       }
     }
     Enums: {
@@ -460,4 +515,31 @@ export interface NewRequestNotificationPayload {
   start_time?: string
   end_time?: string
   message?: string | null
+}
+
+export type TutoringReview = Database['public']['Tables']['tutoring_reviews']['Row']
+
+export interface TutorReviewItem {
+  id: string
+  session_id: string
+  rating: number
+  comment: string | null
+  created_at: string
+  student_name: string
+  student_avatar: string | null
+  session_title: string
+  subject_name: string
+  subject_code: string
+}
+
+export interface TutorRatingStats {
+  average_rating: number
+  total_reviews: number
+  stars: {
+    '5': number
+    '4': number
+    '3': number
+    '2': number
+    '1': number
+  }
 }

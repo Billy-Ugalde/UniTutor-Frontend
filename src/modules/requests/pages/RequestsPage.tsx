@@ -208,6 +208,7 @@ export function RequestsPage({ asTutor = false, sessionsOnly = false }: Props) {
             saving={savingId === request.id}
             onRespond={respond}
             onCancel={!asTutor ? cancel : undefined}
+            onRefresh={refresh}
           />
         ))}
       </div> : !error && <div role="status" className="rounded-xl border border-gray-200 bg-white px-4 py-12 text-center">

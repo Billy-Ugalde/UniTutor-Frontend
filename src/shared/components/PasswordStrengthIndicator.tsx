@@ -36,7 +36,7 @@ export function PasswordStrengthIndicator({ password }: PasswordStrengthIndicato
   ]
 
   return (
-    <div className="mt-2 space-y-2.5 rounded-lg border border-gray-200 bg-gray-50 p-3 text-xs">
+    <div className="mt-2 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-xs">
       <div className="flex items-center justify-between">
         <span className="font-medium text-gray-700">{t("Seguridad de la contraseña:")}</span>
         <span className={`font-semibold ${
@@ -61,7 +61,7 @@ export function PasswordStrengthIndicator({ password }: PasswordStrengthIndicato
         ))}
       </div>
 
-      <ul className="space-y-1 pt-1">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-2.5 gap-y-1 pt-1 text-[11px]">
         {items.map((item) => (
           <li
             key={item.key}
@@ -81,4 +81,3 @@ export function PasswordStrengthIndicator({ password }: PasswordStrengthIndicato
     </div>
   )
 }
-

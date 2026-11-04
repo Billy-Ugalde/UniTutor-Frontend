@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Calendar, Clock, CheckCircle2, MapPin, XCircle } from 'lucide-react'
+import { Calendar, Clock, CheckCircle2, MapPin, XCircle, Star } from 'lucide-react'
 import { useTranslations } from '@/i18n/useTranslations'
 import { Button } from '@/shared/components/ui/Button'
 import { formatTime, parseISODate } from '@/modules/student/utils/date-utils'
 import { canCancel, canRespond, isConfirmed, safeMeetingUrl, requestStatusLabels } from '../utils/request-state'
 import type { RequestRow } from '../services/requests.api'
+import { SessionRatingModal } from './SessionRatingModal'
 
 const statusStyles = {
   pendiente: 'bg-amber-50 text-amber-800 border-amber-200',
@@ -20,12 +21,15 @@ interface Props {
   saving: boolean
   onRespond: (id: string, status: 'aceptada' | 'rechazada') => Promise<boolean>
   onCancel?: (id: string) => Promise<boolean>
+  onRefresh?: () => void
 }
 
-export function RequestCard({ request, asTutor, busy, saving, onRespond, onCancel }: Props) {
+export function RequestCard({ request, asTutor, busy, saving, onRespond, onCancel, onRefresh }: Props) {
   const { t, locale } = useTranslations()
   const [decision, setDecision] = useState<'aceptada' | 'rechazada' | null>(null)
   const [confirmingCancel, setConfirmingCancel] = useState(false)
+  const [isRatingModalOpen, setIsRatingModalOpen] = useState(false)
+  const [review, setReview] = useState(request.review)
   const meetingUrl = safeMeetingUrl(request.location_or_link ?? '')
   const confirmed = isConfirmed(request)
 
@@ -64,6 +68,65 @@ export function RequestCard({ request, asTutor, busy, saving, onRespond, onCance
           </p>}
         </div>
       )}
+
+      {!asTutor && confirmed && request.session_status === 'completada' && (
+        <div className="mt-4">
+          {review ? (
+            <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-amber-900">
+                    {t('Tu calificación')}
+                  </span>
+                  <div className="flex items-center" aria-label={`${review.rating} de 5 estrellas`}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`h-4 w-4 ${
+                          s <= review.rating ? 'fill-amber-400 text-amber-500' : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs font-bold text-gray-800">
+                    {review.rating}/5
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsRatingModalOpen(true)}
+                  className="text-xs font-semibold text-primary-900 hover:text-primary-950 underline cursor-pointer"
+                >
+                  {t('Editar calificación')}
+                </button>
+              </div>
+              {review.comment && (
+                <p className="mt-2 text-xs italic text-gray-700 bg-white/80 rounded-lg p-2.5 border border-amber-100">
+                  "{review.comment}"
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-primary-200 bg-primary-50/60 p-4">
+              <div className="space-y-0.5">
+                <p className="text-sm font-bold text-primary-950">{t('¿Qué tal estuvo tu tutoría?')}</p>
+                <p className="text-xs text-gray-700 font-medium">
+                  {t('Califica al tutor con estrellas y deja tus comentarios sobre la sesión.')}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                onClick={() => setIsRatingModalOpen(true)}
+                className="gap-1.5 shrink-0"
+              >
+                <Star className="h-4 w-4 fill-amber-300 text-amber-400" />
+                {t('Calificar tutoría')}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
       {asTutor && canRespond(request) && (
         <div className="mt-4 border-t border-gray-100 pt-4">
           {decision ? (
@@ -114,6 +177,27 @@ export function RequestCard({ request, asTutor, busy, saving, onRespond, onCance
         <p className="mt-4 text-sm text-gray-700 font-medium">{t('Esta sesión ya no admite respuestas.')}</p>
       )}
       <p className="mt-4 text-xs text-gray-700 font-medium">{t('Solicitud enviada el {date}', { date: new Date(request.created_at).toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' }) })}</p>
+
+      {!asTutor && confirmed && request.session_status === 'completada' && (
+        <SessionRatingModal
+          isOpen={isRatingModalOpen}
+          onClose={() => setIsRatingModalOpen(false)}
+          sessionId={request.session_id}
+          tutorName={request.tutor_name}
+          sessionTitle={request.title}
+          initialRating={review?.rating ?? 0}
+          initialComment={review?.comment ?? ''}
+          onSuccess={(savedReview) => {
+            setReview({
+              id: savedReview.id,
+              rating: savedReview.rating,
+              comment: savedReview.comment,
+              created_at: new Date().toISOString(),
+            })
+            if (onRefresh) onRefresh()
+          }}
+        />
+      )}
     </article>
   )
 }

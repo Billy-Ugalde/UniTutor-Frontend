@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase'
-import type { TutorSearchRow, TutorSlotRow } from '@/types/database.types'
+import type { TutorRatingStats, TutorReviewItem, TutorSearchRow, TutorSlotRow } from '@/types/database.types'
 
 /** Extrae el mensaje de un error de Supabase/Postgres (puede no ser una instancia de Error). */
 export function backendErrorMessage(err: unknown): string {
@@ -118,4 +118,29 @@ export async function loadSearchCatalog(): Promise<SearchCatalog> {
       customCode: row.custom_code,
     })),
   }
+}
+export async function getTutorRatingStats(tutorId: string): Promise<TutorRatingStats> {
+  const { data, error } = await supabase.rpc('get_tutor_rating_stats', {
+    p_tutor_id: tutorId,
+  })
+  if (error) throw error
+  return (data ?? {
+    average_rating: 0,
+    total_reviews: 0,
+    stars: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 },
+  }) as TutorRatingStats
+}
+
+export async function getTutorReviews(
+  tutorId: string,
+  limit = 20,
+  offset = 0,
+): Promise<TutorReviewItem[]> {
+  const { data, error } = await supabase.rpc('get_tutor_reviews', {
+    p_tutor_id: tutorId,
+    p_limit: limit,
+    p_offset: offset,
+  })
+  if (error) throw error
+  return (data ?? []) as TutorReviewItem[]
 }

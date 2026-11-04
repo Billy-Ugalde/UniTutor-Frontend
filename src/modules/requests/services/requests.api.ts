@@ -1,6 +1,13 @@
 import { supabase } from '@/lib/supabase'
 import type { SessionModality, SessionStatus, TutoringRequestStatus } from '@/types/database.types'
 
+export interface RequestReview {
+  id: string
+  rating: number
+  comment: string | null
+  created_at: string
+}
+
 export interface RequestRow {
   id: string
   session_id: string
@@ -9,6 +16,7 @@ export interface RequestRow {
   created_at: string
   student_name: string
   tutor_name: string
+  tutor_id?: string
   subject_name: string
   subject_code: string
   title: string
@@ -18,6 +26,7 @@ export interface RequestRow {
   modality: SessionModality
   session_status: SessionStatus
   location_or_link: string | null
+  review?: RequestReview | null
 }
 
 export async function loadRequests(asTutor: boolean): Promise<RequestRow[]> {
@@ -58,4 +67,19 @@ export async function cancelRequest(id: string): Promise<void> {
   }
 
   if (!data?.success) throw new Error('No se pudo cancelar la solicitud.')
+}
+
+export async function submitReview(
+  sessionId: string,
+  rating: number,
+  comment?: string,
+): Promise<{ success: boolean; id: string; rating: number; comment: string | null }> {
+  const { data, error } = await supabase.rpc('submit_tutoring_review', {
+    p_session_id: sessionId,
+    p_rating: rating,
+    p_comment: comment || null,
+  })
+  if (error) throw error
+  if (!data?.success) throw new Error('No se pudo guardar la calificación.')
+  return data
 }

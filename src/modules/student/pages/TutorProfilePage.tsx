@@ -12,16 +12,17 @@ import {
   UserX,
   Users,
   Video,
+  Star,
 } from 'lucide-react'
 import { useAuth } from '@/modules/auth/hooks/useAuth'
 import { Card } from '@/shared/components/ui/Card'
 import { Button } from '@/shared/components/ui/Button'
 import { toast } from '@/shared/store/toast.store'
-import type { TutorSearchRow, TutorSlotRow } from '@/types/database.types'
+import type { TutorSearchRow, TutorSlotRow, TutorRatingStats, TutorReviewItem } from '@/types/database.types'
 import { AvailabilityCalendar } from '../components/AvailabilityCalendar'
 import { TutorAvatar } from '../components/TutorAvatar'
 import { TutoringRequestModal } from '../components/TutoringRequestModal'
-import { getTutorAvailability, searchTutors } from '../services/tutor-search.api'
+import { getTutorAvailability, searchTutors, getTutorRatingStats, getTutorReviews } from '../services/tutor-search.api'
 import { formatTime, parseISODate } from '../utils/date-utils'
 
 /** La disponibilidad se refresca sola para reflejar cupos tomados por otros estudiantes. */
@@ -37,6 +38,8 @@ export function TutorProfilePage() {
   const [slots, setSlots] = useState<TutorSlotRow[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [notFound, setNotFound] = useState(false)
+  const [ratingStats, setRatingStats] = useState<TutorRatingStats | null>(null)
+  const [reviews, setReviews] = useState<TutorReviewItem[]>([])
 
   const [subjectFilter, setSubjectFilter] = useState('')
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
@@ -59,9 +62,11 @@ export function TutorProfilePage() {
     const load = async () => {
       setIsLoading(true)
       try {
-        const [tutors, rows] = await Promise.all([
+        const [tutors, rows, stats, revs] = await Promise.all([
           searchTutors({ tutorId, institutionId }),
           getTutorAvailability(tutorId, institutionId),
+          getTutorRatingStats(tutorId).catch(() => null),
+          getTutorReviews(tutorId).catch(() => []),
         ])
         if (cancelled) return
         const matchingTutor = tutors.find((item) => item.institution_id === institutionId)
@@ -71,6 +76,8 @@ export function TutorProfilePage() {
         }
         setTutor(matchingTutor)
         setSlots(rows)
+        if (stats) setRatingStats(stats)
+        if (revs) setReviews(revs)
       } catch (err) {
         console.error('Error al cargar el perfil del tutor:', err)
         if (!cancelled) {
@@ -362,6 +369,117 @@ export function TutorProfilePage() {
           </div>
         </div>
       )}
+
+      <div className="space-y-4 pt-6 border-t border-gray-200">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-bold text-gray-900">{t('Reseñas y comentarios')}</h2>
+            <p className="text-sm text-gray-700 font-medium">
+              {t('Opiniones de estudiantes')}
+            </p>
+          </div>
+        </div>
+
+        {reviews.length === 0 ? (
+          <Card className="p-8 text-center">
+            <Star className="mx-auto h-10 w-10 text-gray-300" />
+            <h3 className="mt-3 text-sm font-semibold text-gray-900">{t('Sin reseñas aún')}</h3>
+            <p className="mt-1 text-xs text-gray-600 font-medium">
+              {t('Este tutor aún no tiene calificaciones de estudiantes.')}
+            </p>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {ratingStats && ratingStats.total_reviews > 0 && (
+              <Card className="p-5">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                  <div className="text-center md:border-r border-gray-200 md:pr-6">
+                    <p className="text-4xl font-extrabold text-gray-900">
+                      {ratingStats.average_rating.toFixed(1)}
+                    </p>
+                    <div className="mt-1 flex justify-center items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <Star
+                          key={s}
+                          className={`h-5 w-5 ${
+                            s <= Math.round(ratingStats.average_rating)
+                              ? 'fill-amber-400 text-amber-500'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <p className="mt-1 text-xs text-gray-600 font-medium">
+                      {t('Calificación promedio')} ({ratingStats.total_reviews} {ratingStats.total_reviews === 1 ? t('evaluación') : t('evaluaciones')})
+                    </p>
+                  </div>
+                  <div className="md:col-span-2 space-y-1.5">
+                    {[5, 4, 3, 2, 1].map((score) => {
+                      const count = ratingStats.stars[String(score) as '1' | '2' | '3' | '4' | '5'] ?? 0
+                      const pct = ratingStats.total_reviews > 0 ? (count / ratingStats.total_reviews) * 100 : 0
+                      return (
+                        <div key={score} className="flex items-center gap-2 text-xs">
+                          <span className="w-12 font-medium text-gray-700 flex items-center gap-1">
+                            {score} <Star className="h-3 w-3 fill-amber-400 text-amber-500" />
+                          </span>
+                          <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
+                            <div
+                              className="h-full bg-amber-400 rounded-full"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="w-8 text-right font-medium text-gray-600">
+                            {count}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              </Card>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {reviews.map((rev) => (
+                <Card key={rev.id} className="p-4 flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">{rev.student_name}</p>
+                        <p className="text-xs text-primary-900 font-medium">
+                          {rev.subject_code} · {rev.subject_name}
+                        </p>
+                      </div>
+                      <div className="flex items-center" aria-label={`${rev.rating} estrellas`}>
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star
+                            key={s}
+                            className={`h-3.5 w-3.5 ${
+                              s <= rev.rating ? 'fill-amber-400 text-amber-500' : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    {rev.comment && (
+                      <p className="mt-1 text-xs text-gray-700 whitespace-pre-wrap rounded-lg bg-gray-50 p-2.5">
+                        "{rev.comment}"
+                      </p>
+                    )}
+                  </div>
+                  <p className="mt-3 text-[11px] text-gray-500 text-right">
+                    {new Date(rev.created_at).toLocaleDateString(locale, {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })}
+                  </p>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
       {requestSlot && (
         <TutoringRequestModal

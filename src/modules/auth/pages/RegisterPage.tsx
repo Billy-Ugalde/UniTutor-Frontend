@@ -136,15 +136,14 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="w-full max-w-lg">
-        <div className="mb-8 text-center flex flex-col items-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-3">
-            <GraduationCap className="h-6 w-6" />
-          </div>
-          <h1 className="text-3xl font-bold text-primary-900">UniTutor</h1>
-          <p className="mt-2 text-gray-700 font-medium">{t("Crea tu cuenta institucional")}</p>
+    <div className="w-full max-w-xl my-auto">
+      <div className="mb-3 text-center flex flex-col items-center">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-100 text-primary-900 font-bold mb-1.5">
+          <GraduationCap className="h-5 w-5" />
         </div>
+        <h1 className="text-xl font-bold text-primary-900">UniTutor</h1>
+        <p className="mt-0.5 text-xs text-gray-700 font-medium">{t("Crea tu cuenta institucional")}</p>
+      </div>
 
         <Card>
           <Card.Header>
@@ -291,7 +290,7 @@ export function RegisterPage() {
                   )}
                 </div>
 
-                <div className="space-y-1">
+                <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
                   <Input
                     label={t("Contraseña")}
                     name="password"
@@ -302,19 +301,18 @@ export function RegisterPage() {
                     required
                     autoComplete="new-password"
                   />
-                  <PasswordStrengthIndicator password={form.password} />
+                  <Input
+                    label={t("Confirmar contraseña")}
+                    name="confirmPassword"
+                    type="password"
+                    placeholder={t("Repite tu contraseña")}
+                    value={form.confirmPassword}
+                    onChange={handleChange}
+                    required
+                    autoComplete="new-password"
+                  />
                 </div>
-
-                <Input
-                  label={t("Confirmar contraseña")}
-                  name="confirmPassword"
-                  type="password"
-                  placeholder={t("Repite tu contraseña")}
-                  value={form.confirmPassword}
-                  onChange={handleChange}
-                  required
-                  autoComplete="new-password"
-                />
+                <PasswordStrengthIndicator password={form.password} />
 
                 <Button
                   type="submit"
@@ -342,6 +340,5 @@ export function RegisterPage() {
           )}
         </Card>
       </div>
-    </div>
   )
 }
